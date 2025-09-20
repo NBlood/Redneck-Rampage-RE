@@ -1065,19 +1065,18 @@ void cachegoodsprites(void)
 void prelevel(char g)
 {
 #if 1
-    struct player_struct *p;
-    short i;
-    short nexti;
-    short j;
-    short startwall;
-    short endwall;
-    short lotaglist;
-    short k;
-    short lotags[65];
-    int speed;
-    int dist;
-    short sound;
-    sound = 0;
+	short i;
+	short nexti;
+	short j;
+	short lotags[65];
+	short k;
+	short startwall;
+	short endwall;
+	short lotaglist;
+	int dist;
+	int speed;
+	short sound = 0;
+	struct player_struct *p;
 
     p = &ps[screenpeek];
 #else
