@@ -1,0 +1,9 @@
+system dos4g
+option map
+option stack=90k
+option u
+option static
+debug all
+name makemap
+file bstub, build
+library engine.lib

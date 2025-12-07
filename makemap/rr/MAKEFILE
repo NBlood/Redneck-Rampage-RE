@@ -1,0 +1,8 @@
+makemap.exe : bstub.obj build.obj engine.lib
+	wlink @makemap.lnk
+
+bstub.obj : bstub.c build.h pragmas.h
+	wcc386 bstub /5r /otexan
+
+engine.lib : engine.obj cache1d.obj a.obj
+	wlib engine.lib +-engine.obj +-cache1d.obj +-a.obj
