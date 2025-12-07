@@ -1,0 +1,5 @@
+build.exe : build.obj engine.obj cache1d.obj a.obj bstub.obj
+	wlink f build f engine f cache1d f a f bstub
+
+bstub.obj : bstub.c build.h pragmas.h
+	wcc386 bstub /5r /s /or

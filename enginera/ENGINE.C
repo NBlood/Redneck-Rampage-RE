@@ -8514,9 +8514,9 @@ interrupt stereohandler1()
 		//VR flag
 	if (kinp(0x3c2)&128)
 	{
-		laststereoint = 0;
 		koutpw(0x3d4,((long)(overtbits)<<8)+0x11);
 		koutp(0x3d5,overtbits+16);
+		laststereoint = 0;
 	}
 	if (laststereoint == 1)
 	{
@@ -8534,10 +8534,10 @@ interrupt stereohandler2()
 		//VR flag
 	if (kinp(0x3c2)&128)
 	{
-		laststereoint = 0;
-		koutp(0x378,0xfb+((visualpage&1^1)<<2));
 		koutpw(0x3d4,((long)overtbits<<8)+0x11);
 		koutp(0x3d5,overtbits+16);
+		laststereoint = 0;
+		koutp(0x378,0xfb+((visualpage&1^1)<<2));
 	}
 	if (laststereoint == 1)
 	{

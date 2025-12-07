@@ -6336,9 +6336,9 @@ uninitkeys()
 
 void __interrupt __far keyhandler()
 {
+	koutp(0x20,0x20);
 	oldreadch = readch; readch = kinp(0x60);
 	keytemp = kinp(0x61); koutp(0x61,keytemp|128); koutp(0x61,keytemp&127);
-	koutp(0x20,0x20);
 	if ((readch|1) == 0xe1) { extended = 128; return; }
 	if (oldreadch != readch)
 	{
