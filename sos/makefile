@@ -1,7 +1,7 @@
 # watcom 10.5, tasm 3.1
 
 DCFLAGS = /3r /od /s
-MCLFAGS = /4r /or /s
+MCFLAGS = /4r /ori /s
 
 DOBJ = &
 sosdrv.obj &

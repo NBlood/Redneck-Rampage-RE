@@ -1,6 +1,8 @@
 .386p
 .MODEL SMALL
 
+.DATA
+
 extrn _pMixingBufferEnd:dword
 extrn _wMixingSampleEnd:dword
 extrn _wMixingSampleWhole:dword

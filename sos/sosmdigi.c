@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <dos.h>
 #include <i86.h>
 #include <fcntl.h>
