@@ -13,7 +13,7 @@ ra.exe : game1.obj game2.obj game3.obj game4.obj game5.obj game6.obj game7.obj g
 			gamedef1.obj gamedef2.obj global.obj menus1.obj menus2.obj menus3.obj &
 			player1.obj player2.obj player3.obj player4.obj player5.obj &
 			premap.obj sector1.obj sector2.obj sector3.obj sounds.obj rts.obj &
-			config.obj animlib.obj &
+			config.obj animlib.obj function.obj &
 			lava.obj noise.obj warpfx.obj dpmi.obj _debug.obj rbaudio.obj playmve.obj usrhooks.obj fog.obj
 		wlink $(all) @makefil2.lnk
 !else
@@ -121,5 +121,7 @@ usrhooks.obj : usrhooks.c $(globaldependencies)
 	wcc386 usrhooks $(compileoptions)
 fog.obj : fog.c $(globaldependencies)
 	wcc386 fog $(compileoptions)
+function.obj : function.c $(globaldependencies)
+	wcc386 function $(compileoptions)
 !endif
 

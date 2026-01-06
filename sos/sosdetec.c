@@ -15,7 +15,7 @@ W32 sosDIGIDetectInit(PSTR a1)
 {
     int v1;
     int v2;
-    if (!(_sDETSystem.wFlags & _SOS_DET_SYSTEM_INITIALIZED))
+    if (_sDETSystem.wFlags & _SOS_DET_SYSTEM_INITIALIZED)
     {
         return _ERR_DETECT_INITIALIZED;
     }

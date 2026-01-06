@@ -350,7 +350,7 @@ static int ioReset(int a1)
     mveheader_t *p;
     io_handle = a1;
     p = (mveheader_t*)ioRead(30);
-    if (!p || strcmp(p->f_0, "Interplay MVE File\x1a") || p->f_18 != ~p->f_16 + 0x1234
+    if (!p || strcmp(p->f_0, "Interplay MVE File\x1a\x0") || p->f_18 != ~p->f_16 + 0x1234
         || p->f_16 != 0x100 || p->f_14 != 0x1a)
     {
         return 0;

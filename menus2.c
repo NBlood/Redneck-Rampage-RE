@@ -628,7 +628,7 @@ void menus(void)
                     gametext(c,70,"BURTON GILLIAM",0);
                     gametext(c,90,"DAISY MAE",0);
                     gametext(c,100,"TARA CHARENDOFF",0);
-                    gametext(c,120,"BUBBA, BILLY RAY, SKINNY OL' COOT,",0);
+                    gametext(c,120,"BUBBA, BILLY RAY JETER, SKINNY OL' COOT,",0);
                     gametext(c,130,"FRANK THE BIKER, THE TURD MINION",0);
                     gametext(c,140,"& ALL OTHER VARIOUS RAMBLINGS...",0);
                     gametext(c,150,"DREW MARKHAM",0);
@@ -651,7 +651,7 @@ void menus(void)
                     gametext(c,60,"MUSIC",0);
                     gametext(c,80,"DISGRACELAND",0);
                     gametext(c,90,"TINY D & THE SOFA KINGS",0);
-                    gametext(c,110,"BANJO AND GUITAR PICKIN",0);
+                    gametext(c,110,"BANJO AND GUITAR PICKIN'",0);
                     gametext(c,120,"JOHN SCHLOCKER",0);
                     gametext(c,130,"HOWARD YEARWOOD",0);
                     break;

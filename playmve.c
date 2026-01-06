@@ -10,6 +10,7 @@ _SOS_DIGI_DRIVER sosDriver;
 int dword_32D3B0; // fixme
 int blaster[6]; // fixme
 
+int dword_11A82C = 0;
 HANDLE dword_11A830 = -1;
 HANDLE dword_11A834 = -1;
 
@@ -106,6 +107,9 @@ unsigned short cardid[] = {
     _TEMPOCS_16_ST,
     _TEMPOCS_16_MONO
 };
+
+int dword_11A940 = 1;
+int dword_11A944 = 1;
 
 void * cdecl func_A8570(unsigned int a1)
 {

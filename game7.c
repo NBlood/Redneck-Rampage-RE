@@ -427,10 +427,10 @@ void Logo(void)
                 temp = playanm("2nd.anm",5,2);
                 if (temp != 10)
                 {
-                    temp = playanm("3nd.anm",5,3);
+                    temp = playanm("3rd.anm",5,3);
                     if (temp != 10)
                     {
-                        playanm("4nd.anm",5,4);
+                        playanm("4th.anm",5,4);
                     }
                 }
             }

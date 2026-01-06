@@ -3,6 +3,7 @@ option map
 option stack=90k
 option u
 option caseexact
+option static
 debug all
 name ra
 
@@ -41,6 +42,7 @@ file premap
 file game4
 file noise
 file actors5
+file function
 file game8
 file game5
 file gamedef1

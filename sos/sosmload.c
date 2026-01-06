@@ -35,7 +35,7 @@ W32 sosMIDILoadDriver(W32 a1, HANDLE a2, LPSTR *a3, LPSTR *a4, PSTR a5,
     if (a1 < 0xa000 || a1 > 0xa200)
         return 6;
     strcpy(_sMIDISystem.szPathTemp, _sMIDISystem.szPath);
-    strcat(_sMIDISystem.szPathTemp, "HMIDRV.386");
+    strcat(_sMIDISystem.szPathTemp, "HMIMDRV.386");
     
     v4 = open(_sMIDISystem.szPathTemp, 0x200);
     if (v4 == -1)

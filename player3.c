@@ -328,7 +328,7 @@ void getinput(short snum)
 }
 
 #ifdef RRRA
-long dword_119BFC = 0;
+//long dword_119BFC = 0;
 short bike_turn = 0;
 void getinputmotorcycle(short snum)
 {
