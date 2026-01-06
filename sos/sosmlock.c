@@ -61,4 +61,4 @@ BOOL sosMIDIUnLockLibrary(VOID)
     return 0;
 }
 
-VOID sosMIDICode13End(VOID) {}
+VOID sosMIDICode12End(VOID) {}
