@@ -33,7 +33,7 @@ W32 sosDIGIInitDriver(PSOSDIGIDRIVER a1, HANDLE *a2)
 			return vc;
 		if ((a1->pSamples = sosAlloc(sizeof(_SOS_SAMPLE) * _SOS_MIXER_CHANNELS)) == NULL)
 			return _ERR_MEMORY_FAIL;
-		if ((a1->pMixingBuffer = sosAloc(a1->wDMABufferSize * 4)) == NULL)
+		if ((a1->pMixingBuffer = sosAlloc(a1->wDMABufferSize * 4)) == NULL)
 		{
 			sosFree(a1->pSamples, sizeof(_SOS_SAMPLE) * _SOS_MIXER_CHANNELS);
 			return _ERR_MEMORY_FAIL;

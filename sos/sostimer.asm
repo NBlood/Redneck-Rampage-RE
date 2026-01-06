@@ -3,8 +3,8 @@
 
 .DATA
 
-PUBLIC _wSOSData3Start
-_wSOSData3Start dd 0
+PUBLIC __wSOSData3Start
+__wSOSData3Start dd 0
 dword_102A8     dd 0
 dword_102AC     dd 0
                 dd 0
@@ -22,8 +22,8 @@ PUBLIC __bTIMERInstalled
 __bTIMERInstalled dd 0
 PUBLIC __bTIMERDPMI
 __bTIMERDPMI    dd 0
-PUBLIC _wSOSData3End
-_wSOSData3End dd 0
+PUBLIC __wSOSData3End
+__wSOSData3End dd 0
 
 .CODE
 
