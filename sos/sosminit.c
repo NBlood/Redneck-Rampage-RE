@@ -10,11 +10,11 @@ VOID sosMIDICode9Start(VOID) {}
 
 W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
 {
-    DWORD v4;
+    char far * unk;
     DWORD v8;
     DWORD vc;
     DWORD v10;
-    DWORD unk[2];
+    DWORD v4;
     _MIDI_CHANNEL* v18;
     for (v8 = 0; v8 < 8; v8++)
     {
@@ -67,14 +67,15 @@ W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
             }
             else
             {
-                v10 = sosMIDILoadDriver(a1->wID, vc, &_sMIDIDriver[vc].lpCS, &_sMIDIDriver[vc].lpDS,
-                    &_sMIDIDriver[vc].hMemory, &_sMIDIDriver[vc].wSize, &_sMIDIDriver[vc].dwLinear);
+                v10 = sosMIDILoadDriver(a1->wID, vc, (LPSTR*)&_sMIDIDriver[vc].lpCS, (LPSTR*)&_sMIDIDriver[vc].lpDS,
+                    (PSTR)&_sMIDIDriver[vc].hMemory, (PSTR)&_sMIDIDriver[vc].wSize, (DWORD*)&_sMIDIDriver[vc].dwLinear);
                 if (v10)
                     return v10;
                 a1->lpDriverMemoryCS = _sMIDIDriver[vc].lpCS;
                 a1->lpDriverMemoryDS = _sMIDIDriver[vc].lpDS;
             }
-            sosMIDIDRVGetFuncsPtr(_sMIDIDriver[vc].lpCS, _sMIDIDriver[vc].lpDS, (LPSTR)_sMIDIDriver[vc].lpfnFunction);
+            sosMIDIDRVGetFuncsPtr(_sMIDIDriver[vc].lpCS, _sMIDIDriver[vc].lpDS, (LPSTR)&_sMIDIDriver[vc].lpfnFunction);
+            //sosMIDIDRVGetFuncsPtr(_sMIDIDriver[vc].lpCS, _sMIDIDriver[vc].lpDS, (LPSTR)&_sMIDIDriver[vc] + 0x12);
             _sMIDIDriver[vc].lpfnDataFunction = _sMIDIDriver[vc].lpfnFunction[0];
             v10 = _sMIDIDriver[vc].lpfnFunction[_MIDI_DRV_INIT]((LPSTR)a1->sHardware.wParam, a1->sHardware.wIRQ, a1->sHardware.wPort);
             if (v10)
@@ -89,14 +90,14 @@ W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
     }
     switch (a1->wID)
     {
-        case _MIDI_SOUND_MASTER_II:
+        case _MIDI_GUS:
             break;
     }
 
     v4 = _wMIDIDriverTotalChannels[a1->wID - 0xa000];
     if (!_sMIDIDriver[vc].pChannel)
     {
-        _sMIDIDriver[vc].pChannel = sosAlloc(v4 * sizeof(_MIDI_CHANNEL) + 1);
+        _sMIDIDriver[vc].pChannel = (PCHANNEL)sosAlloc(v4 * sizeof(_MIDI_CHANNEL) + 1);
 
         if (!_sMIDIDriver[vc].pChannel)
             return _ERR_MEMORY_FAIL;
@@ -105,7 +106,7 @@ W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
     v18 = _sMIDIDriver[vc].pChannel;
     memset(v18, 0, v4 * sizeof(_MIDI_CHANNEL));
     *(BYTE*)v18 = v4;
-    v18 = (BYTE*)v18 + 1;
+    v18 = (_MIDI_CHANNEL*)((BYTE*)v18 + 1);
     for (v8 = 0; v8 < v4; v8++)
     {
         v18->wChannel = _wMIDIDriverChannel[a1->wID - 0xa000][v8];
@@ -171,7 +172,7 @@ W32 sosMIDIResetDriver(HANDLE a1)
 
     v14 = _sMIDIDriver[a1].pChannel;
     v8 = *(BYTE*)v14;
-    v14 = (BYTE*)v14 + 1;
+    v14 = (_MIDI_CHANNEL*)((BYTE*)v14 + 1);
     for (v4 = 0; v4 < v8; v4++)
     {
         if (v14->wChannel != -1)

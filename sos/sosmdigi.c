@@ -283,22 +283,22 @@ DWORD sosMIDIFlushTriggeredPatches(HSOS a1, PTRACK a2)
 
 DWORD sosMIDILoadTriggeredPatches(HSOS a1, PTRACK a2)
 {
-    WORD v4;
-    WORD v8;
-    _MIDI_DIGI_SYSTEM *v10;
-    _SOS_SAMPLE *v14;
     _SOS_DIGI_TRIGGERED_PATCH *v24;
     int v18;
+    _MIDI_DIGI_SYSTEM *v10;
+    _SOS_SAMPLE *v14;
+    WORD v4;
+    WORD v8;
     
 
     v10 = &_sSOSMIDIDIGIDriver[a1];
 
     if (!v10->psPatchList)
-        return 10;
+        return _ERR_INVALID_HANDLE;
 
     v18 = open(v10->szPatchFile, 0x200);
     if (v18 == -1)
-        return 14;
+        return _ERR_INVALID_DATA;
 
     v8 = v10->sPatchHeader.dwDefaultTriggeredPatch;
     if (v8 != 0xff)
@@ -317,19 +317,19 @@ DWORD sosMIDILoadTriggeredPatches(HSOS a1, PTRACK a2)
                     if (!v10->sPatchHeader.dwTriggeredOffset)
                     {
                         close(v18);
-                        return 14;
+                        return _ERR_INVALID_DATA;
                     }
                     lseek(v18, v10->sPatchHeader.dwTriggeredPatchHeaders[v4], SEEK_SET);
                     read(v18, &v10->psPatchList[v4].sTriggeredPatch, 0x9c);
                     if (!v10->psPatchList[v4].sTriggeredPatch.dwPatchDataOffset)
                     {
                         close(v18);
-                        return 14;
+                        return _ERR_INVALID_DATA;
                     }
                     if ((v10->psPatchList[v4].pPatchData = sosAlloc(v10->psPatchList[v4].sTriggeredPatch.dwPatchDataSize + 4)) == 0)
                     {
                         close(v18);
-                        return 5;
+                        return _ERR_MEMORY_FAIL;
                     }
                     lseek(v18, v10->psPatchList[v4].sTriggeredPatch.dwPatchDataOffset, SEEK_SET);
                     read(v18, v10->psPatchList[v4].pPatchData + 4, v10->psPatchList[v4].sTriggeredPatch.dwPatchDataSize);
@@ -366,7 +366,7 @@ DWORD sosMIDILoadTriggeredPatches(HSOS a1, PTRACK a2)
             v10->sPatchHeader.dwDefaultTriggeredPatch = 0xff;
         }
     }
-    return 0;
+    return _ERR_NO_ERROR;
 }
 
 VOID sosMIDICode5End(VOID) {}
