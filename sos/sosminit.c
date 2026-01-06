@@ -109,8 +109,7 @@ W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
     v18 = (_MIDI_CHANNEL*)((BYTE*)v18 + 1);
     for (v8 = 0; v8 < v4; v8++)
     {
-        v18->wChannel = _wMIDIDriverChannel[a1->wID - 0xa000][v8];
-        if (v18->wChannel == -1)
+        if ((v18->wChannel = _wMIDIDriverChannel[a1->wID - 0xa000][v8]) == -1)
             v18->wFlags = _MIDI_CHANNEL_LOCKED | _ACTIVE;
         else
             v18->wFlags = 0;
