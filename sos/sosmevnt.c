@@ -64,7 +64,7 @@ BOOL sosMIDIProcessEvent(PSONG a1, PTRACK a2, W32 a3, W32 a4, W32 a5,
 		case _MIDI_NOTE_OFF:
 			if (!(a2->wFlags & _SUPRESSED))
 			{
-				sosMIDISendMIDIEvent(a2->hDriver, _MIDI_NOTE_OFF | a2->sSteal.wRemapChannel,
+				sosMIDISendMIDIEvent(a2->hDriver, _MIDI_NOTE_ON | a2->sSteal.wRemapChannel,
 					a4, 0, 3);
 			}
 			return 0;
@@ -79,9 +79,9 @@ BOOL sosMIDIProcessEvent(PSONG a1, PTRACK a2, W32 a3, W32 a4, W32 a5,
 						vc = NULL;
 						while (v8)
 						{
-							if (v8->bDriverAndChannel == (a2->sSteal.wRemapChannel | (a2->hDriver << 4)))
+							if (v8->bDriverAndChannel == ((a2->hDriver << 4) | a2->sSteal.wRemapChannel))
 							{
-								sosMIDISendMIDIEvent(a2->hDriver, _MIDI_NOTE_OFF | a2->sSteal.wRemapChannel,
+								sosMIDISendMIDIEvent(a2->hDriver, _MIDI_NOTE_ON | a2->sSteal.wRemapChannel,
 									v8->bNote, 0, 3);
 								if (!vc)
 								{

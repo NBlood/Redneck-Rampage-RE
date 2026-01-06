@@ -27,7 +27,7 @@ PSTR sosAlloc(W32 a1)
 
 VOID sosFree(PSTR a1, W32 a2)
 {
-    if (_sSOSSystem.pMemFreeFunction)
+    if (_sSOSSystem.pMemAllocFunction)
     {
         _sSOSSystem.pMemFreeFunction(a1, a2);
         return;

@@ -58,7 +58,7 @@ W32 cdecl far sosDIGISendData(LPSTR a1, W32 a2, W32 a3)
                     if (v4 != 0xffff)
                         sosDIGIStopSample(v1c, v4);
                 }
-                if (_sSOSMIDIDIGIQueue[v20].wMaxVoices >= _sSOSMIDIDIGIQueue[v20].wUsedVoices)
+                if (_sSOSMIDIDIGIQueue[v20].wUsedVoices >= _sSOSMIDIDIGIQueue[v20].wMaxVoices)
                 {
                     v4 = digiQueueGetItem(a3, v14);
                     if (v4 != 0xffff)
@@ -125,7 +125,7 @@ W32 cdecl far sosDIGISendData(LPSTR a1, W32 a2, W32 a3)
                     {
                         if (_sSOSMIDIDIGIQueue[v20].sElement[v10].hSample != 0xffff)
                         {
-                            v2c = (_sSOSMIDIDIGIQueue[v20].sElement[v10].wVelocity * vc) * 2;
+                            v2c = (vc * _sSOSMIDIDIGIQueue[v20].sElement[v10].wVelocity) * 2;
                             sosDIGISetSampleVolume(v1c, _sSOSMIDIDIGIQueue[v20].sElement[v10].hSample, ((short)v2c << 16) | (short)v2c);
                         }
                         ++v10;
@@ -151,7 +151,7 @@ W32 cdecl far sosDIGISendData(LPSTR a1, W32 a2, W32 a3)
 W32 cdecl far sosDIGIInit(LPSTR a1, W32 a2, W32 a3)
 {
     WORD far *vc = a1;
-    if ((_sSOSSystem.pDriver[vc[3]]->wFlags & 1) == 0)
+    if ((_sSOSSystem.pDriver[vc[2]]->wFlags & 1) == 0)
         return 1;
     
 
@@ -171,7 +171,7 @@ W32 cdecl far sosDIGIUnInit(LPSTR a1, W32 a2, W32 a3)
 
 W32 cdecl far sosDIGIReset(LPSTR a1, W32 a2, W32 a3)
 {
-    WORD v4 = _sSOSMIDIDIGIQueue[_sSOSMIDIDIGIDriver[a2].hQueue].wFlags;
+    WORD v4 = _sSOSMIDIDIGIQueue[_sSOSMIDIDIGIDriver[a2].hQueue].wMaxVoices;
     digiQueueUnInit(_sSOSMIDIDIGIDriver[a2].hQueue);
     _sSOSMIDIDIGIDriver[a2].hQueue = digiQueueInit(v4);
     return 0;

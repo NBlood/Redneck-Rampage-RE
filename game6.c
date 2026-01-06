@@ -90,7 +90,7 @@ char cheatquotes[NUMCHEATCODES][14] = {
 };
 
 
-char cheatbuf[20],cheatbuflen;
+char cheatbuf[12],cheatbuflen;
 #else
 #define NUMCHEATCODES 25
 char cheatquotes[NUMCHEATCODES][14] = {

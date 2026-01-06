@@ -41,11 +41,11 @@ W32 sosMIDILoadDriver(W32 a1, HANDLE a2, LPSTR *a3, LPSTR *a4, PSTR a5,
     if (v4 == -1)
         return 15;
 
-    read(v4, &_sMIDIDriver[a2].sDriverHeader, 0x30);
+    read(v4, &_sMIDIDriver[a2].sFileHeader, sizeof(_MIDI_FILE_HEADER));
 
-    while (v10 <= _sMIDIDriver[a2].sDriverHeader.dwNext && !vc)
+    while (v10 <= _sMIDIDriver[a2].sFileHeader.wDrivers && !vc)
     {
-        read(v4, &_sMIDIDriver[a2].sDriverHeader, 0x30);
+        read(v4, &_sMIDIDriver[a2].sDriverHeader, sizeof(_MIDI_DRIVER_HEADER));
         v8 = _sMIDIDriver[a2].sDriverHeader.wSize;
         if (_sMIDIDriver[a2].sDriverHeader.wID == a1)
         {
@@ -79,8 +79,8 @@ W32 sosMIDIUnLoadDriver(HANDLE a1)
     if (a1 >= 8)
         return 10;
     sosDRVUnLockMemory(_sMIDIDriver[a1].dwLinear, _sMIDIDriver[a1].wSize);
-    sosFreeSelector(_sMIDIDriver[a1].lpCS, _sMIDIDriver[a1].hMemory);
     sosFreeSelector(_sMIDIDriver[a1].lpDS, _sMIDIDriver[a1].hMemory);
+    sosFreeSelector(_sMIDIDriver[a1].lpCS, _sMIDIDriver[a1].hMemory);
     return 0;
 }
 

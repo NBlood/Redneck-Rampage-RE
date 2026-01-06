@@ -7,8 +7,8 @@
 
 _SOS_DIGI_DRIVER sosDriver;
 
-int dword_32D3B0; // fixme
-int blaster[6]; // fixme
+int dword_32D3A0[32]; // fixme
+int blaster[8]; // fixme
 
 int dword_11A82C = 0;
 HANDLE dword_11A830 = -1;
@@ -309,7 +309,7 @@ void playmve(char *a1, char *a2, char a3)
     MVE_ioCallbacks(func_A8930);
     MVE_rmCallbacks(func_A8984);
 
-    dword_32D3B0 = 0;
+    dword_32D3A0[4] = 0;
 
     v2 = MVE_RunMovie(v1, -1, -1, 0);
     MVE_ReleaseMem();

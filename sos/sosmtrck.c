@@ -140,8 +140,8 @@ VOID sosMIDIAddTrack(PSONG a1, PTRACK a2)
     PTRACK *vc;
 
     v4 = a1->pTrackFirst;
-    v8 = &a1->pTrackFirst;
     vc = &a1->pTrackFirst;
+    v8 = &a1->pTrackFirst;
 
     while (v4 && a2->wTrackIndex > v4->wTrackIndex)
     {

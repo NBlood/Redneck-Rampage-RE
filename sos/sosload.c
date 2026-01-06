@@ -44,11 +44,11 @@ W32 sosDIGILoadDriver(W32 a1, HANDLE a2, LPSTR *a3, LPSTR *a4, PSTR a5, PSTR a6,
 				return _ERR_MEMORY_FAIL;
 			*a3 = sosCreateAliasCS(*a4);
 
-			if (sosDRVLockMemory(*(DWORD*)a6, _sSOSSystem.sDriverHeader.wSize))
+			if (sosDRVLockMemory(*a7, _sSOSSystem.sDriverHeader.wSize))
 				return _ERR_MEMORY_FAIL;
 
 			_dos_read(v4, *a4, _sSOSSystem.sDriverHeader.wSize, &v10);
-			*a5 = _sSOSSystem.sDriverHeader.wSize;
+			*a6 = _sSOSSystem.sDriverHeader.wSize;
 		}
 		else
 			lseek(v4, _sSOSSystem.sDriverHeader.wSize, SEEK_CUR);
@@ -74,8 +74,8 @@ W32 sosDIGIUnLoadDriver(HANDLE a1)
 	if (sosDRVUnLockMemory(v4->dwLinear, v4->wSize))
 		return _ERR_MEMORY_FAIL;
 
-	sosFreeSelector(v4->lpDriverDS, v4->dwLinear);
-	sosFreeSelector(v4->lpDriverCS, v4->dwLinear);
+	sosFreeSelector(v4->lpDriverDS, v4->hMemory);
+	sosFreeSelector(v4->lpDriverCS, v4->hMemory);
 
 	return _ERR_NO_ERROR;
 }

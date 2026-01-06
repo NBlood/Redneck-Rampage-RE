@@ -201,7 +201,7 @@ VOID sosMIDISendChannelInfo(PTRACK a1)
                         a1->pDriverChannel->wVolume = v14;
                         v14 = (a1->pSong->sVolume.wVolume * v14) / 127;
                         v14 = (v14 * _sMIDISystem.wVolume) / 127;
-                        v14 = (v14 * a1->pDriverChannel->wVolume) / 127;
+                        v14 = (v14 * a1->pDriverChannel->wDriverVolume) / 127;
                         a1->pDriverChannel->wVolumeScalar = v14;
                         sosMIDISendMIDIEvent(a1->hDriver, _MIDI_CONTROL | a1->sSteal.wRemapChannel,
                             v4, v14, 3);
@@ -260,7 +260,7 @@ VOID sosMIDIUpdateChannel(PTRACK a1)
                     a1->pDriverChannel->wVolume = v1c;
                     v1c = (a1->pSong->sVolume.wVolume * v1c) / 127;
                     v1c = (v1c * _sMIDISystem.wVolume) / 127;
-                    v1c = (v1c * a1->pDriverChannel->wVolume) / 127;
+                    v1c = (v1c * a1->pDriverChannel->wDriverVolume) / 127;
                     a1->pDriverChannel->wVolumeScalar = v1c;
                     sosMIDISendMIDIEvent(a1->hDriver, _MIDI_CONTROL | a1->sSteal.wRemapChannel,
                         v14, v1c, 3);

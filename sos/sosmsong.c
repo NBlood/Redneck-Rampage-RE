@@ -223,8 +223,8 @@ VOID sosMIDIProcessSong(VOID)
                             if (!v18->pNext)
                                 v14->pNoteLast = v1c;
                         }
-                        v18->bNote = 0;
-                        v18->bDriverAndChannel = 0;
+                        v18->bNote = 0xff;
+                        v18->bDriverAndChannel = 0xff;
                     }
                     else
                     {
@@ -292,7 +292,7 @@ W32 sosMIDIGetSongNotesOn(HANDLE a1)
 
     v4 = _sMIDISystem.pSongList[a1];
     if (!v4)
-        return 10;
+        return 0;
 
     v8 = v4->pNoteFirst;
     while (v8)

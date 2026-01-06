@@ -51,9 +51,9 @@ W32 sosDIGIStopSample(HANDLE a1, HANDLE a2)
 	v4 = _sSOSSystem.pDriver[a1];
 	if (!v4)
 		return _ERR_INVALID_HANDLE;
-	if (!(v4->pSamples[a1].wFlags & _SACTIVE))
+	if (!(v4->pSamples[a2].wFlags & _SACTIVE))
 		return _ERR_NO_ERROR;
-	v4->pSamples[a1].wFlags |= _SPROCESSED;
+	v4->pSamples[a2].wFlags |= _SPROCESSED;
 	return _ERR_NO_ERROR;
 }
 

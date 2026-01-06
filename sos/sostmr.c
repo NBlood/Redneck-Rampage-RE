@@ -11,6 +11,7 @@ VOID sosModule11Start(VOID) {}
 
 W32 sosTIMERInitSystem(W32 a1, W32 a2)
 {
+    int v4;
     if (a2 & _SOS_TIMER_DPMI)
         _bTIMERDPMI = 1;
     else
@@ -249,8 +250,8 @@ VOID sosTIMERHandler(VOID)
             if (_sTIMERSystem.dwCurrentSummation[v4] & 0x10000)
             {
                 _sTIMERSystem.dwCurrentSummation[v4] &= 0xffff;
-                if (_sTIMERSystem.wMIDIEventSongHandle[v4] != 0xff)
-                    _sTIMERSystem.wMIDIActiveSongHandle = _sTIMERSystem.wMIDIEventSongHandle[v4];
+                if ((BYTE)_sTIMERSystem.wMIDIEventSongHandle[v4] != 0xff)
+                    _sTIMERSystem.wMIDIActiveSongHandle = (BYTE)_sTIMERSystem.wMIDIEventSongHandle[v4];
                 _sTIMERSystem.pfnEvent[v4]();
             }
         }

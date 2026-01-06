@@ -12,7 +12,7 @@ W32 sosMIDISongAlterTempo(HANDLE a1, W32 a2)
         return 10;
 
 
-    vc = _sMIDISystem.pSongList[a2];
+    vc = _sMIDISystem.pSongList[a1];
 
     if (!vc)
         return 10;
@@ -103,7 +103,7 @@ W32 sosMIDICalculateLocation(PSONG a1, DWORD a2, W32 *a3, W32 *a4, W32 *a5)
     v1c = *vc++;
 
     vc += 4;
-    while (vc && --v1c != -1)
+    while (v8 && --v1c != -1)
     {
         v14 = *(DWORD*)vc;
         vc += 4;
@@ -126,7 +126,7 @@ W32 sosMIDICalculateLocation(PSONG a1, DWORD a2, W32 *a3, W32 *a4, W32 *a5)
         v4 += (v18 * v10) >> 16;
     }
 
-    v24 = a1->pChannelTrackDependencyLists;
+    v24 = a1->pTimeChangeList;
     v20 = *v24++;
     v24 += 4;
     while (v4 && --v20 != -1)

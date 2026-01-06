@@ -41,7 +41,7 @@ W32 sosMIDIStopSong(HANDLE a1)
         return _ERR_NOT_INITIALIZED;
     if (!(v8->wFlags & _ACTIVE))
         return _ERR_NOT_INITIALIZED;
-    if ((HANDLE)v8->hEvent == -1)
+    if ((HANDLE)v8->hEvent != -1)
         sosTIMERRemoveEvent(v8->hEvent);
     _sTIMERSystem.wMIDIEventSongHandle[v8->hEvent] = 0xff;
     v8->hEvent = -1;

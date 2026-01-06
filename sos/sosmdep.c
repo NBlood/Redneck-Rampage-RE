@@ -50,7 +50,7 @@ W32 sosMIDIInitDependencyList ( PSONG a1, PSTR * a2 )
                         v18->wFlags |= _MAPPED;
                         v1c[0]++;
                         v18->pTrackChannel = v28;
-                        a1->pChannelTrackDependencyLists[v18->wTrackIndex] = v1c;
+                        *((DWORD*)a1->pDependencyPtrs + v18->wTrackIndex) = v1c;
                         v18->pTrackDependencyList = v1c;
                         *(PSTR*)vc = v18;
                         v18->pDependentTrack = *(PTRACK*)(v1c + 1);

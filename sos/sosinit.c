@@ -50,7 +50,7 @@ W32 sosDIGIInitDriver(PSOSDIGIDRIVER a1, HANDLE *a2)
 	if (!a1->pDMABuffer)
 	{
 		a1->wFlags |= _SOS_DRV_DMA_BUFFER_ALLOCATED;
-		if ((a1->pDMABuffer = sosDIGIAllocDMABuffer(a1->wDMABufferSize, &a1->dwLinear, &a1->hMemory, &a1->lpDMABuffer)) == NULL)
+		if ((a1->pDMABuffer = sosDIGIAllocDMABuffer(a1->wDMABufferSize, &a1->dwDMAPhysical, &a1->wDMARealSeg, &a1->lpDMABuffer)) == NULL)
 		{
 			sosDIGIUnLoadDriver(v4);
 			return _ERR_MEMORY_FAIL;

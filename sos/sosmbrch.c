@@ -102,7 +102,7 @@ W32 sosMIDIBranchToTrackID(HANDLE a1, W32 a2, BYTE a3)
     for (vc = 0; vc < v14->wTotalTracks; vc++)
     {
         v8 = v14->pTrackList[vc];
-        if (v8->wTrackIndex == a2)
+        if (v8->wOriginalTrackIndex == a2)
             break;
     }
     return sosMIDIBranchTrack(v8, a3);

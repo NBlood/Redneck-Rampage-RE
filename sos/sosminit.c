@@ -54,7 +54,7 @@ W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
             {
                 _sMIDIDriver[vc].lpfnFunction[v8] = _lpMIDIWAVEFunctions[v8];
             }
-            _sMIDIDriver[vc].lpfnDataFunction = _lpMIDIWAVEFunctions[0];
+            _sMIDIDriver[vc].lpfnDataFunction = _lpMIDIDIGIFunctions[0];
             v10 = _sMIDIDriver[vc].lpfnFunction[_MIDI_DRV_INIT]((LPSTR)&a1->sDIGIInit, vc, 0);
             if (v10)
                 return v10;
@@ -117,7 +117,7 @@ W32 sosMIDIInitDriver(PSOSMIDIDRIVER a1, HANDLE *a2)
         v18->pOwnerSong = (void*)-1;
         v18->wOwnerPriority = 9;
         v18->wVolume = 127;
-        v18->wVolumeScalar = 0;
+        v18->pOwnerDependency = 0;
         v18->wTracks = 0;
         v18++;
     }
@@ -138,7 +138,7 @@ W32 sosMIDIUnInitDriver(HANDLE a1, BOOL a2)
     sosMIDIResetDriver(a1);
     switch (_sMIDIDriver[a1].wID)
     {
-        case _MIDI_SOUND_MASTER_II:
+        case _MIDI_GUS:
             sosTIMERRemoveEvent(_sMIDIDriver[a1].hEvent);
             break;
     }
@@ -146,8 +146,8 @@ W32 sosMIDIUnInitDriver(HANDLE a1, BOOL a2)
     if (a2 && (_sMIDIDriver[a1].wFlags & _LOADED) != 0)
     {
         sosMIDIUnLoadDriver(a1);
-        _sMIDIDriver[a1].lpCS = 0;
         _sMIDIDriver[a1].lpDS = 0;
+        _sMIDIDriver[a1].lpCS = 0;
     }
     if (a2)
     {

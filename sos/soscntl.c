@@ -287,7 +287,7 @@ BOOL sosDIGISampleDone(HANDLE a1, HANDLE a2)
     if (!v8)
         return _ERR_INVALID_HANDLE;
 
-    return v8->wFlags & _ACTIVE ? TRUE : FALSE;
+    return !(v8->wFlags & _ACTIVE);
 }
 
 VOID sosModule3End(VOID) {}

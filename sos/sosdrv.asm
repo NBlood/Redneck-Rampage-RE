@@ -313,7 +313,7 @@ _sosRealFree PROC
     push    es
     xor     eax, eax
     mov     ax, 101h
-    mov     edx, [ebp+0Ch]
+    mov     edx, [ebp+8]
     int     31h
     pop     es
     pop     gs
@@ -999,32 +999,32 @@ ENDP
 
 PUBLIC _sosDRVFreeVDSStruct
 _sosDRVFreeVDSStruct PROC
-                mov     ax, ds
-                mov     gs, ax
-                mov     fs, ax
-                mov     es, ax
-                push    ebp
-                mov     ebp, esp
-                push    esi
-                push    edi
-                push    ebx
-                push    ecx
-                push    fs
-                push    gs
-                push    es
-                mov     ax, 101h
-                mov     dx, [ebp+0Ch]
-                int     31h
-                mov     ax, 0
-                pop     es
-                pop     gs
-                pop     fs
-                pop     ecx
-                pop     ebx
-                pop     edi
-                pop     esi
-                pop     ebp
-                retn
+    mov     ax, ds
+    mov     gs, ax
+    mov     fs, ax
+    mov     es, ax
+    push    ebp
+    mov     ebp, esp
+    push    esi
+    push    edi
+    push    ebx
+    push    ecx
+    push    fs
+    push    gs
+    push    es
+    mov     ax, 101h
+    mov     dx, [ebp+8]
+    int     31h
+    mov     ax, 0
+    pop     es
+    pop     gs
+    pop     fs
+    pop     ecx
+    pop     ebx
+    pop     edi
+    pop     esi
+    pop     ebp
+    retn
 ENDP
 
 PUBLIC _sosDRVVDSGetBuffer
@@ -1157,7 +1157,7 @@ _sosDRVFreeDMASelector PROC
     push    gs
     push    es
     mov     ax, 1
-    mov     bx, [ebp+0Ch]
+    mov     bx, [ebp+8]
     int     31h
     pop     es
     pop     gs
