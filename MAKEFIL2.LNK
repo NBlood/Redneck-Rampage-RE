@@ -1,9 +1,11 @@
 system dos4g
 option map
-option stack=90k
+option stack=100k
 option u
 option caseexact
 option static
+segment type code lo
+segment type data lo
 debug all
 name REDNECK
 

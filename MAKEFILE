@@ -8,7 +8,7 @@ prod = /5r /otexan /bt=DOS
 !endif
 
 !ifdef rrra
-ra.exe : game1.obj game2.obj game3.obj game4.obj game5.obj game6.obj game7.obj game8.obj game9.obj &
+redneck.exe : game1.obj game2.obj game3.obj game4.obj game5.obj game6.obj game7.obj game8.obj game9.obj &
 			actors1.obj actors2.obj actors3.obj actors4.obj actors5.obj actors6.obj &
 			gamedef1.obj gamedef2.obj global.obj menus1.obj menus2.obj menus3.obj &
 			player1.obj player2.obj player3.obj player4.obj player5.obj &

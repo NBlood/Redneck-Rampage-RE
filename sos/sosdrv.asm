@@ -1,5 +1,5 @@
 .386p
-.MODEL SMALL
+.MODEL FLAT
 
 .DATA
 

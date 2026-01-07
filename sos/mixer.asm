@@ -1,10 +1,10 @@
 .386p
-.MODEL SMALL
+.MODEL FLAT
+
+.DATA
 
 extrn _hmiMIXERRoutines:far
 extrn _hmiXFERRoutines:far
-
-.DATA
 
 PUBLIC __wSOSData4Start
 PUBLIC _pMixingBufferEnd
@@ -24,8 +24,7 @@ dword_1276FC    dd 0
 dword_127700    dd 0
 _wMixingSampleEnd dd 0
 _wMixingSampleFraction dd 0
-_wMixingSampleWhole dd 0
-dword_127710    dd 0
+_wMixingSampleWhole dd 2 dup(0)
 dword_127714    dd 0
 dword_127718    dd 0
 dword_12771C    dd 0
@@ -280,7 +279,7 @@ L22:
     shl     ebx, 1
 L23:
     mov     word ptr _wMixingSampleWhole, ax
-    mov     word ptr dword_127710, bx
+    mov     word ptr (_wMixingSampleWhole+4), bx
     or      dword_127714, 10h
 L24:
     mov     eax, dword_127714

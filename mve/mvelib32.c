@@ -7,10 +7,6 @@
 #include "vbe.h"
 #include "mvelib32.h"
 
-// todo:
-// MVE_rmStepMovie
-// MVE_frGet
-
 unsigned char nf_wqty;
 unsigned char nf_hqty;
 unsigned char nf_fqty;
