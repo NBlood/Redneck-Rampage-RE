@@ -562,9 +562,7 @@ void Shutdown( void )
     uninitengine();
     CONTROL_Shutdown();
     CONFIG_WriteSetup();
-#ifndef RRRA
     KB_Shutdown();
-#endif
 }
 
 #ifdef RRRA
@@ -600,6 +598,9 @@ void compilecons(void)
    }
 }
 
+#ifdef RRRA
+extern int dommxoverlay;
+#endif
 
 void Startup(void)
 {
@@ -619,7 +620,12 @@ void Startup(void)
 
    CONTROL_Startup( ControllerType, &GetTime, TICRATE );
 
+#ifdef RRRA
+   dommxoverlay = 0;
+   initengine();
+#else
    initengine(ScreenMode,ScreenWidth,ScreenHeight);
+#endif
    inittimer();
 
    puts("* Hold Esc to Abort. *");

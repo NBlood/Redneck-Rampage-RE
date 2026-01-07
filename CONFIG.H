@@ -29,6 +29,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define _config_public
 
 #define SETUPNAMEPARM "SETUPFILE"
+#ifdef RRRA
+extern int cp1;
+#endif
 
 extern int32 FXDevice;
 extern int32 MusicDevice;

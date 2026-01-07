@@ -243,10 +243,9 @@ void moveeffectors(void)   //STATNUM 3
                         t[4] = 0;
                         s->xvel = k;
 #ifdef RRRA
-                        if (lastlevel && hulkspawn)
-#else
-                        if (hulkspawn)
+                        if (lastlevel)
 #endif
+                        if (hulkspawn)
                         {
                             hulkspawn--;
                             ns = spawn(i,HULK);

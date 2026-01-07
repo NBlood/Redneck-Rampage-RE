@@ -659,19 +659,21 @@ void setupbackdrop(short backpicnum)
                 pskyoff[0] = 0;
                 pskyoff[1] = 0;
                 pskybits = 1;
-                return;
             }
-            if (tilesizx[backpicnum] == 1024)
+            else if (tilesizx[backpicnum] == 1024)
             {
                 pskyoff[0] = 0;
                 pskybits = 0;
-                return;
             }
+            else
+                pskybits = 3;
             break;
 #endif
    }
 
+#ifndef RRRA
    pskybits=3;
+#endif
 }
 
 void cachespritenum(short i)
@@ -1064,6 +1066,22 @@ void cachegoodsprites(void)
 
 void prelevel(char g)
 {
+#ifdef RRRA
+    short i;
+    short lotaglist;
+    short j;
+    short lotags[65];
+    short endwall;
+    short startwall;
+    short k;
+    short nexti;
+    int speed;
+    int dist;
+    short sound = 0;
+    struct player_struct* p;
+
+    p = &ps[screenpeek];
+#else
 #if 1
 	short i;
 	short nexti;
@@ -1089,6 +1107,7 @@ void prelevel(char g)
     p3 = 0;
 
     p = &ps[screenpeek];
+#endif
 #endif
 
 #ifdef RRRA
@@ -1848,12 +1867,21 @@ void resettimevars(void)
 
 void genspriteremaps(void)
 {
+#ifdef RRRA
+    long j, fp;
+    signed char look_pos;
+    short unk;
+    char* lookfn = "lookup.dat";
+    char numl;
+    char table[768];
+#else
     long j,fp;
     signed char look_pos;
     char *lookfn = "lookup.dat";
     char numl;
     char table[768];
     short unk;
+#endif
 
     fp = kopen4load(lookfn,loadfromgrouponly);
     if(fp != -1)
@@ -2162,9 +2190,16 @@ void clearfifo(void)
 
 void enterlevel(char g)
 {
+#ifdef RRRA
     short i,j;
     long l;
     char levname[80];
+    int unk;
+#else
+    short i,j;
+    long l;
+    char levname[80];
+#endif
 
     if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
     ud.respawn_monsters = ud.m_respawn_monsters;

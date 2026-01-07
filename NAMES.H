@@ -678,7 +678,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define ORDERING 2531
 #define TEXTSTORY 2541
 #define LOADSCREEN 2542
-#define RRTILE2560 2560
 #define RRTILE2562 2562
 #define RRTILE2564 2564
 #define RRTILE2573 2573

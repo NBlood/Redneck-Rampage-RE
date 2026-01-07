@@ -31,7 +31,7 @@ extern char actor_tog;
 
 void moveexplosions(void)  // STATNUM 5
 {
-    short i, j, k, nexti, sect, p;
+    short i, j, k, nexti, u1, sect, p;
     long l, x, *t;
     spritetype *s;
 
@@ -382,7 +382,7 @@ void moveexplosions(void)  // STATNUM 5
                 else
                 {
 #ifdef RRRA
-                    if (s->picnum == RRTILE2465 || s->picnum == RRTILE2560)
+                    if (s->picnum == RRTILE2465 || s->picnum == RRTILE2460)
                         KILLIT(i);
 #endif
                     if(t[2] == 0)

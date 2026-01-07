@@ -27,6 +27,30 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 
 #include "lava.h"
+#ifdef RRRA
+
+extern int fp1, fp2, fp3, fp4, fp5, fp6, fp7;
+extern int fp8, fp9;
+
+char gbrightness;
+char brightness;
+
+long thunderflash;
+long thundertime;
+
+long winderflash;
+long windertime;
+short geocnt;
+short geosectorwarp[64];
+short geosector[64];
+long geox[64];
+long geoy[64];
+long geoz[64];
+short geosectorwarp2[64];
+long geox2[64];
+long geoy2[64];
+long geoz2[64];
+#else
 
 short geosectorwarp[64];
 short geosectorwarp2[64];
@@ -47,13 +71,24 @@ long thundertime;
 
 long winderflash;
 long windertime;
+#endif
 
 void thunder(void)
 {
+#ifdef RRRA
+    int r1, r2;
+    struct player_struct *p;
+    short startwall;
+    short j;
+    short endwall;
+    short i;
+    unsigned char shade;
+#else
     struct player_struct *p;
     int r1, r2;
     short startwall, endwall, i, j;
     unsigned char shade;
+#endif
 
     p = &ps[screenpeek];
 

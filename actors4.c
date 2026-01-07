@@ -1677,7 +1677,11 @@ void moveactors(void)
 
 void ballreturn(short spr)
 {
+#ifdef RRRA
+    short j, i, nextj, nexti;
+#else
     short j, i, nexti, nextj;
+#endif
     i = headspritestat[105];
     while (i >= 0)
     {
@@ -1743,7 +1747,11 @@ short pinsectorresetup(short sect)
 short checkpins(short sect)
 {
     short i, pin;
+#ifdef RRRA
+    int  y, x;
+#else
     int  x, y;
+#endif
     short pins[10];
     short nexti, tag;
     

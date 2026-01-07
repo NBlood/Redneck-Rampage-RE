@@ -239,7 +239,7 @@ short spawn( short j, short pn )
                 sp->xrepeat = 0;
                 sp->yrepeat = 0;
                 sub_86730(2);
-                ps[screenpeek].fogtype = 1;
+                ps[screenpeek].fogtype = 2;
                 break;
             case RRTILE6144:
                 sp->xrepeat = 0;
@@ -1701,6 +1701,10 @@ short spawn( short j, short pn )
 
                 switch(sp->lotag)
                 {
+#ifdef RRRA
+                    case 46:
+                        break;
+#endif
                     case 7: // Transporters!!!!
                     case 23:// XPTR END
                         if(sp->lotag != 23)
@@ -1758,11 +1762,11 @@ short spawn( short j, short pn )
                             sp->cstat &= 32767;
                         }
                         break;
+                    case 12:
 #ifdef RRRA
                     case 47:
                     case 48:
 #endif
-                    case 12:
 
                         T2 = sector[sect].floorshade;
                         T3 = sector[sect].ceilingshade;
@@ -2216,7 +2220,7 @@ short spawn( short j, short pn )
                 sp->yrepeat = 18;
                 sp->clipdist = mulscale7(sp->xrepeat,tilesizx[sp->picnum]);
                 sp->owner = 100;
-                sp->cstat = 257;
+                sp->cstat |= 257;
                 sp->lotag = 1;
                 changespritestat(i,1);
                 break;
@@ -2231,7 +2235,7 @@ short spawn( short j, short pn )
                 sp->yrepeat = 32;
                 sp->clipdist = mulscale7(sp->xrepeat,tilesizx[sp->picnum]);
                 sp->owner = 20;
-                sp->cstat = 257;
+                sp->cstat |= 257;
                 sp->lotag = 1;
                 changespritestat(i,1);
                 break;

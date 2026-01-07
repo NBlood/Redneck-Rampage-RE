@@ -607,6 +607,6 @@ extern void dotorch(void);
 extern void dojaildoor(void);
 extern void moveminecart(void);
 extern void thunder(void);
-extern short madenoise(short snum);
+extern int madenoise(short snum);
 //extern short wakeup(short i, short snum);
 

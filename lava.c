@@ -26,6 +26,39 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 //-------------------------------------------------------------------------
 #include "duke3d.h"
 
+#ifdef RRRA
+extern int lp1, lp2, lp3, lp4;
+short torchcnt;
+short jaildoorcnt;
+short minecartcnt;
+
+short torchsector[64];
+short torchsectorshade[64];
+short torchtype[64];
+
+short jaildoorsound[32];
+long jaildoordrag[32];
+long jaildoorspeed[32];
+short jaildoorsecthtag[32];
+long jaildoordist[32];
+short jaildoordir[32];
+short jaildooropen[32];
+short jaildoorsect[32];
+
+short lightninsector[64];
+short lightninsectorshade[64];
+
+short minecartdir[16];
+long minecartspeed[16];
+short minecartchildsect[16];
+short minecartsound[16];
+long minecartdist[16];
+long minecartdrag[16];
+short minecartopen[16];
+short minecartsect[16];
+
+short lightnincnt;
+#else
 short torchcnt;
 short jaildoorcnt;
 short minecartcnt;
@@ -58,13 +91,23 @@ short minecartsect[16];
 
 short lightninsector[64];
 short lightninsectorshade[64];
+#endif
 
 void dotorch(void)
 {
+#ifdef RRRA
+    int ds;
+    short j;
+    short i;
+    short endwall;
+    short startwall;
+    char shade;
+#else
     int ds;
     short j, i;
     short startwall, endwall;
     char shade;
+#endif
     ds = TRAND&8;
     for (i = 0; i < torchcnt; i++)
     {
@@ -122,7 +165,7 @@ void dojaildoor(void)
     long speed;
     for (i = 0; i < jaildoorcnt; i++)
     {
-        if (numplayers > 2)
+        if (numplayers < 2)
             speed = jaildoorspeed[i];
         else
             speed = jaildoorspeed[i];
@@ -237,6 +280,24 @@ void dojaildoor(void)
 
 void moveminecart(void)
 {
+#ifdef RRRA
+    short i;
+    short j;
+    short nextj;
+    short endwall;
+    short startwall;
+    long y;
+    long speed;
+    long max_y;
+    short csect;
+    long cx;
+    long cy;
+    long min_x;
+    long x;
+    long min_y;
+    long max_x;
+    long unk;
+#else
     short i;
     short j;
     short csect;
@@ -253,6 +314,7 @@ void moveminecart(void)
     long min_y;
     long max_y;
     long min_x;
+#endif
     for (i = 0; i < minecartcnt; i++)
     {
         speed = minecartspeed[i];

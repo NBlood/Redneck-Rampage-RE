@@ -1,19 +1,25 @@
-#include "duke3d.h"
 
+
+#define dword_1DC1C8 dword_a
+#define dword_1DC1CC dword_b
+#define dword_1DC1D0 dword_c
+#define dword_1DC1D4 dword_d
+#define dword_1DC1D8 dword_e
+
+char* dword_1DC1C8, * dword_1DC1CC, * dword_1DC1D0, * dword_1DC1D4, * dword_1DC1D8;
 signed char byte_11A3E0[] = {
     0, 0, 1, 1, 1, 32, 16, 24, 12, 12, 12, 24, 24, 24, 32,
     32, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0
 }; // fixme
-
-char *dword_1DC1C8, *dword_1DC1CC, *dword_1DC1D0, *dword_1DC1D4, *dword_1DC1D8;
+#include "duke3d.h"
 
 void sub_86730(short unk)
 {
-    short i;
-    char table[768];
     static char byte_11A3FA = 0;
     if (!byte_11A3FA)
     {
+        short i;
+        char table[768];
         byte_11A3FA = 1;
         dword_1DC1C8 = palookup[0];
         dword_1DC1CC = palookup[30];

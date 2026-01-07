@@ -250,9 +250,11 @@ void doorders(void)
 #ifdef RRRA
 void dobonus2(char bonusonly)
 {
-    short t, r, tinc,gfx_offset,bg_tile;
-    long i, y,xfragtotal,yfragtotal,var24;
+    short t, r, tinc,gfx_offset;
+    long i, y,xfragtotal,yfragtotal;
     short bonuscnt;
+    short bg_tile;
+    long var24;
 
     var24 = 0;
     bonuscnt = 0;
@@ -269,13 +271,15 @@ void dobonus2(char bonusonly)
 
     if (boardfilename[0] == 0 && numplayers < 2)
     {
-        if ((ud.eog == 0 || ud.volume_number != 1) && ud.volume_number <= 1)
+        if (ud.eog == 0 || ud.volume_number != 1)
+            if (ud.volume_number <= 1)
         {
             var24 = 1;
             MUSIC_StopSong();
             KB_FlushKeyboardQueue();
             ShowMapFrame();
         }
+        goto FRAGBONUS;
     }
 
     if(bonusonly) goto FRAGBONUS;
@@ -440,7 +444,7 @@ void dobonus2(char bonusonly)
             else if (!var24)
                 rotatesprite(0,0,65536L,0,bg_tile,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
-            if( totalclock > (1000000000L) && totalclock < (1000000320L) )
+            if( totalclock > (1000000000L) && totalclock < (1000000730L) )
             {
                 switch( (totalclock>>4)%15 )
                 {
@@ -650,7 +654,7 @@ void dobonus2(char bonusonly)
             }
         }
         else break;
-        if (!var24 || bonuscnt)
+        if (!var24 || bonuscnt != 8)
             nextpage();
     }
     if (ud.eog)
@@ -666,14 +670,14 @@ void dobonus2(char bonusonly)
             switch ((totalclock >> 4) & 1)
             {
             case 0:
-                rotatesprite(0,0,65536,0,0,RRTILE8677,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                rotatesprite(0,0,65536,0,RRTILE8677,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
                 nextpage();
                 palto(0, 0, 0, 0);
                 ps[myconnectindex].palette = palette;
                 getpackets();
                 break;
             default:
-                rotatesprite(0,0,65536,0,0,RRTILE8677+1,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                rotatesprite(0,0,65536,0,RRTILE8677+1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
                 nextpage();
                 palto(0, 0, 0, 0);
                 ps[myconnectindex].palette = palette;
@@ -1379,9 +1383,10 @@ void SetupGameButtons( void )
 
 void dobonus(char bonusonly)
 {
-    short t, r, tinc,gfx_offset,bg_tile;
+    short t, r, tinc,gfx_offset;
     long i, y,xfragtotal,yfragtotal;
     short bonuscnt;
+    short bg_tile;
 
     bonuscnt = 0;
 
@@ -1414,7 +1419,7 @@ void dobonus(char bonusonly)
             sound(249);
 
         rotatesprite(0,0,65536L,0,MENUSCREEN,16,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
-        rotatesprite(160<<16,24<<16,23592L,0,INGAMEDUKETHREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
+        rotatesprite(160<<16,57<<16,16592L,0,THREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
         gametext(160,58,"MULTIPLAYER TOTALS",0);
         gametext(160,58+10,level_names[(ud.volume_number*7)+ud.last_level-1],0);
 

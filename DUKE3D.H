@@ -92,7 +92,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 //#include "funct.h"
 
 
+#ifdef RRRA
+extern int wp1,wp2,wp3;
+#else
 extern int wp1,wp2,wp3,wp4;
+#endif
 
 #define TICRATE (120)
 #define TICSPERFRAME (TICRATE/26)
@@ -451,6 +455,9 @@ typedef struct player_struct
 };
 
 extern unsigned char tempbuf[2048], packbuf[576];
+#ifdef RRRA
+extern int __rap1;
+#endif
 
 extern long gc,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
 
@@ -547,6 +554,11 @@ extern volatile long checksume;
 
 // Hack to fix variables layout
 extern int wp5,wp6,wp7,wp8,wp9,wp10,wp11,wp12,wp13,wp14,wp15,wp16,wp17,wp18,wp19,wp20,wp21,wp22,wp23,wp24;
+#ifdef RRRA
+extern int _rap1, _rap2, _rap3, _rap4, _rap5, _rap6, _rap7, _rap8, _rap9, _rap10, _rap11;
+extern int _rap12, _rap13, _rap14, _rap15, _rap16, _rap17, _rap18, _rap19, _rap20, _rap21;
+extern int _rap22, _rap23, _rap24, _rap25, _rap26, _rap27;
+#endif
 
 extern char screencapt;
 extern short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
@@ -561,6 +573,11 @@ extern char volume_names[4][33];
 #endif
 extern char skill_names[6][33];
 extern char level_file_names[44][128];
+
+
+#ifdef RRRA
+extern int _rap_1, _rap_2;
+#endif
 
 extern int32 SoundToggle,MusicToggle;
 extern short last_threehundred,lastsavedpos;
@@ -622,7 +639,11 @@ extern long *curipos[MAXINTERPOLATIONS];
 
 extern long stereomode, stereowidth, stereopixelwidth;
 
+#ifdef RRRA
+extern short hulkspawn, chickenplant, thunderon, ufospawn, ufocnt, cdon, vixenlevel;
+#else
 extern short chickenplant, thunderon, ufospawn, ufocnt, cdon, hulkspawn, vixenlevel;
+#endif
 
 extern short ambientfx;
 extern char shadedsector[MAXSECTORS];

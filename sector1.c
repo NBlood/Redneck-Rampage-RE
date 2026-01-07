@@ -685,6 +685,14 @@ char activatewarpelevators(short s,short d) //Parm = sectoreffectornum
 
 void operatesectors(short sn,short ii)
 {
+#ifdef RRRA
+    long j, l, q, startwall, endwall;
+    long u1,u2,u3,u4,u5,u6,u7;
+    short i;
+    char sect_error;
+    sectortype *sptr;
+
+#else
     long j, l, q, startwall, endwall;
     long u6,u7;
     short i;
@@ -692,6 +700,7 @@ void operatesectors(short sn,short ii)
     sectortype *sptr;
 
     long u1,u2,u3,u4,u5;
+#endif
 
     sect_error = 0;
     sptr = &sector[sn];

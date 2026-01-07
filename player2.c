@@ -861,20 +861,20 @@ void displayweapon(short snum)
                     {
                         if ((*kb) < 5)
                         {
-                            rdmyospal(weapon_xoffset+x+190-(p->look_ang>>1)-dx,
+                            rdmyospal(x+weapon_xoffset+190-(p->look_ang>>1)-dx,
                                       looking_arc+258-gun_pos-64+p->at57e-dy,RRTILE1752,0,o,pal);
                         }
-                        rdmyospal(weapon_xoffset+x+190-(p->look_ang>>1),
+                        rdmyospal(x+weapon_xoffset+190-(p->look_ang>>1),
                                   looking_arc+258-gun_pos-dy,HANDTHROW+remote_frames[*kb],gs,o,pal);
                     }
                     else
                     {
                         if ((*kb) < 5)
                         {
-                            rdmyospal(weapon_xoffset+x+190-(p->look_ang>>1)-dx,
+                            rdmyospal(x+weapon_xoffset+190-(p->look_ang>>1)-dx,
                                       looking_arc+258-gun_pos-64+p->at57e-dy,RRTILE1752,0,o,pal);
                         }
-                        rdmyospal(weapon_xoffset+x+190-(p->look_ang>>1),
+                        rdmyospal(x+weapon_xoffset+190-(p->look_ang>>1),
                                   looking_arc+258-gun_pos-dy,HANDTHROW+1,gs,o,pal);
                     }
                 }

@@ -936,7 +936,7 @@ void menus(void)
 #ifdef RRRA
                         case 1: cmenu(200);break;
                         case 2:
-                            if(movesperpacket == 4 && myconnectindex != connecthead)
+                            if(movesperpacket == 4 && connecthead != myconnectindex)
                                 break;
                             cmenu(300);
                             break;

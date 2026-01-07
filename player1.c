@@ -97,6 +97,7 @@ void incur_damage( struct player_struct *p )
 
 void quickkill(struct player_struct *p)
 {
+    int u1, u2;
     p->pals[0] = 48;
     p->pals[1] = 48;
     p->pals[2] = 48;

@@ -437,6 +437,42 @@ void checkavailweapon( struct player_struct *p )
 
 long ifsquished(short i, short p)
 {
+    sectortype *sc;
+    char squishme;
+    long floorceildist;
+
+    return 0;
+
+    if(PN == APLAYER && ud.clipping)
+        return 0;
+
+    sc = &sector[SECT];
+    floorceildist = sc->floorz - sc->ceilingz;
+
+    if(sc->lotag != 23)
+    {
+        if(sprite[i].pal == 1)
+            squishme = floorceildist < (32<<8) && (sc->lotag&32768) == 0;
+        else
+            squishme = floorceildist < (12<<8); // && (sc->lotag&32768) == 0;
+    }
+    else squishme = 0;
+
+    if( squishme )
+    {
+        FTA(10,&ps[p]);
+
+        if(badguy(&sprite[i])) sprite[i].xvel = 0;
+
+        if(sprite[i].pal == 1)
+        {
+            hittype[i].picnum = SHOTSPARK1;
+            hittype[i].extra = 1;
+            return 0;
+        }
+
+        return 1;
+    }
     return 0;
 }
 
@@ -664,7 +700,7 @@ movesprite(short spritenum, long xchange, long ychange, long zchange, unsigned l
         }
 
         if( dasectnum < 0 || ( dasectnum >= 0 &&
-            hittype[spritenum].actorstayput >= 0 && hittype[spritenum].actorstayput != dasectnum ) )
+            ( hittype[spritenum].actorstayput >= 0 && hittype[spritenum].actorstayput != dasectnum ) ) )
         {
                 sprite[spritenum].x = oldx;
                 sprite[spritenum].y = oldy;

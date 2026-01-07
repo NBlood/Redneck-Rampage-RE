@@ -363,7 +363,11 @@ void cheats(void)
                             }
                             else
                             {
+#ifdef RRRA
+                                if(levnume > 7)
+#else
                                 if(levnume >= 8)
+#endif
                                 {
                                     ps[myconnectindex].cheat_phase = 0;
                                     KB_FlushKeyboardQueue();
@@ -553,7 +557,9 @@ void cheats(void)
                         KB_FlushKeyboardQueue();
                         return;
                     case 28:
-                        if (numplayers < 2 && ps[myconnectindex].gm == MODE_GAME && cdon)
+                        if (numplayers < 2)
+                            if (ps[myconnectindex].gm == MODE_GAME)
+                                if (cdon)
                         {
                             rbstop();
                             rbPlayTrack(10);
@@ -688,6 +694,7 @@ void cheats(void)
                         ps[myconnectindex].ammo_amount[RA14_WEAPON] = max_ammo_amount[RA14_WEAPON];
                         FTA(136,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyboardQueue();
                         return;
 #endif
                 }

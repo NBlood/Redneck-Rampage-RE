@@ -646,15 +646,15 @@ void moveweapons(void)
 void movetransports(void)
 {
 #ifdef RRRA
-    char warpdir, warpspriteto;
+    char warpspriteto;
+    char warpdir;
+    short i, j, k, p, sect, sectlotag, nexti, nextj, nextk;
+    long ll, onfloorz, q;
+    long ll2;
 #else
     char warpspriteto;
-#endif
     short i, j, k, l, p, sect, sectlotag, nexti, nextj, nextk;
-#ifdef RRRA
-    long ll2,ll,onfloorz,q;
-#else
-    long ll,onfloorz,q;
+    long ll, onfloorz, q;
 #endif
 
     i = headspritestat[9]; //Transporters

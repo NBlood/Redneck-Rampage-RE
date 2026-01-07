@@ -65,8 +65,7 @@ extern FILE *frecfilep;
 
 void main(int argc,char **argv)
 {
-    long i, j, k, l;
-    int var_10;
+    long i, var_10, k, l;
 #ifdef RRRA
     int playmve_ = 1;
 #endif
@@ -82,6 +81,7 @@ void main(int argc,char **argv)
     CONFIG_ReadSetup();
     {
         short i;
+        short unk;
         char *c;
         i = 1;
         if (argc > 1)

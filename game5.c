@@ -45,9 +45,10 @@ extern long lastvisinc;
 
 void animatesprites(long x,long y,short a,long smoothratio)
 {
-    short i, j, k, p, sect, bg;
+    short i, j, k, p, sect;
     long l, t1,t3,t4;
     spritetype *s,*t;
+    short bg;
 
     bg = 0;
 
@@ -769,7 +770,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 long daz,xrep,yrep;
 
 #ifdef RRRA
-                if (sector[sect].lotag == 160) continue;
+                if ((sector[sect].lotag&0xff) == 160) continue;
 #endif
                 if( (sector[sect].lotag&0xff) > 2 || s->statnum == 4 || s->statnum == 5 || s->picnum == DRONE )
                     daz = sector[sect].floorz;

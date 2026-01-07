@@ -199,7 +199,7 @@ void checkhitsprite(short i,short sn)
             PN = RRTILE5086;
             spritesound(GLASS_HEAVYBREAK, i);
             break;
-        case TECHLIGHTBUST2:
+        case TECHLIGHT4:
             PN = TECHLIGHTBUST4;
             spritesound(GLASS_HEAVYBREAK, i);
             break;
@@ -368,7 +368,7 @@ void checkhitsprite(short i,short sn)
             break;
         case RRTILE8475:
             PN = RRTILE5075;
-            spritesound(GLASS_HEAVYBREAK, i);
+            spritesound(472, i);
             break;
         case RRTILE8498:
             PN = RRTILE5077;
@@ -417,7 +417,7 @@ void checkhitsprite(short i,short sn)
                 {
                     if (sprite[j].picnum == RRTILE8679 && sprite[j].pal == 4)
                     {
-                        if (sprite[j].lotag == SLT)
+                        if (SLT == sprite[j].lotag)
                             sprite[j].picnum = RRTILE8680;
                     }
                 }
@@ -474,35 +474,34 @@ void checkhitsprite(short i,short sn)
             deletesprite(i);
             break;
         case RRTILE2451:
-            if (PL != 4)
+            if (PL == 4)
+                return;
+            spritesound(SQUISHED, i);
+            if (SLT != 0)
             {
-                spritesound(SQUISHED, i);
-                if (SLT != 0)
+                short j;
+                for (j = 0; j < MAXSPRITES; j++)
                 {
-                    short j;
-                    for (j = 0; j < MAXSPRITES; j++)
+                    if (sprite[j].picnum == RRTILE2451 && sprite[j].pal == 4)
                     {
-                        if (sprite[j].picnum == RRTILE2451 && sprite[j].pal == 4)
+                        if (SLT == sprite[j].lotag)
                         {
-                            if (SLT == sprite[j].lotag)
-                            {
-                                guts(&sprite[i], RRTILE2460, 12, myconnectindex);
-                                guts(&sprite[i], RRTILE2465, 3, myconnectindex);
-                                sprite[j].xrepeat = 0;
-                                sprite[j].yrepeat = 0;
-                                sprite[i].xrepeat = 0;
-                                sprite[i].yrepeat = 0;
-                            }
+                            guts(&sprite[i], RRTILE2460, 12, myconnectindex);
+                            guts(&sprite[i], RRTILE2465, 3, myconnectindex);
+                            sprite[j].xrepeat = 0;
+                            sprite[j].yrepeat = 0;
+                            sprite[i].xrepeat = 0;
+                            sprite[i].yrepeat = 0;
                         }
                     }
                 }
-                else
-                {
-                    guts(&sprite[i], RRTILE2460, 12, myconnectindex);
-                    guts(&sprite[i], RRTILE2465, 3, myconnectindex);
-                    sprite[i].xrepeat = 0;
-                    sprite[i].yrepeat = 0;
-                }
+            }
+            else
+            {
+                guts(&sprite[i], RRTILE2460, 12, myconnectindex);
+                guts(&sprite[i], RRTILE2465, 3, myconnectindex);
+                sprite[i].xrepeat = 0;
+                sprite[i].yrepeat = 0;
             }
             break;
         case RRTILE2437:
@@ -1571,7 +1570,7 @@ void cheatkeys(short snum)
 
 void checksectors(short snum)
 {
-    long i = -1,oldz;
+    long i,oldz;
     struct player_struct *p;
     short j,hitscanwall;
 
@@ -1698,7 +1697,7 @@ void checksectors(short snum)
                         spritesound(29, p->i);
                     else if (snd == 3)
                         spritesound(257, p->i);
-                    else if (snd == 4)
+                    else
                         spritesound(258, p->i);
                 }
                 return;
@@ -1745,7 +1744,7 @@ void checksectors(short snum)
             }
             return;
         }
-        neartag(p->posx,p->posy,p->posz,sprite[p->i].sectnum,p->oang,&neartagsector,&neartagwall,&neartagsprite,&neartaghitdist,1280L,3);
+        neartag(p->oposx,p->oposy,p->oposz,sprite[p->i].sectnum,p->oang,&neartagsector,&neartagwall,&neartagsprite,&neartaghitdist,1280L,3);
 #endif
         
 #if defined(DESYNCCORRECT) && !defined(RRRA)
@@ -1820,7 +1819,7 @@ void checksectors(short snum)
                             spritesound(445, neartagsprite);
                             dword_119C08 = 1;
                         }
-                        else if (Sound[445].num == 0 && Sound[446].num == 0 && Sound[447].num == 0 && dword_119C08 == 0)
+                        else if (Sound[445].num == 0 && Sound[446].num == 0 && Sound[447].num == 0 && dword_119C08)
                         {
                             short snd = TRAND%2;
                             if (snd == 1)
@@ -2024,6 +2023,20 @@ void checksectors(short snum)
 
 void dofurniture(short wl, short sect, short snum)
 {
+#ifdef RRRA
+    short startwall;
+    short endwall;
+    short i;
+    short var_C;
+    long x;
+    long y;
+    long max_x;
+    long max_y;
+    long min_x;
+    long min_y;
+    long ins;
+    long var_cx;
+#else
     short startwall;
     short endwall;
     short i;
@@ -2036,6 +2049,7 @@ void dofurniture(short wl, short sect, short snum)
     long max_y;
     long ins;
     long var_cx;
+#endif
 
     startwall = sector[wall[wl].nextsector].wallptr;;
     endwall = startwall + sector[wall[wl].nextsector].wallnum;

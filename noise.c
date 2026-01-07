@@ -28,7 +28,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 int enemyindex[128];
 short maxenemies[3];
 
-short madenoise(short snum)
+int madenoise(short snum)
 {
     struct player_struct *p;
     p = &ps[snum];
@@ -38,7 +38,7 @@ short madenoise(short snum)
     return 1;
 }
 
-short wakeup(short i, short snum)
+int wakeup(short i, short snum)
 {
     struct player_struct *p;
     long radius;
@@ -54,8 +54,8 @@ short wakeup(short i, short snum)
 
     radius = p->at290;
 
-    if (p->at286 - radius < sprite[i].x && p->at286 + radius > sprite[i].x
-        && p->at28a - radius < sprite[i].y && p->at28a + radius > sprite[i].y)
+    if (sprite[i].x > p->at286 - radius && sprite[i].x < p->at286 + radius
+        && sprite[i].y > p->at28a - radius && sprite[i].y < p->at28a + radius)
         return 1;
     return 0;
 }

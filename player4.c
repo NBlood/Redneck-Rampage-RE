@@ -296,14 +296,14 @@ void processinput(short snum)
                     var8c <<= 2;
                 if (p->raat5b5)
                 {
-                    p->posxv += (var8c>>5)*(sintable[(var94*-51+var90+512)&2047]<<4);
-                    p->posyv += (var8c>>5)*(sintable[(var94*-51+var90)&2047]<<4);
+                    p->posxv += (var8c>>5)*(sintable[(var90+512+var94*-51)&2047]<<4);
+                    p->posyv += (var8c>>5)*(sintable[(var90+var94*-51)&2047]<<4);
                     p->ang = (var90-(var98>>2))&2047;
                 }
                 else
                 {
-                    p->posxv += (var8c>>7)*(sintable[(var94*-51+var90+512)&2047]<<4);
-                    p->posyv += (var8c>>7)*(sintable[(var94*-51+var90)&2047]<<4);
+                    p->posxv += (var8c>>7)*(sintable[(var90+512+var94*-51)&2047]<<4);
+                    p->posyv += (var8c>>7)*(sintable[(var90+var94*-51)&2047]<<4);
                     p->ang = (var90-(var98>>6))&2047;
                 }
                 p->raat5cd = 0;
@@ -313,16 +313,16 @@ void processinput(short snum)
             {
                 if (p->raat5b5)
                 {
-                    p->posxv += (var8c>>5)*(sintable[(var94*-51+var90+512)&2047]<<4);
-                    p->posyv += (var8c>>5)*(sintable[(var94*-51+var90)&2047]<<4);
+                    p->posxv += (var8c>>5)*(sintable[(var90+512+var94*-51)&2047]<<4);
+                    p->posyv += (var8c>>5)*(sintable[(var90+var94*-51)&2047]<<4);
                     p->ang = (var90-(var98>>4))&2047;
                     if (Sound[220].num == 0)
                         spritesound(220,p->i);
                 }
                 else
                 {
-                    p->posxv += (var8c>>7)*(sintable[(var94*-51+var90+512)&2047]<<4);
-                    p->posyv += (var8c>>7)*(sintable[(var94*-51+var90)&2047]<<4);
+                    p->posxv += (var8c>>7)*(sintable[(var90+512+var94*-51)&2047]<<4);
+                    p->posyv += (var8c>>7)*(sintable[(var90+var94*-51)&2047]<<4);
                     p->ang = (var90-(var98>>7))&2047;
                 }
             }
@@ -341,8 +341,8 @@ void processinput(short snum)
                 var9c *= 10;
             else
                 var9c *= 5;
-            p->posxv += (var9c>>7)*(sintable[(vara4*-51+vara0+512)&2047]<<4);
-            p->posyv += (var9c>>7)*(sintable[(vara4*-51+vara0)&2047]<<4);
+            p->posxv += (var9c>>7)*(sintable[(vara0+512+vara4*-51)&2047]<<4);
+            p->posyv += (var9c>>7)*(sintable[(vara0+vara4*-51)&2047]<<4);
         }
         p->raat5cd = 0;
         p->raat5cf = 0;
@@ -600,14 +600,14 @@ void processinput(short snum)
             vard4 <<= 2;
             if (p->raat5b5)
             {
-                p->posxv += (vard4>>6)*(sintable[(vardc*-51+vard8+512)&2047]<<4);
-                p->posyv += (vard4>>6)*(sintable[(vardc*-51+vard8)&2047]<<4);
+                p->posxv += (vard4>>6)*(sintable[(vard8+512+vardc*-51)&2047]<<4);
+                p->posyv += (vard4>>6)*(sintable[(vard8+vardc*-51)&2047]<<4);
                 p->ang = (vard8-(vare0>>5))&2047;
             }
             else
             {
-                p->posxv += (vard4>>7)*(sintable[(vardc*-51+vard8+512)&2047]<<4);
-                p->posyv += (vard4>>7)*(sintable[(vardc*-51+vard8)&2047]<<4);
+                p->posxv += (vard4>>7)*(sintable[(vard8+512+vardc*-51)&2047]<<4);
+                p->posyv += (vard4>>7)*(sintable[(vard8+vardc*-51)&2047]<<4);
                 p->ang = (vard8-(vare0>>6))&2047;
             }
         }
@@ -776,8 +776,8 @@ void processinput(short snum)
                 if (sb_snum & 2)
 #endif
                 {
-                    cz = sprite[j].z;
                     hz = 0;
+                    cz = sprite[j].z;
                     fz = sprite[j].z + (4<<8);
                 }
             }
@@ -1390,7 +1390,7 @@ void processinput(short snum)
                         p->raat5c7 = 1;
                         p->poszv -= gc*(p->MotoSpeed>>4);
                         p->MotoOnGround = 0;
-                        if (Sound[188].num)
+                        if (Sound[188].num > 0)
                             stopsound(Sound[188].num);
                         spritesound(189,pi);
                     }
@@ -1997,8 +1997,8 @@ void processinput(short snum)
                     {
                         if (numplayers == 1)
                         {
-                            movesprite(var60,sintable[(p->TiltStatus*20+p->ang+512)&2047]>>8,
-                                sintable[(p->TiltStatus*20+p->ang)&2047]>>8,sprite[var60].zvel,CLIPMASK0);
+                            movesprite(var60,sintable[(p->ang+512+p->TiltStatus*20)&2047]>>8,
+                                sintable[(p->ang+p->TiltStatus*20)&2047]>>8,sprite[var60].zvel,CLIPMASK0);
                         }
                     }
                     else
@@ -2009,7 +2009,7 @@ void processinput(short snum)
                     p->TurbCount = 6;
                 }
                 else if ((sprite[var60].picnum == RRTILE2431 || sprite[var60].picnum == RRTILE2443 || sprite[var60].picnum == RRTILE2451 || sprite[var60].picnum == RRTILE2455)
-                    && sprite[var60].picnum != ACTIVATORLOCKED && p->MotoSpeed > 45)
+                    && (sprite[var60].picnum != ACTIVATORLOCKED && p->MotoSpeed > 45))
                 {
                     spritesound(SQUISHED,var60);
                     if (sprite[var60].picnum == RRTILE2431 || sprite[var60].picnum == RRTILE2451)
@@ -2046,8 +2046,8 @@ void processinput(short snum)
                     {
                         if (numplayers == 1)
                         {
-                            movesprite(var60,sintable[(p->TiltStatus*20+p->ang+512)&2047]>>9,
-                                sintable[(p->TiltStatus*20+p->ang)&2047]>>9,sprite[var60].zvel,CLIPMASK0);
+                            movesprite(var60,sintable[(p->ang+512+p->TiltStatus*20)&2047]>>9,
+                                sintable[(p->ang+p->TiltStatus*20)&2047]>>9,sprite[var60].zvel,CLIPMASK0);
                         }
                     }
                     else
@@ -2180,7 +2180,8 @@ void processinput(short snum)
                 activatebysector(psect,snum);
         }
 
-        if (ud.clipping == 0 && sector[p->cursectnum].ceilingz > (sector[p->cursectnum].floorz-(12<<8)))
+        if (ud.clipping == 0)
+            if (sector[p->cursectnum].ceilingz > (sector[p->cursectnum].floorz-(12<<8)))
         {
             quickkill(p);
             return;
@@ -2543,7 +2544,7 @@ void processinput(short snum)
                     if (p->ammo_amount[RPG_WEAPON])
                         p->ammo_amount[RPG_WEAPON]--;
 #ifdef RRRA
-                    if(p->on_ground && (sb_snum&2) && !p->OnMotorcycle)
+                    if(p->on_ground && ((sb_snum&2) && !p->OnMotorcycle))
 #else
                     if(p->on_ground && (sb_snum&2) )
 #endif
@@ -2890,9 +2891,11 @@ void processinput(short snum)
                     madenoise(snum);
                     p->ammo_amount[RA13_WEAPON]--;
                     if (p->ammo_amount[RA13_WEAPON] <= 0)
+                    {
                         (*kb) = 0;
-                    else
-                        checkavailweapon(p);
+                        break;
+                    }
+                    checkavailweapon(p);
                 }
                 if ((*kb) == 2)
                 {
@@ -2921,9 +2924,11 @@ void processinput(short snum)
                     checkavailweapon(p);
                 }
                 if (p->ammo_amount[RA14_WEAPON] <= 0)
+                {
                     (*kb) = 0;
-                else
-                    checkavailweapon(p);
+                    break;
+                }
+                checkavailweapon(p);
                 break;
 
 
@@ -3097,8 +3102,9 @@ void processinput(short snum)
 
 int haskey(short sect, short snum)
 {
-    short wk;
+    int unk;
     struct player_struct *p;
+    short wk;
     p = &ps[snum];
     if (!sector[sect].filler)
         return 1;

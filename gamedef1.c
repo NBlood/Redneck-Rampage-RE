@@ -1534,6 +1534,18 @@ void copydefaultcons(void)
         fpi = kopen4load( defaultcons[i] , 1 );
         fpo = fopen( defaultcons[i],"wb");
 
+#ifdef RRRA
+        if(fpi == 0)
+        {
+            if(fpo == 0) fclose(fpo);
+            continue;
+        }
+        if(fpo == 0)
+        {
+            if(fpi == 0) kclose(fpi);
+            continue;
+        }
+#else
         if(fpi == 0)
         {
             if(fpo == -1) fclose(fpo);
@@ -1544,6 +1556,7 @@ void copydefaultcons(void)
             if(fpi == 0) kclose(fpi);
             continue;
         }
+#endif
 
         fs = kfilelength(fpi);
 

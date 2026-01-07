@@ -44,10 +44,17 @@ extern int32 lastcontroltime; //MED
 
 static long myaimmode = 0, myaimstat = 0, omyaimstat = 0;
 
+long wupass = 0;
+
 void getinput(short snum)
+#ifdef RRRA
+{
+#endif
 {
 
+#ifndef RRRA
     short j, daang;
+#endif
 // MED
     ControlInfo info;
     int32 tics;
@@ -102,6 +109,10 @@ void getinput(short snum)
         loc.bits |=   BUTTON(gamefunc_Look_Left)<<6;
     loc.bits |=   BUTTON(gamefunc_Look_Right)<<7;
 
+#ifdef RRRA
+    {
+        short j;
+#endif
     j=0;
     if (BUTTON(gamefunc_Weapon_1))
        j = 1;
@@ -131,6 +142,9 @@ void getinput(short snum)
        j = 10;
 
     loc.bits |=   j<<8;
+#ifdef RRRA
+    }
+#endif
     loc.bits |=   BUTTON(gamefunc_Steroids)<<12;
     loc.bits |=   BUTTON(gamefunc_Look_Up)<<13;
     if (ps[snum].drink_amt > 99)
@@ -308,6 +322,10 @@ void getinput(short snum)
         return;
     }
 
+#ifdef RRRA
+    {
+        short daang;
+#endif
     if( numplayers > 1 )
         daang = myang;
     else daang = p->ang;
@@ -317,6 +335,9 @@ void getinput(short snum)
 
     momx += mulscale9(svel,sintable[(daang+2048)&2047]);
     momy += mulscale9(svel,sintable[(daang+1536)&2047]);
+#ifdef RRRA
+    }
+#endif
 
     momx += fricxv;
     momy += fricyv;
@@ -326,6 +347,9 @@ void getinput(short snum)
     loc.avel = angvel;
     loc.horz = horiz;
 }
+#ifdef RRRA
+}
+#endif
 
 #ifdef RRRA
 //long dword_119BFC = 0;
@@ -333,14 +357,16 @@ short bike_turn = 0;
 void getinputmotorcycle(short snum)
 {
 
-    short j, daang;
+    short daang;
 // MED
     ControlInfo info;
-    int32 tics;
     boolean turnl,turnr;
+    int j;
     int32 turnamount;
+    int32 tics;
+    int32 momx;
     int32 keymove;
-    int32 momx,momy;
+    int32 momy;
     struct player_struct *p;
 
     p = &ps[snum];
@@ -570,14 +596,16 @@ void getinputmotorcycle(short snum)
 void getinputboat(short snum)
 {
 
-    short j, daang;
+    short daang;
 // MED
     ControlInfo info;
-    int32 tics;
     boolean turnl,turnr;
+    int j;
     int32 turnamount;
+    int32 tics;
+    int32 momx;
     int32 keymove;
-    int32 momx,momy;
+    int32 momy;
     struct player_struct *p;
 
     p = &ps[snum];
@@ -844,11 +872,10 @@ getspritescore(long snum, long dapicnum)
     return(0);
 }
 
-long wupass = 0;
-
 char doincrements(struct player_struct *p)
 {
     long /*j,*/i,snum;
+    short snd;
 
 #ifdef RRRA
     if (WindTime > 0)
@@ -925,7 +952,8 @@ char doincrements(struct player_struct *p)
         if (p->eat)
             p->eat--;
     }
-    if (p->drink_amt > 89 && p->drink_amt == 100)
+    if (p->drink_amt > 89)
+        if (p->drink_amt == 100)
     {
         p->at598 = 1;
         if (Sound[420].num == 0)
@@ -939,7 +967,8 @@ char doincrements(struct player_struct *p)
     if (p->eat >= 100)
         p->eat = 100;
 
-    if (p->eat >= 31 && TRAND < p->eat)
+    if (p->eat >= 31)
+        if (TRAND < p->eat)
     {
         switch (TRAND&3)
         {
@@ -977,7 +1006,8 @@ char doincrements(struct player_struct *p)
     {
         p->last_pissed_time--;
 
-        if (p->drink_amt > 66 && (p->last_pissed_time % 26) == 0)
+        if (p->drink_amt > 66)
+            if ((p->last_pissed_time % 26) == 0)
             p->drink_amt--;
 
         if (ud.lockout == 0)
@@ -1103,7 +1133,7 @@ char doincrements(struct player_struct *p)
         {
             if (!wupass)
             {
-                short snd = -1;
+                snd = -1;
                 wupass = 1;
                 if (lastlevel)
                 {
@@ -1170,6 +1200,9 @@ char doincrements(struct player_struct *p)
                 }
                 if (snd == -1)
                     snd = 391;
+#ifdef RRRA
+                if (snd)
+#endif
                 spritesound(snd,p->i);
             }
             else if(totalclock > 1024)
@@ -1194,7 +1227,7 @@ void checkweapons(struct player_struct *p)
     short weapon_sprites[MAX_WEAPONS] = { KNEE, FIRSTGUNSPRITE, SHOTGUNSPRITE,
             CHAINGUNSPRITE, RPGSPRITE, HEAVYHBOMB, SHRINKERSPRITE, DEVISTATORSPRITE,
             TRIPBOMBSPRITE, BOWLINGBALLSPRITE, FREEZEBLAST, HEAVYHBOMB};
-    short i,j;
+    short j,i;
 
 #ifdef RRRA
     if (p->OnMotorcycle && numplayers > 1)

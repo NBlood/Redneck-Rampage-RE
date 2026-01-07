@@ -935,10 +935,10 @@ extern short bike_turn;
 
 void checksync(void)
 {
-      long i, k;
 #ifdef RRRA
       struct player_struct *p;
 #endif
+      long i, k;
 
       for(i=connecthead;i>=0;i=connectpoint2[i])
             if (syncvalhead[i] == syncvaltottail) break;

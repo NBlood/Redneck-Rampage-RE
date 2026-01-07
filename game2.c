@@ -788,8 +788,13 @@ void displayfragbar(void)
 
 void weaponbar(short snum)
 {
+#ifdef RRRA
+    struct player_struct* p;
+    short i, amount, icon;
+#else
     struct player_struct *p;
     short i, icon, amount;
+#endif
 
     p = &ps[snum];
     rotatesprite(0,158<<16,32800L,0,WEAPONBAR,0,0,10+16+64+128,0,0,xdim-1,ydim-1);
@@ -999,7 +1004,7 @@ void coolgaugetext(short snum)
                     invennum(166,162,p->ammo_amount[RPG_WEAPON],0,10+128);
                 }
 #ifdef RRRA
-                if (p->curr_weapon == RA16_WEAPON)
+                else if (p->curr_weapon == RA16_WEAPON)
                 {
                     patchstatusbar2(158,158,174,174);
                     invennum(166,162,p->ammo_amount[RA16_WEAPON],0,10+128);
@@ -1059,7 +1064,7 @@ void coolgaugetext(short snum)
                     case 7: i = BOOT_ICON; break;
                 }
                 if (i == AIRTANK_ICON)
-                    rotatesprite((183-o)<<16,(200-24)<<16,32768L,0,AIRTANK_ICON,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
+                    rotatesprite((183-o)<<16,(200-24)<<16,32768L,0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
                 else if (i == FIRSTAID_ICON || i == BOOT_ICON || i == STEROIDS_ICON)
                     rotatesprite((183-o)<<16,(200-22)<<16,32768L,0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
                 else
@@ -1096,8 +1101,10 @@ void coolgaugetext(short snum)
 
 void gutmeter(short player)
 {
-    long o, ss;
     struct player_struct *p;
+    long ss;
+    int unk;
+    long o;
 
     p = &ps[player];
     ss = ud.screen_size;

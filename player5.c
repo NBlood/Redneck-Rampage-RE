@@ -161,14 +161,14 @@ void computergetinput(long snum, input *syn)
         {
             case KNEE_WEAPON: fightdist = 256; break;
 #ifdef RRRA
-            case RA16_WEAPON: fightdist = 384; break;
+            case RA15_WEAPON: fightdist = 384; break;
 #endif
             case PISTOL_WEAPON: fightdist = 512; break;
             case SHOTGUN_WEAPON: fightdist = 512; break;
             case CHAINGUN_WEAPON: fightdist = 512; break;
             case RPG_WEAPON: fightdist = 2048; break;
 #ifdef RRRA
-            case RA15_WEAPON: fightdist = 2048; break;
+            case RA16_WEAPON: fightdist = 2048; break;
 #endif
             case HANDBOMB_WEAPON:
                 fightdist = 512;
