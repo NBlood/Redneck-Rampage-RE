@@ -6,7 +6,7 @@ unsigned int dpmi_RealToLinear(unsigned int a1)
     return ((a1 & 0xffff0000) >> 12) + (a1 & 0xffff);
 }
 
-void *dpmi_allocmem(unsigned short a1, unsigned short *a2, unsigned int *a3, unsigned int *a4, unsigned int *a5)
+void *dpmi_allocmem(int a1, unsigned short *a2, unsigned int *a3, unsigned int *a4, unsigned int *a5)
 {
     union REGS r;
 
@@ -26,7 +26,7 @@ void *dpmi_allocmem(unsigned short a1, unsigned short *a2, unsigned int *a3, uns
     return (void*)(r.w.ax << 4);
 }
 
-int dpmi_freemem(unsigned short a1)
+int dpmi_freemem(int a1)
 {
     union REGS r;
 

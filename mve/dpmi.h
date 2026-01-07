@@ -70,8 +70,8 @@ typedef union
 } RMREGS;
 
 unsigned int dpmi_RealToLinear(unsigned int a1);
-void *dpmi_allocmem(unsigned short a1, unsigned short *a2, unsigned int *a3, unsigned int *a4, unsigned int *a5);
-int dpmi_freemem(unsigned short a1);
+void *dpmi_allocmem(int a1, unsigned short *a2, unsigned int *a3, unsigned int *a4, unsigned int *a5);
+int dpmi_freemem(int a1);
 int dpmi_lockmem(void far * a1, unsigned int a2);
 int dpmi_unlockmem(void far * a1, unsigned int a2);
 int dpmi_rmint(unsigned int a1, RMREGS *a2);

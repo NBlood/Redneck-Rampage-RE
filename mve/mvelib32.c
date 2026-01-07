@@ -7,6 +7,15 @@
 #include "vbe.h"
 #include "mvelib32.h"
 
+// todo:
+// palMakeSynthPalette
+// gfxSimpleGraphicsSetup
+// MVE_rmStepMovie
+// MVE_frGet
+
+unsigned char nf_wqty;
+unsigned char nf_hqty;
+unsigned char nf_fqty;
 
 typedef struct {
     unsigned char f_0[20];
@@ -21,95 +30,9 @@ typedef struct {
     unsigned int f_4;
 } sndqueue_t;
 
-static mve_cb_alloc mem_alloc;
-static mve_cb_free mem_free;
-static unsigned int sync_period;
-int sync_wait_quanta;
 unsigned short prev_timer2;
 
-static mve_cb_read io_read;
-static int io_handle;
-static unsigned int io_next_hdr;
-static memstruct_t io_mem_buf;
-
-static volatile unsigned int snd_cnt;
-static sndqueue_t snd_queue[60];
-static volatile unsigned int snd_empty;
-static volatile unsigned int snd_processed;
-static unsigned int snd_done;
-
-static int snd_bits16;
-static int snd_stereo;
-static int snd_comp16;
-
-static unsigned int snd_buf_base_len;
-static unsigned int snd_buf_len;
-static void *snd_buf;
-
-static int snd_fill;
-static volatile int snd_empty2;
-static int snd_target_pad;
-static unsigned int snd_buf_cur;
-static int snd_total_processed;
-static int snd_target;
-
-static _SOS_SAMPLE snd_SampleData;
-
-static memstruct_t snd_mem_buf;
-
-static mve_cb_SoundHook snd_SoundHook;
-
-static memstruct_t nf_mem_buf1;
-static memstruct_t nf_mem_buf2;
-
-unsigned char nf_wqty;
-unsigned int nf_width;
-unsigned char nf_fqty;
-unsigned char nf_hqty;
-unsigned int nf_height;
-unsigned int nf_hicolor;
-unsigned int nf_new_line;
-unsigned int nf_back_right;
-unsigned int nf_new_row0;
-void *nf_buf_cur;
-void *nf_buf_prv;
-
-static unsigned int sf_ScreenWidth;
-static unsigned int sf_ScreenHeight;
-static unsigned int sf_ResolutionWidth;
-static unsigned int sf_ResolutionHeight;
-unsigned int sf_LineWidth;
-unsigned int sf_WinSize;
-
-unsigned int cdecl (*sf_SetBank)(void);
-
-void *sf_WriteWinPtr;
-void *sf_WriteWinLimit;
-
-unsigned int sf_WinGran;
-unsigned int sf_WinGranPerSize;
-static unsigned int sf_hicolor;
-
-unsigned int sf_WriteWin;
-
 unsigned int opt_hscale_adj;
-
-unsigned int nf_new_x;
-unsigned int nf_new_y;
-unsigned int nf_new_w;
-unsigned int nf_new_h;
-
-unsigned short pal15_tbl[256];
-unsigned char pal_tbl[768];
-
-static mve_cb_ctl rm_ctl;
-static unsigned int rm_FrameCount;
-static unsigned int rm_FrameDropCount;
-static int rm_dx;
-static int rm_dy;
-static unsigned int rm_track_bit;
-static void *rm_p;
-static unsigned int rm_len;
 
 static unsigned int opt_fastmode = 0;
 unsigned int opt_hscale_step = 4;
@@ -143,28 +66,11 @@ volatile unsigned int sync_time = 0;
 static int sync_late = 0;
 static int sync_FrameDropped = 0;
 
+static mve_cb_alloc mem_alloc;
+static mve_cb_free mem_free;
+
 // asm routines
 
-void cdecl syncCallback(void);
-void cdecl syncReset(unsigned int a1);
-void cdecl syncInit2(void);
-int cdecl syncMaybeWait(void);
-unsigned int cdecl syncMaybeWaitLevel(unsigned int a1);
-unsigned int cdecl syncTime(void);
-unsigned int cdecl getDMAByteCnt(unsigned int a1);
-void cdecl sndDecompM16(void *a1, void *a2, unsigned int a3);
-void cdecl sndDecompS16(void *a1, void *a2, unsigned int a3);
-void cdecl sndDecompM8(void *a1, void *a2, unsigned int a3);
-void cdecl sndDecompS8(void *a1, void *a2, unsigned int a3);
-void cdecl sndCnv16to8(void *a1, void *a2, unsigned int a3);
-void cdecl nfHiColorDecomp(void *a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5);
-void cdecl nfHiColorDecompChg(void *a1, void *a2, void *a3, unsigned int a4, unsigned int a5, unsigned int a6, unsigned int a7);
-void cdecl nfDecomp(void *a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5);
-void cdecl nfDecompChg(void *a1, void *a2, void *a3, unsigned int a4, unsigned int a5, unsigned int a6, unsigned int a7);
-void cdecl nfPkConfig(void);
-void cdecl nfPkDecomp(void* a1, void* a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6);
-void cdecl nfPkDecompH(void* a1, void* a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6);
-void cdecl nfHPkDecomp(void* a1, void* a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6);
 void cdecl mve_ShowFrameField(void* a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6, unsigned int a7, unsigned int a8, unsigned int a9, unsigned int a10);
 void cdecl mve_ShowFrameFieldHi(void* a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6, unsigned int a7, unsigned int a8, unsigned int a9, unsigned int a10);
 void cdecl mve_sfShowFrameChg(unsigned int a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5, void *a6, unsigned int a7, unsigned int a8);
@@ -191,7 +97,7 @@ static void MemFree(memstruct_t *a1)
     {
         dpmi_unlockmem(a1->f_0, a1->f_4);
     }
-    if (a1->f_4 && mem_free)
+    if (a1->f_8 && mem_free)
     {
         mem_free(a1->f_0);
         a1->f_8 = 0;
@@ -220,7 +126,7 @@ static void MemLock(memstruct_t *a1, unsigned int a2)
     }
     else
     {
-        if (!a1->f_c && a1->f_4)
+        if (a1->f_c && a1->f_4)
             dpmi_unlockmem(a1->f_0, a1->f_4);
     }
     a1->f_c = a2;
@@ -229,7 +135,7 @@ static void MemLock(memstruct_t *a1, unsigned int a2)
 static void *MemAlloc(memstruct_t *a1, unsigned int a2)
 {
     void *p;
-    if (a1->f_4 > a2)
+    if (a1->f_4 >= a2)
         return a1->f_0;
 
     if (mem_alloc)
@@ -237,16 +143,24 @@ static void *MemAlloc(memstruct_t *a1, unsigned int a2)
         MemFree(a1);
         a2 += 100;
         p = mem_alloc(a2);
-        if (p)
-        {
-            MemInit(a1, a2, p);
-        }
-
+        if (!p)
+            return NULL;
+        MemInit(a1, a2, p);
         a1->f_8 = 1;
         return a1->f_0;
     }
     return NULL;
 }
+
+void cdecl syncCallback(void);
+void cdecl syncReset(unsigned int a1);
+void cdecl syncInit2(void);
+int cdecl syncMaybeWait(void);
+unsigned int cdecl syncMaybeWaitLevel(unsigned int a1);
+unsigned int cdecl syncTime(void);
+
+static unsigned int sync_period;
+int sync_wait_quanta;
 
 static void syncRelease(void)
 {
@@ -267,7 +181,7 @@ static int syncInit(unsigned int a1, int a2)
 {
     static int dword_125FF0 = 1;
     static void *off_125FF4 = syncCallback;
-    int v2 = -((a1 * 10000) / 8320 * a2);
+    int v2 = -((a1 * 10000) / 8380 * a2);
 
     if (sync_hTimer == -1 || a1 != sync_period || v2 != sync_wait_quanta)
     {
@@ -338,6 +252,11 @@ void cdecl MVE_logDumpStats(void)
     printf("Logging support disabled.\n");
 }
 
+static mve_cb_read io_read;
+static int io_handle;
+static unsigned int io_next_hdr;
+static memstruct_t io_mem_buf;
+
 void cdecl MVE_ioCallbacks(mve_cb_read a1)
 {
     io_read = a1;
@@ -388,6 +307,38 @@ static void ioRelease(void)
 {
     MemFree(&io_mem_buf);
 }
+
+static int snd_comp16;
+static int snd_target_pad;
+static void* snd_buf;
+static volatile unsigned int snd_processed;
+static int snd_total_processed;
+static int snd_target;
+static int snd_stereo;
+static unsigned int snd_done;
+static volatile unsigned int snd_cnt;
+static volatile unsigned int snd_empty;
+static unsigned int snd_buf_base_len;
+static unsigned int snd_buf_len;
+static volatile int snd_empty2;
+static int snd_fill;
+static unsigned int snd_buf_cur;
+static memstruct_t snd_mem_buf;
+static _SOS_SAMPLE snd_SampleData;
+static sndqueue_t snd_queue[60];
+
+unsigned int cdecl getDMAByteCnt(unsigned int a1);
+void cdecl sndDecompM16(void* a1, void* a2, unsigned int a3);
+void cdecl sndDecompS16(void* a1, void* a2, unsigned int a3);
+void cdecl sndDecompM8(void* a1, void* a2, unsigned int a3);
+void cdecl sndDecompS8(void* a1, void* a2, unsigned int a3);
+void cdecl sndCnv16to8(void* a1, void* a2, unsigned int a3);
+
+static HANDLE snd_SampleHandle = -1;
+static int snd_paused = 0;
+static int snd_vol = 0x7fff7fff;
+static mve_cb_SoundHook snd_SoundHook;
+static int snd_bits16;
 
 W32 sosDIGIGetBytesPlayed(HANDLE a1, HANDLE a2)
 {
@@ -459,10 +410,6 @@ W32 sosDIGIGetBytesPlayed(HANDLE a1, HANDLE a2)
 
     return v1c - t2;
 }
-
-static HANDLE snd_SampleHandle = -1;
-static int snd_paused = 0;
-static int snd_vol = 0x7fff7fff;
 
 static void cdecl snd_SampleCallback(_SOS_SAMPLE *a1)
 {
@@ -741,12 +688,40 @@ static void sndResume(void)
 
     snd_paused = 0;
 }
+void* nf_buf_cur;
+
+static memstruct_t nf_mem_buf1;
+static memstruct_t nf_mem_buf2;
+
+extern int wp11, wp12;
+extern int wp13, wp14;
 
 void cdecl MVE_memVID(void *a1, void *a2, unsigned int a3)
 {
     MemInit(&nf_mem_buf1, a3, a1);
     MemInit(&nf_mem_buf2, a3, a2);
 }
+
+unsigned int nf_height;
+unsigned int nf_back_right;
+unsigned int nf_new_line;
+unsigned int nf_new_y;
+unsigned int nf_new_x;
+unsigned int nf_new_w;
+void* nf_buf_prv;
+unsigned int nf_new_h;
+unsigned int nf_width;
+unsigned int nf_hicolor;
+unsigned int nf_new_row0;
+
+void cdecl nfHiColorDecomp(void* a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5);
+void cdecl nfHiColorDecompChg(void* a1, void* a2, void* a3, unsigned int a4, unsigned int a5, unsigned int a6, unsigned int a7);
+void cdecl nfDecomp(void* a1, unsigned int a2, unsigned int a3, unsigned int a4, unsigned int a5);
+void cdecl nfDecompChg(void* a1, void* a2, void* a3, unsigned int a4, unsigned int a5, unsigned int a6, unsigned int a7);
+void cdecl nfPkConfig(void);
+void cdecl nfPkDecomp(void* a1, void* a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6);
+void cdecl nfPkDecompH(void* a1, void* a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6);
+void cdecl nfHPkDecomp(void* a1, void* a2, unsigned int a3, unsigned int a4, unsigned int a5, unsigned int a6);
 
 static int nfConfig(unsigned int a1, unsigned int a2, unsigned int a3, unsigned int a4)
 {
@@ -788,14 +763,33 @@ static void nfRelease(void)
 
 static void nfAdvance(void)
 {
-    void *t = nf_buf_cur;
-    nf_buf_cur = nf_buf_prv;
-    nf_buf_prv = t;
+    void *t = nf_buf_prv;
+    nf_buf_prv = nf_buf_cur;
+    nf_buf_cur = t;
 }
+
+extern int wp9;
+
+static unsigned int sf_ResolutionHeight;
+unsigned int sf_WinGran;
+static unsigned int sf_ScreenHeight;
+static unsigned int sf_ResolutionWidth;
+static unsigned int sf_ScreenWidth;
+unsigned int sf_LineWidth;
+static unsigned int sf_hicolor;
+unsigned int cdecl(*sf_SetBank)(void);
+
+extern int wp1, wp2, wp3, wp4, wp5, wp6, wp7, wp8, wp10, wp15;
 
 static mve_cb_ShowFrame sf_ShowFrame = MVE_ShowFrame;
 static unsigned int sf_auto = 1;
 static unsigned int sf_auto_mode = 0;
+
+unsigned int sf_WriteWin;
+void* sf_WriteWinLimit;
+void* sf_WriteWinPtr;
+unsigned int sf_WinSize;
+unsigned int sf_WinGranPerSize;
 
 static void sfVGA(unsigned int a1, unsigned int a2, unsigned int a3, unsigned int a4)
 {
@@ -841,8 +835,8 @@ void cdecl MVE_sfSVGA(unsigned int a1, unsigned int a2, unsigned int a3, unsigne
     else
         sf_WinGranPerSize = 1;
 
-    sf_hicolor = a9;
     sf_auto = 0;
+    sf_hicolor = a9;
 }
 
 static void sfShowFrame(int a1, int a2, unsigned int a3)
@@ -922,6 +916,8 @@ static void sfShowFrameChg(int a1, int a2, void *a3)
 }
 
 static mve_cb_SetPalette pal_SetPalette = MVE_SetPalette;
+unsigned char pal_tbl[768];
+unsigned short pal15_tbl[256];
 
 void cdecl MVE_palCallbacks(mve_cb_SetPalette a1)
 {
@@ -1423,6 +1419,13 @@ void cdecl MVE_sfAutoDoubleBuffer(unsigned int a1)
     sf_auto_dbl = a1;
 }
 
+static mve_cb_ctl rm_ctl;
+static int rm_dx;
+static int rm_dy;
+static unsigned int rm_track_bit;
+static unsigned int rm_len;
+static void* rm_p;
+
 void cdecl MVE_rmCallbacks(mve_cb_ctl a1)
 {
     rm_ctl = a1;
@@ -1440,6 +1443,9 @@ void cdecl MVE_rmHScale(unsigned int a1)
     else
         opt_hscale_step = 4;
 }
+
+static unsigned int rm_FrameCount;
+static unsigned int rm_FrameDropCount;
 
 void cdecl MVE_rmFrameCounts(unsigned int *a1, unsigned int *a2)
 {
@@ -1650,7 +1656,7 @@ L5:
                 goto L5;
             case 3:
                 t3 = (mvestruct3_t*)v6;
-                v8 = v7.f_3 <= 1 ? t3->f_2_2 : 0;
+                v8 = v7.f_3 >= 1 ? t3->f_2_2 : 0;
                 v9 = t3->f_6;
                 if (v7.f_3 == 0)
                     v9 &= 0xffff;
@@ -1767,10 +1773,10 @@ L5:
                             v5 = -7;
                             goto L1;
                         }
-                    }
-                    if (sf_auto_dbl)
-                    {
-                        MVE_gfxSetDoubleBuffer(0, sf_ResolutionHeight, 0);
+                        if (sf_auto_dbl)
+                        {
+                            MVE_gfxSetDoubleBuffer(0, sf_ResolutionHeight, 0);
+                        }
                     }
                     sf_auto = 1;
                     sf_auto_mode = v12;
@@ -1923,7 +1929,7 @@ void cdecl MVE_ReleaseMem(void)
     nfRelease();
 }
 
-char* cdecl MVE_strerror(unsigned int a1)
+char* cdecl MVE_strerror(int a1)
 {
     char *MovieErrors[] = {
         "Movie aborted with special code",
@@ -2092,7 +2098,7 @@ L5:
                 v11 = 0;
                 if (v7.f_3 >= 1)
                     v11 = t6->f_4;
-                if (!v11)
+                if (v11)
                 {
                     v5 = -8;
                     goto L1;

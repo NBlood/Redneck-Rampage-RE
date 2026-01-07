@@ -75,7 +75,7 @@ int cdecl MVE_RunMovie(int a1, unsigned int a2, unsigned int a3,
 int cdecl MVE_RunMovieContinue(int a1, unsigned int a2, unsigned int a3,
     unsigned int a4);
 void cdecl MVE_ReleaseMem(void);
-char* cdecl MVE_strerror(unsigned int a1);
+char* cdecl MVE_strerror(int a1);
 void * cdecl MVE_frOpen(mve_cb_read a1, int a2, mve_cb_fr a3);
 int cdecl MVE_frGet(loadsave_t *ls, void **a2, unsigned int *a3, unsigned int *a4);
 void cdecl MVE_frClose(loadsave_t *a1);

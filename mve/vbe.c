@@ -170,7 +170,7 @@ int vbe_SaveVideoState(unsigned int a1, void *a2, unsigned int a3)
     if (!dpmi_rmint(0x10, &s) || s.w.ax != 0x4f)
         return 0;
 
-    memcpy(a2, vbe_buffer, a3);
+    memcpy(a2, a3, vbe_buffer);
     return 1;
 }
 
@@ -191,7 +191,7 @@ int vbe_RestoreVideoState(unsigned int a1, void *a2, unsigned int a3)
     s.w.es = vbe_buffer_segment;
     s.w.bx = 0;
 
-    memcpy(vbe_buffer, a2, a3);
+    memcpy(vbe_buffer, a3, a2);
 
     if (!dpmi_rmint(0x10, &s) || s.w.ax != 0x4f)
         return 0;
@@ -306,8 +306,8 @@ int vbe_SetDisplayStart(unsigned int a1, unsigned int a2)
     s.h.al = 0x07;
     s.w.ss = vbe_buffer_segment;
     s.w.sp = 0x800;
-    s.h.bl = 0;
     s.h.bh = 0;
+    s.h.bl = 0;
     s.w.cx = a1;
     s.w.dx = a2;
 

@@ -99,8 +99,8 @@ void dpmiRealInt386x(char i, dpmiregs_t *req)
 
 unsigned int dpmiUnlockRegion(unsigned int a, unsigned int b)
 {
-    unsigned int s;
     union REGS regs;
+    unsigned int s;
     s = a;
     total_bytes -= b;
     memset(&regs, 0, sizeof(regs));
@@ -115,8 +115,8 @@ unsigned int dpmiUnlockRegion(unsigned int a, unsigned int b)
 
 unsigned int dpmiLockRegion(unsigned int a, unsigned int b)
 {
-    unsigned int s;
     union REGS regs;
+    unsigned int s;
     s = a;
     total_bytes += b;
     memset(&regs, 0, sizeof(regs));
@@ -182,8 +182,8 @@ int dpmiInit(void)
 
 void dpmiUninit(void)
 {
-    unsigned short v4, v8;
     union REGS regs;
+    unsigned short v8, v4;
     if (dpmiDosSelector)
     {
         dpmiDosBuffer = 0;

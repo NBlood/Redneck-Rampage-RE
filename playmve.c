@@ -8,7 +8,8 @@
 _SOS_DIGI_DRIVER sosDriver;
 
 int dword_32D3A0[32]; // fixme
-int blaster[8]; // fixme
+int blaster[7]; // fixme
+int hackvar123;
 
 int dword_11A82C = 0;
 HANDLE dword_11A830 = -1;
@@ -131,8 +132,8 @@ void func_A85B0(unsigned short a1, unsigned short a2, unsigned short a3)
 unsigned short func_A85F0(char *a1)
 {
     int i;
-    int v8;
     char *vc;
+    int v8;
     if (!*a1)
         return 0xffff;
 
@@ -264,24 +265,25 @@ extern int FXDevice;
 
 void playmve(char *a1, char *a2, char a3)
 {
-    static int dword_11A94C = 0;
     int v1;
     int v2;
-    char drive[4];
-    char dir[132];
-    char buf[144];
+    static int dword_11A94C = 0;
     if (_dos_open(a1, 512, &v1))
         return;
 
-    MVE_memCallbacks(func_A8570, func_A8594);
-    _splitpath(a1, drive, dir, NULL, NULL);
-    strcpy(buf, drive);
-    strcat(buf, dir);
-
-    if (!dword_11A94C)
     {
-        switch (FXDevice)
+        char drive[4];
+        char buf[144];
+        char dir[132];
+        MVE_memCallbacks(func_A8570, func_A8594);
+        _splitpath(a2, drive, dir, NULL, NULL);
+        strcpy(buf, drive);
+        strcat(buf, dir);
+
+        if (!dword_11A94C)
         {
+            switch (FXDevice)
+            {
             case 0:
                 func_A86DC("SB", buf);
                 break;
@@ -301,9 +303,10 @@ void playmve(char *a1, char *a2, char a3)
             default:
                 func_A86DC("", buf);
                 break;
-        }
+            }
 
-        dword_11A94C = 1;
+            dword_11A94C = 1;
+        }
     }
 
     MVE_ioCallbacks(func_A8930);

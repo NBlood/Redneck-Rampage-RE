@@ -1789,7 +1789,7 @@ L77:
 		jmp	short L84
 
 L78:
-		lea	esi, [edi+esi-4000h]
+		lea	esi, [esi+edi-4000h]
 		movsd
 		movsd
 		add	esi, edx
@@ -1856,7 +1856,7 @@ L83:
 		jmp	short L78
 
 L84:
-		lea	esi, [edi+esi-0C000h]
+		lea	esi, [esi+edi-0C000h]
 		add	esi, [ebp-0ch]
 		movsd
 		movsd
@@ -2090,7 +2090,7 @@ L103:
 		jmp	L112
 
 L104:
-		lea	esi, [edi+esi-4000h]
+		lea	esi, [esi+edi-4000h]
 		movsd
 		movsd
 		add	esi, edx
@@ -2169,7 +2169,7 @@ L111:
 		jmp	L104
 
 L112:
-		lea	esi, [edi+esi-0C000h]
+		lea	esi, [esi+edi-0C000h]
 		add	esi, [ebp-0ch]
 		movsd
 		movsd
@@ -2405,7 +2405,7 @@ L131:
 
 L132:
 		mov	ebx, esi
-		lea	esi, [eax+edi]
+		lea	esi, [edi+eax]
 		mov	edx, _nf_width
 		mov	eax, [esi]
 		mov	[edi], eax
@@ -2663,40 +2663,40 @@ L136:
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
@@ -3524,14 +3524,14 @@ L146:
 		mov	al, bl
 		mov	ah, al
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ah, bl
 		mov	al, ah
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, al
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	ah, bl
 		mov	al, ah
@@ -3539,14 +3539,14 @@ L146:
 		mov	al, bl
 		mov	ah, al
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ah, bl
 		mov	al, ah
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, al
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	ah, bl
 		mov	al, ah
@@ -3554,14 +3554,14 @@ L146:
 		mov	al, bl
 		mov	ah, al
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ah, bl
 		mov	al, ah
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, al
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	ah, bl
 		mov	al, ah
@@ -3569,14 +3569,14 @@ L146:
 		mov	al, bl
 		mov	ah, al
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	ah, bl
 		mov	al, ah
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, al
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		add	edi, edx
 		add	esi, 8
 		sub	edi, [ebp-10h]
@@ -3835,14 +3835,14 @@ L150:
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	al, bl
 		mov	ah, bl
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	al, bl
 		mov	ah, bl
@@ -3850,14 +3850,14 @@ L150:
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	al, bl
 		mov	ah, bl
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	al, bl
 		mov	ah, bl
@@ -3865,14 +3865,14 @@ L150:
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	al, bl
 		mov	ah, bl
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		lea	edi, [edi+edx*2]
 		mov	al, bl
 		mov	ah, bl
@@ -3880,14 +3880,14 @@ L150:
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	al, bl
 		mov	ah, bl
 		shl	eax, 10h
 		mov	al, bl
 		mov	ah, bl
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		add	edi, edx
 		add	esi, 0Ch
 		sub	edi, [ebp-10h]
@@ -4682,7 +4682,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		shr	eax, 10h
 		mov	bl, ah
 		mov	bh, ah
@@ -4690,7 +4690,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	eax, [esi+4]
 		mov	bl, ah
@@ -4699,7 +4699,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		shr	eax, 10h
 		mov	bl, ah
 		mov	bh, ah
@@ -4707,7 +4707,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	eax, [esi+8]
 		mov	bl, ah
@@ -4716,7 +4716,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		shr	eax, 10h
 		mov	bl, ah
 		mov	bh, ah
@@ -4724,7 +4724,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	eax, [esi+0Ch]
 		mov	bl, ah
@@ -4733,7 +4733,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		shr	eax, 10h
 		mov	bl, ah
 		mov	bh, ah
@@ -4741,7 +4741,7 @@ L158:
 		mov	bl, al
 		mov	bh, al
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		add	edi, edx
 		sub	edi, [ebp-10h]
 		add	esi, 10h
@@ -4762,13 +4762,13 @@ L159:
 		mov	bx, cx
 		mov	[edi], eax
 		mov	[edi+4], ebx
-		mov	[edx+edi], eax
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx], eax
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	[edi], eax
 		mov	[edi+4], ebx
-		mov	[edx+edi], eax
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx], eax
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	cl, [esi+2]
 		mov	ch, cl
@@ -4782,8 +4782,8 @@ L159:
 		mov	bx, cx
 		mov	[edi], eax
 		mov	[edi+4], ebx
-		mov	[edx+edi], eax
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx], eax
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	[edi], eax
 		mov	[edi+4], ebx
@@ -5015,7 +5015,7 @@ L180:
 
 L181:
 		mov	ebx, esi
-		lea	esi, [eax+edi]
+		lea	esi, [edi+eax]
 		mov	edx, _nf_width
 		mov	eax, [esi]
 		mov	[edi], eax
@@ -6514,8 +6514,8 @@ L208:
 		mov	bx, cx
 		mov	[edi], eax
 		mov	[edi+4], ebx
-		mov	[edx+edi], eax
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx], eax
+		mov	[edi+edx+4], ebx
 		lea	edi, [edi+edx*2]
 		mov	cl, [esi+2]
 		mov	ch, cl
@@ -6728,7 +6728,7 @@ L225:
 
 L226:
 		mov	ebx, esi
-		lea	esi, [eax+edi]
+		lea	esi, [edi+eax]
 		mov	edx, _nf_width
 		mov	eax, [esi]
 		mov	[edi], eax
@@ -6984,55 +6984,55 @@ L229:
 L230:
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[edx+edi+8], eax
+		mov	[edi+edx+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[edx+edi+0Ch], eax
+		mov	[edi+edx+0Ch], eax
 		lea	edi, [edi+edx*2]
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[edx+edi+8], eax
+		mov	[edi+edx+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[edx+edi+0Ch], eax
+		mov	[edi+edx+0Ch], eax
 		lea	edi, [edi+edx*2]
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[edx+edi+8], eax
+		mov	[edi+edx+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[edx+edi+0Ch], eax
+		mov	[edi+edx+0Ch], eax
 		lea	edi, [edi+edx*2]
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[edx+edi], eax
+		mov	[edi+edx], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[edx+edi+4], eax
+		mov	[edi+edx+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[edx+edi+8], eax
+		mov	[edi+edx+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[edx+edi+0Ch], eax
+		mov	[edi+edx+0Ch], eax
 		add	edi, edx
 		sub	edi, [ebp-10h]
 		add	esi, 6
@@ -7231,7 +7231,7 @@ L233:
 		shr	ebx, 10h
 		mov	[edx+38h], bl
 		mov	[edx+3Bh], bh
-		add	edx, L234_0-L234_0 ; hack
+		add	edx, L234_0-L234 ; hack
 		mov	al, [esi+0Ch]
 		mov	ebx, [ecx+eax*4]
 		mov	[edx], bl
@@ -7800,55 +7800,55 @@ L239:
 L240:
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		lea	edi, [edi+esi*2]
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		lea	edi, [edi+esi*2]
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		lea	edi, [edi+esi*2]
 		mov	eax, ebx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	eax, ebx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	eax, ebx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	eax, ebx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		add	edi, esi
 		pop	esi
 		pop	ebp
@@ -8062,85 +8062,85 @@ L244:
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		lea	edi, [edi+esi*2]
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		lea	edi, [edi+esi*2]
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		lea	edi, [edi+esi*2]
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi], eax
-		mov	[esi+edi], eax
+		mov	[edi+esi], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+4], eax
-		mov	[esi+edi+4], eax
+		mov	[edi+esi+4], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+8], eax
-		mov	[esi+edi+8], eax
+		mov	[edi+esi+8], eax
 		mov	ax, bx
 		shl	eax, 10h
 		mov	ax, bx
 		mov	[edi+0Ch], eax
-		mov	[esi+edi+0Ch], eax
+		mov	[edi+esi+0Ch], eax
 		add	edi, esi
 		pop	esi
 		pop	ebp
@@ -9094,85 +9094,85 @@ L252:
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		mov	ax, [esi+2]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		mov	ax, [esi+4]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+8], ebx
-		mov	[edx+edi+8], ebx
+		mov	[edi+edx+8], ebx
 		mov	ax, [esi+6]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+0Ch], ebx
-		mov	[edx+edi+0Ch], ebx
+		mov	[edi+edx+0Ch], ebx
 		lea	edi, [edi+edx*2]
 		mov	ax, [esi+8]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		mov	ax, [esi+0Ah]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		mov	ax, [esi+0Ch]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+8], ebx
-		mov	[edx+edi+8], ebx
+		mov	[edi+edx+8], ebx
 		mov	ax, [esi+0Eh]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+0Ch], ebx
-		mov	[edx+edi+0Ch], ebx
+		mov	[edi+edx+0Ch], ebx
 		lea	edi, [edi+edx*2]
 		mov	ax, [esi+10h]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		mov	ax, [esi+12h]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		mov	ax, [esi+14h]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+8], ebx
-		mov	[edx+edi+8], ebx
+		mov	[edi+edx+8], ebx
 		mov	ax, [esi+16h]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+0Ch], ebx
-		mov	[edx+edi+0Ch], ebx
+		mov	[edi+edx+0Ch], ebx
 		lea	edi, [edi+edx*2]
 		mov	ax, [esi+18h]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi], ebx
-		mov	[edx+edi], ebx
+		mov	[edi+edx], ebx
 		mov	ax, [esi+1Ah]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+4], ebx
-		mov	[edx+edi+4], ebx
+		mov	[edi+edx+4], ebx
 		mov	ax, [esi+1Ch]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+8], ebx
-		mov	[edx+edi+8], ebx
+		mov	[edi+edx+8], ebx
 		mov	ax, [esi+1Eh]
 		shrd	ebx, eax, 10h
 		mov	bx, ax
 		mov	[edi+0Ch], ebx
-		mov	[edx+edi+0Ch], ebx
+		mov	[edi+edx+0Ch], ebx
 		add	edi, edx
 		sub	edi, [ebp-10h]
 		add	esi, 20h
@@ -9191,19 +9191,19 @@ L253:
 		mov	[edi+4], ebx
 		mov	[edi+8], ecx
 		mov	[edi+0Ch], ecx
-		mov	[edx+edi], ebx
-		mov	[edx+edi+4], ebx
-		mov	[edx+edi+8], ecx
-		mov	[edx+edi+0Ch], ecx
+		mov	[edi+edx], ebx
+		mov	[edi+edx+4], ebx
+		mov	[edi+edx+8], ecx
+		mov	[edi+edx+0Ch], ecx
 		lea	edi, [edi+edx*2]
 		mov	[edi], ebx
 		mov	[edi+4], ebx
 		mov	[edi+8], ecx
 		mov	[edi+0Ch], ecx
-		mov	[edx+edi], ebx
-		mov	[edx+edi+4], ebx
-		mov	[edx+edi+8], ecx
-		mov	[edx+edi+0Ch], ecx
+		mov	[edi+edx], ebx
+		mov	[edi+edx+4], ebx
+		mov	[edi+edx+8], ecx
+		mov	[edi+edx+0Ch], ecx
 		lea	edi, [edi+edx*2]
 		mov	ax, [esi+4]
 		shrd	ebx, eax, 10h
@@ -9215,19 +9215,19 @@ L253:
 		mov	[edi+4], ebx
 		mov	[edi+8], ecx
 		mov	[edi+0Ch], ecx
-		mov	[edx+edi], ebx
-		mov	[edx+edi+4], ebx
-		mov	[edx+edi+8], ecx
-		mov	[edx+edi+0Ch], ecx
+		mov	[edi+edx], ebx
+		mov	[edi+edx+4], ebx
+		mov	[edi+edx+8], ecx
+		mov	[edi+edx+0Ch], ecx
 		lea	edi, [edi+edx*2]
 		mov	[edi], ebx
 		mov	[edi+4], ebx
 		mov	[edi+8], ecx
 		mov	[edi+0Ch], ecx
-		mov	[edx+edi], ebx
-		mov	[edx+edi+4], ebx
-		mov	[edx+edi+8], ecx
-		mov	[edx+edi+0Ch], ecx
+		mov	[edi+edx], ebx
+		mov	[edi+edx+4], ebx
+		mov	[edi+edx+8], ecx
+		mov	[edi+edx+0Ch], ecx
 		add	edi, edx
 		sub	edi, [ebp-10h]
 		add	esi, 8
@@ -9572,7 +9572,7 @@ _mve_ShowFrameFieldHi:
 		sub	eax, [ebp+1ch]
 		mov	[ebp-0ch], eax
 		mov	eax, _sf_LineWidth
-		cmp	[ebp+24h], 0
+		cmp	[ebp+2Ch], 0
 		jz	short L282
 		add	eax, eax
 
@@ -9589,7 +9589,7 @@ L282:
 		add	[ebp+24h], eax
 		mov	eax, [ebp+0ch]
 		shr	eax, 1
-		cmp	[ebp+24h], 0
+		cmp	[ebp+2Ch], 0
 		jz	short L283
 		cmp	[ebp+14h], eax
 		jb	short L283
@@ -9606,7 +9606,7 @@ L283:
 		add	eax, [ebp+24h]
 		add	eax, [ebp+24h]
 		add	edi, eax
-		test	[ebp+24h], 1
+		test	[ebp+2Ch], 1
 		jz	short L284
 		add	edi, _sf_LineWidth
 
@@ -9643,7 +9643,7 @@ L287:
 		mov	esi, [ebp+8]
 		mov	eax, [ebp-10h]
 		mul	dword ptr [ebp+28h]
-		test	[ebp+24h], 1
+		test	[ebp+2Ch], 1
 		jz	short L288
 		add	eax, _sf_LineWidth
 
@@ -10824,7 +10824,7 @@ _MVE_SetPalette:
 		retn
 
 L392:
-		lea	ebx, [ecx+eax]
+		lea	ebx, [eax+ecx]
 		cmp	ebx, 100h
 		jbe	short L393
 		mov	ecx, 100h
@@ -11019,7 +11019,7 @@ L413:
 
 L414:
 		mov	al, bl
-		mov	ah, [ebx+esi]
+		mov	ah, [esi+ebx]
 		out	dx, ax
 		inc	bl
 		loop	L414
@@ -11047,7 +11047,7 @@ L415:
 		inc	dx
 		in	al, dx
 		dec	dx
-		mov	[ebx+esi], al
+		mov	[esi+ebx], al
 		inc	bl
 		loop	L415
 		pop	ebx
