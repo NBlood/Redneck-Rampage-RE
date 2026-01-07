@@ -8,8 +8,6 @@
 #include "mvelib32.h"
 
 // todo:
-// palMakeSynthPalette
-// gfxSimpleGraphicsSetup
 // MVE_rmStepMovie
 // MVE_frGet
 
@@ -964,29 +962,27 @@ typedef struct {
     unsigned char r, g, b;
 } rgb_t;
 
-static void palMakeSynthPalette(int a1, int a2, int a3, int a4, int a5, int a6) // FIXME
+static void palMakeSynthPalette(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-    int i, j;
-    rgb_t *p;
+    int i;
+    int j;
     rgb_t *pp = (rgb_t*)pal_tbl;
     for (i = 0; i < a2; i++)
     {
         for (j = 0; j < a3; j++)
         {
-            p = &pp[a1 + a3 * i + j];
-            p->r = (i * 63) / (a2 - 1);
-            p->g = 0;
-            p->b = (j * 63) / (a3 - 1) * 5 / 8;
+            pp[a1 + a3 * i + j].r = (i * 63) / (a2 - 1);
+            pp[a1 + a3 * i + j].g = 0;
+            pp[a1 + a3 * i + j].b = (j * 63) / (a3 - 1) * 5 / 8;
         }
     }
     for (i = 0; i < a5; i++)
     {
         for (j = 0; j < a6; j++)
         {
-            p = &pp[a4 + a6 * i + j];
-            p->r = 0;
-            p->g = (i * 63) / (a5 - 1);
-            p->b = (j * 63) / (a6 - 1) * 5 / 8;
+            pp[a4 + a6 * i + j].r = 0;
+            pp[a4 + a6 * i + j].g = (i * 63) / (a5 - 1);
+            pp[a4 + a6 * i + j].b = (j * 63) / (a6 - 1) * 5 / 8;
         }
     }
 }
@@ -1133,7 +1129,7 @@ void gfxSimpleGraphicsSetup(gfxstruct1_t *a1, unsigned int a2, unsigned int a3, 
     a1->f_34 = a1->f_30 + a5;
     a1->f_38 = a12;
     a1->f_3c = a12 + 2;
-    a1->f_40 = a1->f_2c - 2 - a4;
+    a1->f_40 = (a1->f_2c - 2) - a4;
     a1->f_44 = 0x3ff;
     a1->f_48 = 0;
     a1->f_4c = 0;
@@ -1143,12 +1139,7 @@ void gfxSimpleGraphicsSetup(gfxstruct1_t *a1, unsigned int a2, unsigned int a3, 
     a1->f_5c = a8 >> 2;
     a1->f_60 = 1;
     a1->f_64 = 0;
-
-    if (a14 > 240)
-        a1->f_68 = 0;
-    else
-        a1->f_68 = 1;
-
+    a1->f_68 = a14 > 240 ? 0 : 1;
     a1->f_6c = 1;
     a1->f_70 = 1;
     a1->f_74 = 1;
@@ -1605,6 +1596,7 @@ int cdecl MVE_rmStepMovie(void)
     short v12;
     unsigned int v13;
     unsigned int v14;
+#if 0
     mvestruct1_t *t1;
     mvestruct2_t *t2;
     mvestruct3_t *t3;
@@ -1617,6 +1609,7 @@ int cdecl MVE_rmStepMovie(void)
     mvestruct10_t *t10;
     mvestruct11_t *t11;
     mvestruct12_t *t12;
+#endif
 
     v2 = rm_len;
     v6 = rm_p;
@@ -1628,7 +1621,7 @@ int cdecl MVE_rmStepMovie(void)
         sndResume();
         rm_hold = 0;
     }
-    for (; 1; v2 = 0, v6 = ioNextRecord())
+    while(1)
     {
         v3 = 0; v4 = 0;
         if (v6 == 0)
@@ -1646,16 +1639,22 @@ L5:
             case 0:
                 v5 = -1;
                 goto L4;
+            case 1:
+                v2 = 0, v6 = ioNextRecord();
+                break;
             case 2:
-                t2 = (mvestruct2_t*)v6;
+            {
+                mvestruct2_t *t2 = (mvestruct2_t*)v6;
                 if (!syncInit(t2->f_0, t2->f_4))
                 {
                     v5 = -3;
                     goto L1;
                 }
                 goto L5;
+            }
             case 3:
-                t3 = (mvestruct3_t*)v6;
+            {
+                mvestruct3_t *t3 = (mvestruct3_t*)v6;
                 v8 = v7.f_3 >= 1 ? t3->f_2_2 : 0;
                 v9 = t3->f_6;
                 if (v7.f_3 == 0)
@@ -1666,11 +1665,13 @@ L5:
                     goto L1;
                 }
                 goto L5;
+            }
             case 4:
                 sndSync();
                 goto L5;
             case 5:
-                t4 = (mvestruct4_t*)v6;
+            {
+                mvestruct4_t* t4 = (mvestruct4_t*)v6;
                 v13 = v7.f_3 >= 2 ? t4->f_6 : 0;
                 v14 = v7.f_3 >= 1 ? t4->f_4 : 1;
                 if (!nfConfig(t4->f_0, t4->f_2, v14,
@@ -1697,14 +1698,18 @@ L5:
                     goto L1;
                 }
                 goto L5;
+            }
             case 6:
-                t5 = (mvestruct5_t*)v6;
+            {
+                mvestruct5_t *t5 = (mvestruct5_t*)v6;
                 if (t5->f_c & 1)
                     nfAdvance();
                 nfDecomp(t5->f_e, t5->f_4, t5->f_6, t5->f_8, t5->f_a);
                 goto L5;
+            }
             case 7:
-                t6 = (mvestruct6_t*)v6;
+            {
+                mvestruct6_t* t6 = (mvestruct6_t*)v6;
                 v11 = 0;
                 rm_FrameCount++;
                 if (v7.f_3 >= 1)
@@ -1730,9 +1735,11 @@ L5:
                 {
                     sfShowFrame(rm_dx, rm_dy, v11);
                 }
-                if (gfx_page_y[1] == 0 && t6->f_2 && !v3)
+                if (gfx_page_y[1] == 0 && t6->f_2 != 0 && v3 == 0)
                 {
-                    palSetPalette(t6->f_0, t6->f_2);
+                    int y = t6->f_0;
+                    int x = t6->f_2;
+                    palSetPalette(y,x);
                 }
                 else if (gfx_page_y[1] != 0)
                 {
@@ -1751,16 +1758,20 @@ L5:
                 }
 
                 goto L2;
+            }
             case 8:
             case 9:
-                t7 = (mvestruct7_t*)v6;
+            {
+                mvestruct7_t *t7 = (mvestruct7_t*)v6;
                 if (t7->f_2 & rm_track_bit)
                 {
                     sndAdd(v7.f_2 == 8 ? t7->f_6 : 0, t7->f_4);
                 }
                 goto L5;
+            }
             case 10:
-                t8 = (mvestruct8_t*)v6;
+            {
+                mvestruct8_t *t8 = (mvestruct8_t*)v6;
                 if (sf_auto)
                 {
                     v12 = t8->f_4;
@@ -1782,16 +1793,21 @@ L5:
                     sf_auto_mode = v12;
                 }
                 goto L5;
+            }
             case 11:
-                t9 = (mvestruct9_t*)v6;
+            {
+                mvestruct9_t *t9 = (mvestruct9_t*)v6;
                 palMakeSynthPalette(t9->f_0, t9->f_1, t9->f_2, t9->f_3, t9->f_4, t9->f_5);
                 palMakePal15();
                 goto L5;
+            }
             case 12:
-                t10 = (mvestruct10_t*)v6;
+            {
+                mvestruct10_t *t10 = (mvestruct10_t*)v6;
                 palLoadPalette(t10->f_4, t10->f_0, t10->f_2);
                 palMakePal15();
                 goto L5;
+            }
             case 13:
                 palLoadCompPalette(v6);
                 palMakePal15();
@@ -1803,13 +1819,16 @@ L5:
                 v4 = v6;
                 goto L5;
             case 16:
-                t11 = (mvestruct11_t*)v6;
+            {
+                mvestruct11_t *t11 = (mvestruct11_t*)v6;
                 if (t11->f_c & 1)
                     nfAdvance();
                 nfDecompChg(v3, v4, t11->f_e, t11->f_4, t11->f_6, t11->f_8, t11->f_a);
                 goto L5;
+            }
             case 17:
-                t12 = (mvestruct12_t*)v6;
+            {
+                mvestruct12_t* t12 = v6;
                 if (v7.f_3 < 3)
                 {
                     v5 = -8;
@@ -1840,14 +1859,11 @@ L5:
                     nfPkDecomp(v4, t12->f_e, t12->f_4, t12->f_6, t12->f_8, t12->f_a);
                 }
                 goto L5;
-            case 1:
-                break;
+            }
             default:
                 goto L5;
         }
     }
-
-    v5 = -2;
 L1:
     MVE_rmEndMovie();
 L4:
@@ -2085,7 +2101,7 @@ L5:
                 v13 = v7.f_3 >= 2 ? t4->f_6 : 0;
                 v8 = opt_fastmode;
                 opt_fastmode = 0;
-                if (v13 || !nfConfig(t4->f_0, t4->f_2, v7.f_3 >= 1 ? t4->f_4 : 1, 0))
+                if (v13 || !nfConfig(t4->f_0, t4->f_2, v7.f_3 >= 1 ? t4->f_4 : 1, v13))
                 {
                     opt_fastmode = v8;
                     v5 = -5;

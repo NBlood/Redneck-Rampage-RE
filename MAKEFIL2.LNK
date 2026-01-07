@@ -5,7 +5,7 @@ option u
 option caseexact
 option static
 debug all
-name ra
+name REDNECK
 
 # O_o
 file actors2
