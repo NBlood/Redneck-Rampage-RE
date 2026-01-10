@@ -81,7 +81,11 @@ short spawn( short j, short pn )
 
         T1 = T2 = T3 = T4 = T5 = T6 = 0;
 
+#ifdef DEMO
+        if( PN != SPEAKER && PN != DUCK && PN != TARGET && PN != TRIPBOMB && PN != VIEWSCREEN && PN != VIEWSCREEN2 && (CS&48) )
+#else
         if(CS&48)
+#endif
             if( !(PN >= CRACK1 && PN <= CRACK4) )
         {
             if(SS == 127) return i;
@@ -184,6 +188,7 @@ short spawn( short j, short pn )
                         sp->ang = sprite[j].ang;
                 }
                 break;
+#ifndef DEMO
             case RRTILE280:
             case RRTILE281:
             case RRTILE282:
@@ -301,9 +306,12 @@ short spawn( short j, short pn )
                 sp->lotag = 0;
                 changespritestat(i,106);
                 break;
+#endif
             case WATERSPLASH2:
+#ifndef DEMO
             case MUD:
-                if (j >= 0)
+#endif
+                if(j >= 0)
                 {
                     setsprite(i,sprite[j].x,sprite[j].y,sprite[j].z);
                     sp->xrepeat = sp->yrepeat = 8+(TRAND&7);
@@ -335,6 +343,9 @@ short spawn( short j, short pn )
             case DOMELITE:
                 if(sp->picnum != WATERSPLASH2)
                     sp->cstat |= 257;
+#ifdef DEMO
+            case NUKEBUTTON:
+#endif
                 if(sp->picnum == DOMELITE)
                     sp->cstat |= 257;
             case JIBS1:
@@ -346,6 +357,14 @@ short spawn( short j, short pn )
             case DUKETORSO:
             case DUKEGUN:
             case DUKELEG:
+#ifdef DEMO
+            case HEADJIB1:
+            case ARMJIB1:
+            case LEGJIB1:
+            case HULKLEG1:
+            case HULKHEAD1:
+            case HULKARM1:
+#else
             case BILLYJIBA:
             case BILLYJIBB:
             case HULKJIBA:
@@ -401,6 +420,7 @@ short spawn( short j, short pn )
                     sp->yrepeat = 54;
                 }
 #endif
+#endif
                 changespritestat(i,5);
                 break;
             case TONGUE:
@@ -447,7 +467,7 @@ short spawn( short j, short pn )
                 break;
 
             case FRAMEEFFECT1:
-                if (j >= 0)
+                if(j >= 0)
                 {
                     sp->xrepeat = sprite[j].xrepeat;
                     sp->yrepeat = sprite[j].yrepeat;
@@ -459,12 +479,33 @@ short spawn( short j, short pn )
                 else sp->xrepeat = sp->yrepeat = 0;
 
                 changespritestat(i,5);
+
                 break;
 
-            case FORCESPHERE:
-                if (j == -1)
+#ifdef DEMO
+            case LASERLINE:
+                sp->yrepeat = 6;
+                sp->xrepeat = 32;
+
+                if(lasermode == 1)
+                    sp->cstat = 16 + 2;
+                else if(lasermode == 0 || lasermode == 2)
+                    sp->cstat = 16;
+                else
                 {
-                    sp->cstat = (short)32768;
+                    sp->xrepeat = 0;
+                    sp->yrepeat = 0;
+                }
+
+                if(j >= 0) sp->ang = hittype[j].temp_data[5]+512;
+                changespritestat(i,5);
+                break;
+#endif
+
+            case FORCESPHERE:
+                if(j == -1 )
+                {
+                    sp->cstat = (short) 32768;
                     changespritestat(i,2);
                 }
                 else
@@ -475,11 +516,21 @@ short spawn( short j, short pn )
                 break;
 
             case BLOOD:
-                sp->xrepeat = sp->yrepeat = 4;
-                sp->z -= (26<<8);
-                changespritestat(i,5);
-                break;
+#ifdef DEMO
+               sp->xrepeat = sp->yrepeat = 8;
+               sp->z -= (26<<8);
+               if( j >= 0 && sprite[j].pal == 6 )
+                   sp->pal = 6;
+#else
+               sp->xrepeat = sp->yrepeat = 4;
+               sp->z -= (26<<8);
+#endif
+               changespritestat(i,5);
+               break;
             case BLOODPOOL:
+#ifdef DEMO
+            case PUKE:
+#endif
                 {
                     short s1;
                     s1 = sp->sectnum;
@@ -510,13 +561,23 @@ short spawn( short j, short pn )
                     break;
                 }
 
+#ifdef DEMO
+                if(j >= 0 && sp->picnum != PUKE)
+#else
                 if(j >= 0)
+#endif
                 {
                     if( sprite[j].pal == 1)
                         sp->pal = 1;
                     else if( sprite[j].pal != 6 && sprite[j].picnum != NUKEBARREL && sprite[j].picnum != TIRE )
                     {
+#ifdef DEMO
+                        if(sprite[j].picnum == FECES)
+                            sp->pal = 7; // Brown
+                        else sp->pal = 2; // Red
+#else
                         sp->pal = 2; // Red
+#endif
                     }
                     else sp->pal = 0;  // green
 
@@ -524,6 +585,13 @@ short spawn( short j, short pn )
                         sp->shade = 127;
                 }
                 sp->cstat |= 32;
+#ifdef DEMO
+            case FECES:
+                if( j >= 0)
+                    sp->xrepeat = sp->yrepeat = 1;
+                changespritestat(i,5);
+                break;
+#endif
 
             case BLOODSPLAT1:
             case BLOODSPLAT2:
@@ -538,6 +606,37 @@ short spawn( short j, short pn )
                 insertspriteq(i);
                 changespritestat(i,5);
                 break;
+
+#ifdef DEMO
+            case TRIPBOMB:
+                if( sp->lotag > ud.player_skill )
+                {
+                    sp->xrepeat=sp->yrepeat=0;
+                    changespritestat(i,5);
+                    break;
+                }
+
+                sp->xrepeat=4;
+                sp->yrepeat=5;
+
+                sp->owner = i;
+                sp->hitag = i;
+
+                sp->xvel = 16;
+                ssp(i,CLIPMASK0);
+                hittype[i].temp_data[0] = 17;
+                hittype[i].temp_data[2] = 0;
+                hittype[i].temp_data[5] = sp->ang;
+
+            case SPACEMARINE:
+                if(sp->picnum == SPACEMARINE)
+                {
+                    sp->extra = 20;
+                    sp->cstat |= 257;
+                }
+                changespritestat(i,2);
+                break;
+#endif
 
             case HYDRENT:
             case SATELITE:
@@ -566,17 +665,34 @@ short spawn( short j, short pn )
             case BOTTLE17:
             case BOTTLE18:
             case BOTTLE19:
+#ifdef DEMO
+            case OCEANSPRITE1:
+            case OCEANSPRITE2:
+            case OCEANSPRITE3:
+            case OCEANSPRITE5:
+            case MONK:
+            case INDY:
+            case LUKE:
+#endif
             case SCALE:
             case VACUUM:
             case FANSPRITE:
             case CACTUS:
             case CACTUSBROKE:
+#ifdef DEMO
+            case HANGLIGHT:
+            case FETUS:
+            case FETUSBROKE:
+#endif
             case CAMERALIGHT:
             case MOVIECAMERA:
             case IVUNIT:
             case POT1:
             case POT2:
             case POT3:
+#ifdef DEMO
+            case TRIPODCAMERA:
+#endif
             case SUSHIPLATE1:
             case SUSHIPLATE2:
             case SUSHIPLATE3:
@@ -592,6 +708,9 @@ short spawn( short j, short pn )
             case PIPE6:
                 sp->clipdist = 32;
                 sp->cstat |= 257;
+#ifdef DEMO
+            case OCEANSPRITE4:
+#endif
                 changespritestat(i,0);
                 break;
             case FEMMAG1:
@@ -599,8 +718,25 @@ short spawn( short j, short pn )
                 sp->cstat &= ~257;
                 changespritestat(i,0);
                 break;
-
+#ifdef DEMO
+            case MASKWALL1:
+            case MASKWALL2:
+            case MASKWALL3:
+            case MASKWALL4:
+            case MASKWALL5:
+            case MASKWALL6:
             case MASKWALL7:
+            case MASKWALL8:
+            case MASKWALL9:
+            case MASKWALL10:
+            case MASKWALL11:
+            case MASKWALL12:
+            case MASKWALL13:
+            case MASKWALL14:
+            case MASKWALL15:
+#else
+            case MASKWALL7:
+#endif
                 j = sp->cstat&60;
                 sp->cstat = j|1;
                 changespritestat(i,0);
@@ -644,15 +780,38 @@ short spawn( short j, short pn )
                 insertspriteq(i);
                 changespritestat(i,5);
                 break;
+
+#ifdef DEMO
+            case FEM1:
+            case FEM2:
+            case FEM3:
+            case FEM4:
+            case FEM5:
+            case FEM6:
+            case FEM7:
+            case FEM8:
+            case FEM9:
+            case FEM10:
+            case PODFEM1:
+            case NAKED1:
+            case STATUE:
+            case TOUGHGAL:
+#else
             case FEM10:
             case NAKED1:
             case STATUE:
             case TOUGHGAL:
+#endif
                 sp->yvel = sp->hitag;
                 sp->hitag = -1;
+#ifdef DEMO
+                if(sp->picnum == PODFEM1) sp->extra <<= 1;
+            case BLOODYPOLE:
+#endif
             case QUEBALL:
             case STRIPEBALL:
-                if (sp->picnum == QUEBALL || sp->picnum == STRIPEBALL)
+
+                if(sp->picnum == QUEBALL || sp->picnum == STRIPEBALL)
                 {
                     sp->cstat = 256;
                     sp->clipdist = 8;
@@ -662,8 +821,10 @@ short spawn( short j, short pn )
                     sp->cstat |= 257;
                     sp->clipdist = 32;
                 }
+
                 changespritestat(i,2);
                 break;
+#ifndef DEMO
             case BOWLINGBALL:
                 sp->cstat = 256;
                 sp->clipdist = 64;
@@ -746,6 +907,7 @@ short spawn( short j, short pn )
                 sp->yrepeat = 23;
                 changespritestat(i,2);
                 break;
+#endif
             case DUKELYINGDEAD:
                 if(j >= 0 && sprite[j].picnum == APLAYER)
                 {
@@ -754,15 +916,27 @@ short spawn( short j, short pn )
                     sp->shade = sprite[j].shade;
                     sp->pal = ps[sprite[j].yvel].palookup;
                 }
+#ifdef DEMO
+            case DUKECAR:
+            case HELECOPT:
+//                if(sp->picnum == HELECOPT || sp->picnum == DUKECAR) sp->xvel = 1024;
+#endif
                 sp->cstat = 0;
                 sp->extra = 1;
                 sp->xvel = 292;
                 sp->zvel = 360;
             case RESPAWNMARKERRED:
+#ifdef DEMO
+            case BLIMP:
+#endif
                 if(sp->picnum == RESPAWNMARKERRED)
                 {
+#ifdef DEMO
+                    sp->xrepeat = sp->yrepeat = 24;
+#else
                     sp->xrepeat = sp->yrepeat = 8;
-                    if(j >= 0) sp->z = hittype[j].floorz;
+#endif
+                    if(j >= 0) sp->z = hittype[j].floorz; // -(1<<4);
                 }
                 else
                 {
@@ -784,7 +958,13 @@ short spawn( short j, short pn )
                 sp->cstat = 16+(krand()&12);
                 insertspriteq(i);
             case MONEY:
+#ifdef DEMO
+            case MAIL:
+            case PAPER:
+                if( sp->picnum == MONEY || sp->picnum == MAIL || sp->picnum == PAPER )
+#else
                 if(sp->picnum == MONEY)
+#endif
                 {
                     hittype[i].temp_data[0] = TRAND&2047;
                     sp->cstat = TRAND&12;
@@ -793,6 +973,16 @@ short spawn( short j, short pn )
                 }
                 changespritestat(i,5);
                 break;
+
+#ifdef DEMO
+            case VIEWSCREEN:
+            case VIEWSCREEN2:
+                sp->owner = i;
+                sp->lotag = 1;
+                sp->extra = 1;
+                changespritestat(i,6);
+                break;
+#endif
 
             case SHELL: //From the player
             case SHOTGUNSHELL:
@@ -825,18 +1015,23 @@ short spawn( short j, short pn )
                     sp->ang = a-512;
                     sp->xvel = 20;
 
+#ifdef DEMO
+                    sp->xrepeat=sp->yrepeat=4;
+#else
                     if (sp->picnum == SHELL)
                         sp->xrepeat=sp->yrepeat=2;
                     else
                         sp->xrepeat=sp->yrepeat=4;
+#endif
 
                     changespritestat(i,5);
                 }
                 break;
+
             case RESPAWN:
                 sp->extra = 66-13;
             case MUSICANDSFX:
-                if (ud.multimode < 2 && sp->pal == 1)
+                if( ud.multimode < 2 && sp->pal == 1)
                 {
                     sp->xrepeat = sp->yrepeat = 0;
                     changespritestat(i,5);
@@ -845,6 +1040,8 @@ short spawn( short j, short pn )
                 sp->cstat = (short)32768;
                 changespritestat(i,11);
                 break;
+
+#ifndef DEMO
             case SOUNDFX:
                 {
                     short tg;
@@ -854,10 +1051,23 @@ short spawn( short j, short pn )
                     tg = sp->lotag;
                 }
                 break;
+#endif
+
+#ifdef DEMO
+            case EXPLOSION2:
+            case EXPLOSION2BOT:
+            case BURNING:
+            case BURNING2:
+            case SMALLSMOKE:
+            case SHRINKEREXPLOSION:
+            case COOLEXPLOSION1:
+#else
             case EXPLOSION2:
             case EXPLOSION3:
             case BURNING:
             case SMALLSMOKE:
+#endif
+
                 if(j >= 0)
                 {
                     sp->ang = sprite[j].ang;
@@ -865,13 +1075,24 @@ short spawn( short j, short pn )
                     sp->cstat = 128|(TRAND&4);
                 }
 
+#ifdef DEMO
+                if(sp->picnum == EXPLOSION2 || sp->picnum == EXPLOSION2BOT)
+#else
                 if(sp->picnum == EXPLOSION2)
+#endif
                 {
                     sp->xrepeat = 48;
                     sp->yrepeat = 48;
                     sp->shade = -127;
                     sp->cstat |= 128;
                 }
+#ifdef DEMO
+                else if(sp->picnum == SHRINKEREXPLOSION )
+                {
+                    sp->xrepeat = 32;
+                    sp->yrepeat = 32;
+                }
+#else
                 else if(sp->picnum == EXPLOSION3)
                 {
                     sp->xrepeat = 128;
@@ -879,12 +1100,18 @@ short spawn( short j, short pn )
                     sp->shade = -127;
                     sp->cstat |= 128;
                 }
-                else if(sp->picnum == SMALLSMOKE)
+#endif
+                else if( sp->picnum == SMALLSMOKE )
                 {
+                    // 64 "money"
                     sp->xrepeat = 12;
                     sp->yrepeat = 12;
                 }
+#ifdef DEMO
+                else if(sp->picnum == BURNING || sp->picnum == BURNING2)
+#else
                 else if(sp->picnum == BURNING)
+#endif
                 {
                     sp->xrepeat = 4;
                     sp->yrepeat = 4;
@@ -923,20 +1150,20 @@ short spawn( short j, short pn )
                 else
                     changespritestat(i,10);
                 break;
-
             case WATERBUBBLE:
                 if(j >= 0 && sprite[j].picnum == APLAYER)
-                    sp->z-= (16<<8);
-                if(sp->picnum == WATERBUBBLE)
+                    sp->z -= (16<<8);
+                if( sp->picnum == WATERBUBBLE)
                 {
-                    if(j >= 0)
+                    if( j >= 0 )
                         sp->ang = sprite[j].ang;
                     sp->xrepeat = sp->yrepeat = 1+(TRAND&7);
                 }
-                else
-                    sp->xrepeat = sp->yrepeat = 32;
+                else sp->xrepeat = sp->yrepeat = 32;
+
                 changespritestat(i,5);
                 break;
+
             case CRANE:
 
                 sp->cstat |= 64|257;
@@ -980,8 +1207,8 @@ short spawn( short j, short pn )
                 sp->extra = 8;
                 changespritestat(i,6);
                 break;
+
             case WATERDRIP:
-                // TODO: array underflow
                 if(j >= 0 && sprite[j].statnum == 10 || sprite[j].statnum == 1)
                 {
                     sp->shade = 32;
@@ -1002,10 +1229,17 @@ short spawn( short j, short pn )
                 }
             case TRASH:
 
-                if(sp->picnum != WATERDRIP) sp->ang = TRAND&2047;
+                if(sp->picnum != WATERDRIP)
+                    sp->ang = TRAND&2047;
+
+#ifdef DEMO
+            case WATERDRIPSPLASH:
+#endif
 
                 sp->xrepeat = 24;
                 sp->yrepeat = 24;
+
+
                 changespritestat(i,6);
                 break;
 
@@ -1031,14 +1265,36 @@ short spawn( short j, short pn )
             case BOLT1+1:
             case BOLT1+2:
             case BOLT1+3:
+#ifdef DEMO
+            case SIDEBOLT1:
+            case SIDEBOLT1+1:
+            case SIDEBOLT1+2:
+            case SIDEBOLT1+3:
+#endif
                 T1 = sp->xrepeat;
                 T2 = sp->yrepeat;
             case MASTERSWITCH:
-                if(sp->picnum == 8)
+                if(sp->picnum == MASTERSWITCH)
                     sp->cstat |= 32768;
                 sp->yvel = 0;
                 changespritestat(i,6);
                 break;
+#ifdef DEMO
+            case TARGET:
+            case DUCK:
+                sp->extra = 1;
+                sp->cstat |= 257;
+                changespritestat(i,1);
+                break;
+            case BILLYRAYSTAYPUT:
+            case BRAYSNIPER:
+            case HULKSTAYPUT:
+            case HENSTAYPUT:
+            case MINIONSTAYPUT:
+            case COOTSTAYPUT:
+            case BOSS1STAYPUT:
+
+#else
             case BILLYRAYSTAYPUT:
             case BRAYSNIPER:
             case BUBBASTAND:
@@ -1053,7 +1309,63 @@ short spawn( short j, short pn )
 #else
             case SBMOVE:
 #endif
+#endif
                 hittype[i].actorstayput = sp->sectnum;
+#ifdef DEMO
+            case BOSS1:
+            case BOSS2:
+            case BOSS3:
+            case ROTATEGUN:
+            case GREENSLIME:
+                if(sp->picnum == GREENSLIME)
+                    sp->extra = 1;
+            case DRONE:
+            case LIZMAN:
+            case LIZMANSPITTING:
+            case LIZMANFEEDING:
+            case LIZMANJUMP:
+            case ORGANTIC:
+            case RAT:
+            case SHARK:
+            case COOT:
+            case BILLYRAY:
+            case BILLYCOCK:
+            case MINION:
+            case HULK:
+            case COW:
+            case HEN:
+                if( sp->picnum == BOSS1 || sp->picnum == BOSS2 || sp->picnum == BOSS1STAYPUT || sp->picnum == BOSS3 )
+                {
+                    if(j >= 0 && sprite[j].picnum == RESPAWN)
+                        sp->pal = sprite[j].pal;
+                    if(sp->pal)
+                    {
+                        sp->clipdist = 80;
+                        sp->xrepeat = 40;
+                        sp->yrepeat = 40;
+                    }
+                    else
+                    {
+                        sp->xrepeat = 80;
+                        sp->yrepeat = 80;
+                        sp->clipdist = 164;
+                    }
+                }
+                else
+                {
+                    sp->clipdist = 80;
+                    if(sp->picnum != SHARK)
+                    {
+                        sp->xrepeat = 40;
+                        sp->yrepeat = 40;
+                    }
+                    else
+                    {
+                        sp->xrepeat = 60;
+                        sp->yrepeat = 60;
+                    }
+                }
+#else
             case BOULDER:
             case BOULDER1:
             case RAT:
@@ -1096,8 +1408,10 @@ short spawn( short j, short pn )
 #endif
                 sp->xrepeat = 40;
                 sp->yrepeat = 40;
+#endif
                 switch (sp->picnum)
                 {
+#ifndef DEMO
                     case VIXEN:
                         if (sp->pal == 34)
                         {
@@ -1111,6 +1425,7 @@ short spawn( short j, short pn )
                         }
                         sp->clipdist = mulscale7(sp->xrepeat,tilesizx[sp->picnum]);
                         break;
+#endif
                     case HULKHANG:
                     case HULKHANGDEAD:
                     case HULKJUMP:
@@ -1139,7 +1454,9 @@ short spawn( short j, short pn )
                     case BILLYRAY:
                     case BILLYRAYSTAYPUT:
                     case BRAYSNIPER:
+#ifndef DEMO
                     case BUBBASTAND:
+#endif
 #ifdef RRRA
                     case SBSWIPE:
                     case BILLYPLAY:
@@ -1156,6 +1473,12 @@ short spawn( short j, short pn )
                     case HEN:
                     case HENSTAYPUT:
                     case HENSTAND:
+#ifdef DEMO
+                        sp->xrepeat = 21;
+                        sp->yrepeat = 15;
+                        sp->clipdist = mulscale7(sp->xrepeat,tilesizx[sp->picnum]);
+                        sp->clipdist <<= 1;
+#else
                         if(sp->pal == 35)
                         {
                             sp->xrepeat = 42;
@@ -1168,6 +1491,7 @@ short spawn( short j, short pn )
                             sp->yrepeat = 15;
                             sp->clipdist = 64;
                         }
+#endif
                         break;
                     case MINION:
                     case MINIONSTAYPUT:
@@ -1179,6 +1503,7 @@ short spawn( short j, short pn )
                             sp->pal = 8;
 #endif
                         break;
+#ifndef DEMO
                     case DOGRUN:
                     case PIG:
                         sp->xrepeat = 16;
@@ -1310,6 +1635,7 @@ short spawn( short j, short pn )
                         sp->clipdist = mulscale7(sp->xrepeat,tilesizx[sp->picnum]);
                         break;
 #endif
+#endif
 
                     default:
                         break;
@@ -1337,10 +1663,14 @@ short spawn( short j, short pn )
                     {
                         sp->cstat |= 257;
 
-                        if(sp->picnum != 5501)
+                        if(sp->picnum != SHARK)
                             if (actorfella(sp))
                                 ps[myconnectindex].max_actors_killed++;
                     }
+
+#ifdef DEMO
+                    if(sp->picnum == ORGANTIC) sp->cstat |= 128;
+#endif
 
                     if(j >= 0)
                     {
@@ -1350,32 +1680,41 @@ short spawn( short j, short pn )
                     }
                     else changespritestat(i,2);
 
+#ifndef DEMO
                     sp->shade = sprite[j].shade;
+#endif
                 }
 
+#ifdef DEMO
+                if(sp->picnum == ROTATEGUN)
+                    sp->zvel = 0;
+#endif
+
                 break;
+
             case LOCATORS:
-//                sp->xrepeat=sp->yrepeat=0;
                 sp->cstat |= 32768;
                 changespritestat(i,7);
                 break;
-                
+
             case ACTIVATORLOCKED:
             case ACTIVATOR:
-//                sp->xrepeat=sp->yrepeat=0;
                 sp->cstat |= 32768;
                 if (sp->picnum == ACTIVATORLOCKED)
                     sector[sect].lotag ^= 16384;
                 changespritestat(i,8);
                 break;
+
             case DOORSHOCK:
                 sp->cstat |= 1+256;
                 sp->shade = -12;
-
                 changespritestat(i,6);
                 break;
 
             case OOZ:
+#ifdef DEMO
+            case OOZ2:
+#endif
                 sp->shade = -12;
 
                 if(j >= 0)
@@ -1391,6 +1730,7 @@ short spawn( short j, short pn )
                 sp->yrepeat = j;
                 sp->xrepeat = 25-(j>>1);
                 sp->cstat |= (TRAND&4);
+
                 break;
 
             case HEAVYHBOMB:
@@ -1401,7 +1741,7 @@ short spawn( short j, short pn )
             case REACTOR:
             case RECON:
 
-                if (sp->picnum == RECON)
+                if(sp->picnum == RECON)
                 {
                     if( sp->lotag > ud.player_skill )
                     {
@@ -1420,7 +1760,7 @@ short spawn( short j, short pn )
                     }
                     sp->extra = 130;
                 }
-                
+
                 if(sp->picnum == REACTOR || sp->picnum == REACTOR2)
                     sp->extra = impact_damage;
 
@@ -1470,6 +1810,7 @@ short spawn( short j, short pn )
             case FIRSTAID:
             case SIXPAK:
 
+#ifndef DEMO
             case RRTILE43:
             case BOWLINGBALLSPRITE:
 #ifdef RRRA
@@ -1477,18 +1818,24 @@ short spawn( short j, short pn )
             case MOTOAMMO:
             case BOATAMMO:
 #endif
-                if (j >= 0)
+#endif
+                if(j >= 0)
                 {
                     sp->lotag = 0;
+#ifdef DEMO
+                    sp->z -= (32<<8);
+                    sp->zvel = -1024;
+#else
                     if (sp->picnum != BOWLINGBALLSPRITE)
                     {
-                        sp->z -= (32 << 8);
-                        sp->zvel = -(4 << 8);
+                        sp->z -= (32<<8);
+                        sp->zvel = -1024;
                     }
                     else
                     {
                         sp->zvel = 0;
                     }
+#endif
                     ssp(i,CLIPMASK0);
                     sp->cstat = TRAND&4;
                 }
@@ -1509,7 +1856,7 @@ short spawn( short j, short pn )
 
             case ACCESSCARD:
 
-                if (sp->picnum == ATOMICHEALTH)
+                if(sp->picnum == ATOMICHEALTH)
                     sp->cstat |= 128;
 
                 if(ud.multimode > 1 && ud.coop != 1 && sp->picnum == ACCESSCARD)
@@ -1535,10 +1882,12 @@ short spawn( short j, short pn )
                 }
                 switch (sp->picnum)
                 {
+#ifndef DEMO
                 case FIRSTGUNSPRITE:
                     sp->xrepeat = 16;
                     sp->yrepeat = 16;
                     break;
+#endif
                 case SHOTGUNAMMO:
                     sp->xrepeat = 18;
                     sp->yrepeat = 17;
@@ -1558,8 +1907,13 @@ short spawn( short j, short pn )
                     sp->yrepeat = 8;
                     break;
                 case COLA:
+#ifdef DEMO
+                    sp->xrepeat = 8;
+                    sp->yrepeat = 5;
+#else
                     sp->xrepeat = 5;
                     sp->yrepeat = 4;
+#endif
                     break;
                 case AMMO:
                     sp->xrepeat = 9;
@@ -1591,6 +1945,7 @@ short spawn( short j, short pn )
                     sp->xrepeat = 6;
                     sp->yrepeat = 4;
                     break;
+#ifndef DEMO
                 case AIRTANK:
                     sp->xrepeat = 19;
                     sp->yrepeat = 16;
@@ -1647,18 +2002,42 @@ short spawn( short j, short pn )
                     sp->xrepeat = 17;
                     sp->yrepeat = 16;
                     break;
+#endif
                 }
+#ifndef DEMO
                 sp->shade = sector[sp->sectnum].floorshade;
+#endif
                 break;
+
             case WATERFOUNTAIN:
                 SLT = 1;
+
             case TREE1:
             case TREE2:
             case TIRE:
+#ifdef DEMO
+            case CONE:
+#endif
                 CS = 257; // Make it hitable
                 sprite[i].extra = 1;
                 changespritestat(i,6);
                 break;
+
+#ifdef DEMO
+            case FLOORFLAME:
+                sp->shade = -127;
+                changespritestat(i,6);
+                break;
+
+            case BOUNCEMINE:
+                sp->owner = i;
+                sp->cstat |= 1+256; //Make it hitable
+                sp->xrepeat = sp->yrepeat = 24;
+                sp->shade = -127;
+                sp->extra = impact_damage<<2;
+                changespritestat(i,2);
+                break;
+#endif
 
             case CAMERA1:
             case CAMERA1+1:
@@ -1671,6 +2050,10 @@ short spawn( short j, short pn )
                 if(camerashitable) sp->cstat = 257;
                 else sp->cstat = 0;
 
+#ifdef DEMO
+            case GENERICPOLE:
+#endif
+
                 if( ud.multimode < 2 && sp->pal != 0 )
                 {
                     sp->xrepeat = sp->yrepeat = 0;
@@ -1678,7 +2061,11 @@ short spawn( short j, short pn )
                     break;
                 }
                 else sp->pal = 0;
+#ifdef DEMO
+                if(sp->picnum == CAMERAPOLE || sp->picnum == GENERICPOLE) break;
+#else
                 if(sp->picnum == CAMERAPOLE) break;
+#endif
                 sp->picnum = CAMERA1;
                 changespritestat(i,1);
                 break;
@@ -1694,6 +2081,7 @@ short spawn( short j, short pn )
             case CEILINGSTEAM:
                 changespritestat(i,6);
                 break;
+
             case SECTOREFFECTOR:
                 sp->yvel = sector[sect].extra;
                 sp->cstat |= 32768;
@@ -2131,13 +2519,17 @@ short spawn( short j, short pn )
                     case 6:
                     case 14:
                         j = callsound(sect,i);
+#ifdef DEMO
+                        if(j == -1) j = SUBWAY;
+#else
                         if(j == -1)
                         {
                             if (sector[sp->sectnum].floorpal == 7)
                                 j = 456;
                             else
-                                j = 75;
+                                j = SUBWAY;
                         }
+#endif
                         hittype[i].lastvx = j;
                     case 30:
                         if(numplayers > 1) break;
@@ -2172,6 +2564,7 @@ short spawn( short j, short pn )
 
                 break;
 
+
             case SEENINE:
             case OOZFILTER:
 
@@ -2192,8 +2585,23 @@ short spawn( short j, short pn )
             case CRACK2:
             case CRACK3:
             case CRACK4:
+#ifdef DEMO
+            case FIREEXT:
+                if(sp->picnum == FIREEXT)
+                {
+                    sp->cstat = 257;
+                    sp->extra = impact_damage<<2;
+                }
+                else
+                {
+                    sp->cstat |= 17;
+                    sp->extra = 1;
+                }
+#else
                 sp->cstat |= 17;
                 sp->extra = 1;
+#endif
+
                 if( ud.multimode < 2 && sp->pal != 0)
                 {
                     sp->xrepeat = sp->yrepeat = 0;
@@ -2287,6 +2695,7 @@ short spawn( short j, short pn )
                 sp->shade = -16;
                 changespritestat(i,6);
                 break;
+#ifndef DEMO
             case RRTILE63:
                 sp->cstat |= 32768;
                 sp->xrepeat = 1;
@@ -2294,6 +2703,7 @@ short spawn( short j, short pn )
                 sp->clipdist = 1;
                 changespritestat(i,100);
                 break;
+#endif
     }
     return i;
 }

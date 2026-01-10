@@ -138,6 +138,7 @@ int gametext(int x,int y,char *t,char s)
     return (x);
 }
 
+#ifndef DEMO
 int gametext2(int x,int y,char *t,char s)
 {
     short ac,newx;
@@ -186,6 +187,7 @@ int gametext2(int x,int y,char *t,char s)
 
     return (x);
 }
+#endif
 
 int gametextpal(int x,int y,char *t,char s,char p)
 {
@@ -1040,13 +1042,31 @@ void check_fta_sounds(short i)
 #endif
             spritesound(PRED_RECOG, i);
             break;
+#ifdef DEMO
+        case LIZMAN:
+        case LIZMANSPITTING:
+        case LIZMANFEEDING:
+        case LIZMANJUMP:
+#else
         case LTH: // LIZMAN
+#endif
             break;
         case BILLYCOCK:
         case BILLYRAY:
         case BRAYSNIPER: // PIGCOP
             spritesound(PIG_RECOG, i);
             break;
+#ifdef DEMO
+        case HULK:
+        case HEN:
+        case RECON:
+        case MINION:
+        case DRONE:
+        case ORGANTIC:
+        case GREENSLIME:
+        case COW:
+            break;
+#else
         case DOGRUN:
         case HULK:
         case HEN:
@@ -1060,6 +1080,7 @@ void check_fta_sounds(short i)
         case RABBIT:
 #endif
             break;
+#endif
     }
 }
 

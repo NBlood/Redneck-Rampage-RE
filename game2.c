@@ -61,6 +61,34 @@ short actorfella(spritetype *s)
 {
     switch (s->picnum)
     {
+#ifdef DEMO
+        case SHARK:
+        case RECON:
+        case DRONE:
+        case COOT:
+        case COOTSTAYPUT:
+        case BILLYRAY:
+        case EGG:
+        case BILLYRAYSTAYPUT:
+        case BILLYCOCK:
+        case BRAYSNIPER:
+        case LIZMAN:
+        case LIZMANSPITTING:
+        case LIZMANFEEDING:
+        case LIZMANJUMP:
+        case ORGANTIC:
+        case BOSS1:
+        case BOSS2:
+        case BOSS3:
+        case GREENSLIME:
+        case RAT:
+        case ROTATEGUN:
+        case HULK:
+        case HULKSTAYPUT:
+        case HULKJUMP:
+        case MINION:
+        case MINIONSTAYPUT:
+#else
         case BOULDER:
         case BOULDER1:
         case EGG:
@@ -111,6 +139,7 @@ short actorfella(spritetype *s)
         case UFO4:
         case UFO5:
 #endif
+#endif
             return 1;
     }
     return 0;
@@ -122,6 +151,34 @@ short badguy(spritetype *s)
 
     switch(s->picnum)
     {
+#ifdef DEMO
+            case SHARK:
+            case RECON:
+            case DRONE:
+            case COOT:
+            case COOTSTAYPUT:
+            case BILLYRAY:
+            case EGG:
+            case BILLYRAYSTAYPUT:
+            case BILLYCOCK:
+            case BRAYSNIPER:
+            case LIZMAN:
+            case LIZMANSPITTING:
+            case LIZMANFEEDING:
+            case LIZMANJUMP:
+            case ORGANTIC:
+            case BOSS1:
+            case BOSS2:
+            case BOSS3:
+            case GREENSLIME:
+            case RAT:
+            case ROTATEGUN:
+            case HULK:
+            case HULKSTAYPUT:
+            case HULKJUMP:
+            case MINION:
+            case MINIONSTAYPUT:
+#else
             case BOULDER:
             case BOULDER1:
             case EGG:
@@ -171,6 +228,7 @@ short badguy(spritetype *s)
             case UFO4:
             case UFO5:
 #endif
+#endif
                 return 1;
     }
     if( actortype[s->picnum] ) return 1;
@@ -184,6 +242,34 @@ short badguypic(short pn)
 
     switch(pn)
     {
+#ifdef DEMO
+            case SHARK:
+            case RECON:
+            case DRONE:
+            case COOT:
+            case COOTSTAYPUT:
+            case BILLYRAY:
+            case EGG:
+            case BILLYRAYSTAYPUT:
+            case BILLYCOCK:
+            case BRAYSNIPER:
+            case LIZMAN:
+            case LIZMANSPITTING:
+            case LIZMANFEEDING:
+            case LIZMANJUMP:
+            case ORGANTIC:
+            case BOSS1:
+            case BOSS2:
+            case BOSS3:
+            case GREENSLIME:
+            case RAT:
+            case ROTATEGUN:
+            case HULK:
+            case HULKSTAYPUT:
+            case HULKJUMP:
+            case MINION:
+            case MINIONSTAYPUT:
+#else
             case BOULDER:
             case BOULDER1:
             case EGG:
@@ -231,6 +317,7 @@ short badguypic(short pn)
             case UFO3:
             case UFO4:
             case UFO5:
+#endif
 #endif
                 return 1;
     }
@@ -435,6 +522,8 @@ void rdmyospal(long x, long y, short tilenum, signed char shade, char orientatio
     rotatesprite(x<<16,y<<16,36700L,a,tilenum,shade,p,2|orientation,windowx1,windowy1,windowx2,windowy2);
 
 }
+
+#ifndef DEMO
 void rd2myospal(long x, long y, short tilenum, signed char shade, char orientation, char p)
 {
     char fp;
@@ -464,6 +553,7 @@ void rd3myospal(long x, long y, short tilenum, signed char shade, char orientati
     rotatesprite(x<<16,y<<16,47040L,a,tilenum,shade,p,2|orientation,windowx1,windowy1,windowx2,windowy2);
 
 }
+#endif
 
 void invennum(long x,long y,char num1,char ha,char sbits)
 {
@@ -786,6 +876,7 @@ void displayfragbar(void)
     }
 }
 
+#ifndef DEMO
 void weaponbar(short snum)
 {
 #ifdef RRRA
@@ -821,6 +912,7 @@ void weaponbar(short snum)
 #endif
     }
 }
+#endif
 
 void coolgaugetext(short snum)
 {
@@ -893,7 +985,11 @@ void coolgaugetext(short snum)
                 case 4: i = p->jetpack_amount/100; j = p->jetpack_on; break;
                 case 5: i = p->heat_amount/12; j = p->heat_on; break;
                 case 6: i = ((p->scuba_amount+63)>>6); break;
+#ifdef DEMO
+                case 7: i = (p->boot_amount>>1); break;
+#else
                 case 7: i = ((p->boot_amount/10)>>2); break;
+#endif
             }
             invennum(254-o+8,200-6,(char)i,0,10+permbit);
         }
@@ -956,8 +1052,10 @@ void coolgaugetext(short snum)
         patchstatusbar(0,0,320,200);
         if (ud.multimode > 1 && ud.coop != 1)
             rotatesprite(277<<16,(200-27)<<16,65536L,0,KILLSICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
+#ifndef DEMO
         if (ud.screen_size > 8)
             weaponbar(snum);
+#endif
     }
     if (ud.multimode > 1 && ud.coop != 1)
     {
@@ -994,6 +1092,7 @@ void coolgaugetext(short snum)
         {
             if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
             digitalnumber(107,200-17,p->ammo_amount[i],-16,10+16+128);
+#ifndef DEMO
             if (ud.screen_size > 8)
             {
                 if (p->curr_weapon == RPG_WEAPON || p->curr_weapon == HANDBOMB_WEAPON)
@@ -1037,6 +1136,7 @@ void coolgaugetext(short snum)
                     }
                 }
             }
+#endif
         }
     }
 
@@ -1069,7 +1169,11 @@ void coolgaugetext(short snum)
                     rotatesprite((183-o)<<16,(200-22)<<16,32768L,0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
                 else
                     rotatesprite((183-o)<<16,(200-21)<<16,32768L,0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
+#ifdef DEMO
+                if (p->inven_icon >= 6) minitext(201-o,180,"AUTO",2,10+16+permbit);
+#else
                 if (p->inven_icon == 6 || p->inven_icon == 7) minitext(201-o,180,"AUTO",2,10+16+permbit);
+#endif
             }
             if (u&(2048+4096))
             {
@@ -1091,7 +1195,11 @@ void coolgaugetext(short snum)
                     case 4: i = p->jetpack_amount/100; break;
                     case 5: i = p->heat_amount/12; break;
                     case 6: i = ((p->scuba_amount+63)>>6); break;
+#ifdef DEMO
+                    case 7: i = (p->boot_amount>>1); break;
+#else
                     case 7: i = ((p->boot_amount/10)>>1); break;
+#endif
                 }
                 invennum(206-o,200-6,(char)i,0,10+permbit);
             }
@@ -1239,6 +1347,14 @@ void operatefta(void)
         }
         else k = 0;
 
+#ifdef DEMO
+        if( ps[screenpeek].ftq == 115 || ps[screenpeek].ftq == 116 )
+        {
+            if(ud.screen_size > 0) k = 200-50;
+            else k = 200-8;
+        }
+#endif
+
         gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0);
     }
 }
@@ -1272,7 +1388,11 @@ void showtwoscreens(void)
         getpackets();
         if (ready2send != 0)
             return;
+#ifdef DEMO
+        playanm("in_03.anm", 5);
+#else
         playanm("in_03.anm", 5, 3);
+#endif
         totalclock = 0;
         while (!KB_KeyWaiting());
         KB_FlushKeyboardQueue();
@@ -1282,7 +1402,11 @@ void showtwoscreens(void)
         getpackets();
         if (ready2send != 0)
             return;
+#ifdef DEMO
+        playanm("in_04.anm", 5);
+#else
         playanm("in_04.anm", 5, 3);
+#endif
         totalclock = 0;
         while (!KB_KeyWaiting());
         KB_FlushKeyboardQueue();
@@ -1325,17 +1449,26 @@ void gameexit(char *t)
     if(playerswhenstarted > 1 && ud.coop != 1 && *t == ' ')
     {
         dobonus(1);
+#ifdef DEMO
+        setgamemode();
+#else
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight);
+#endif
     }
 
     if( *t != 0 && *(t+1) != 'V' && *(t+1) != 'Y' && playonten == 0 )
         showtwoscreens();
 
+#ifdef DEMO
+    cd_uninit();
+#endif
     Shutdown();
+#ifndef DEMO
 #ifdef RRRA
     if (numplayers < 2)
 #endif
     shutdowncdrom();
+#endif
 
     if(*t != 0)
     {
@@ -1423,6 +1556,9 @@ short strget(short x,short y,char *t,short dalen,short c)
     }
     else x = gametext(x,y,t,c);
     c = 4-(sintable[(totalclock<<4)&2047]>>11);
+#ifdef DEMO
+    rotatesprite((x+8)<<16,(y+4)<<16,13107L,0,SPINNINGNUKEICON+((totalclock>>3)%7),c,0,2+8,0,0,xdim-1,ydim-1);
+#endif
 
     return (0);
 }

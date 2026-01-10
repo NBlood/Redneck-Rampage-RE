@@ -929,8 +929,8 @@ int probe(int x,int y,int i,int n, int t)
 //        rotatesprite(((320>>1)+(centre)+54)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
 //        rotatesprite(((320>>1)-(centre)-54)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
 
-        rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGNUKEICON+15-((15+(totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
-        rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGNUKEICON+((totalclock>>3)%16),sh,0,10,0,0,xdim-1,ydim-1);
+        rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGHEAD+15-((15+(totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
+        rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGHEAD+((totalclock>>3)%16),sh,0,10,0,0,xdim-1,ydim-1);
     }
     else
     {
@@ -938,12 +938,12 @@ int probe(int x,int y,int i,int n, int t)
         {
         case 1:
         case 2:
-            rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGNUKEICON+(((totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
+            rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGHEAD+(((totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
             break;
         case 3:
             break;
         default:
-            rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,6553L,0,SPINNINGNUKEICON+(((totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
+            rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,6553L,0,SPINNINGHEAD+(((totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
             break;
         }
     }

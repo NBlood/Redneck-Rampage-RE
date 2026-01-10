@@ -46,7 +46,11 @@ extern int32 CommandSoundToggleOff;
 extern int32 CommandMusicToggleOff;
 extern char firstdemofile[];
 
-#ifdef RRRA
+#ifdef DEMO
+#define VERSION "0.7"
+#define HEAD   "Redneck Rampage "VERSION" - Moonshine"
+#define HEAD2  "Redneck Rampage "VERSION" - Moonshine"
+#elif defined(RRRA)
 #define VERSION "REL 1.0"
 #define HEAD   "REDNECK RAMPAGE RIDES AGAIN(tm) "VERSION" - KENTUCKY BOURBON EDITION"
 #define HEAD2  "REDNECK RAMPAGE RIDES AGAIN(tm) "VERSION" - KENTUCKY BOURBON EDITION"
@@ -284,7 +288,11 @@ void checkcommandline(int argc,char **argv)
                     case 'L':
                         ud.warp_on = 1;
                         c++;
+#ifdef DEMO
+                        ud.m_level_number = ud.level_number = (atol(c)-1)%11;
+#else
                         ud.m_level_number = ud.level_number = (atol(c)-1)%7;
+#endif
                         break;
                     case 'j':
                     case 'J':
@@ -409,7 +417,76 @@ void Logo(void)
     flushperms();
     nextpage();
 
-#ifdef RRRA
+#ifdef DEMO
+    MUSIC_StopSong();
+    if (!KB_KeyWaiting())
+    {
+        getpackets();
+        if (ready2send)
+            return;
+        sound(195);
+        playanm("iplay.anm",5);
+        totalclock = 0;
+        while (totalclock < 252 && !KB_KeyWaiting())
+        {
+        }
+        KB_FlushKeyboardQueue();
+    }
+    if (!KB_KeyWaiting())
+    {
+        getpackets();
+        if (ready2send)
+            return;
+        playanm("xatlogo.anm",5);
+        totalclock = 0;
+        while (totalclock < 252 && !KB_KeyWaiting())
+        {
+        }
+        KB_FlushKeyboardQueue();
+    }
+    if (!KB_KeyWaiting())
+    {
+        getpackets();
+        if (ready2send)
+            return;
+        playanm("in_01.anm",5);
+        totalclock = 0;
+        if (numplayers > 2)
+        {
+            while (totalclock < 252 && !KB_KeyWaiting())
+            {
+            }
+        }
+        else
+        {
+            while (!KB_KeyWaiting())
+            {
+            }
+        }
+        KB_FlushKeyboardQueue();
+    }
+    if (!KB_KeyWaiting())
+    {
+        getpackets();
+        if (ready2send)
+            return;
+        playanm("in_02.anm",5);
+        totalclock = 0;
+        if (numplayers > 2)
+        {
+            while (totalclock < 252 && !KB_KeyWaiting())
+            {
+            }
+        }
+        else
+        {
+            while (!KB_KeyWaiting())
+            {
+            }
+        }
+        KB_FlushKeyboardQueue();
+    }
+#elif defined(RRRA)
     if (numplayers == 1)
     {
         sub_86730(0);
@@ -514,8 +591,12 @@ void Logo(void)
     }
 #endif
 
+#ifdef DEMO
+    cd_uninit();
+#else
     FX_StopAllSounds();
     clearsoundlocks();
+#endif
     flushperms();
     clearview(0L);
     nextpage();

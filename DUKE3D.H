@@ -220,6 +220,8 @@ extern int wp1,wp2,wp3,wp4;
 
 #ifdef RRRA
 #define MAX_WEAPONS  17
+#elif defined (DEMO)
+#define MAX_WEAPONS  12
 #else
 #define MAX_WEAPONS  13
 #endif
@@ -228,15 +230,26 @@ extern int wp1,wp2,wp3,wp4;
 #define PISTOL_WEAPON        1
 #define SHOTGUN_WEAPON       2
 #define CHAINGUN_WEAPON      3
+#ifdef DEMO
+#define RPG_WEAPON           4
+#define HANDBOMB_WEAPON      5
+#define SHRINKER_WEAPON      6
+#define DEVISTATOR_WEAPON    7
+#define TRIPBOMB_WEAPON      8
+#define FREEZE_WEAPON        9
+#else
 #define HANDBOMB_WEAPON      4
 #define RPG_WEAPON           5
 #define SHRINKER_WEAPON      6
 #define FREEZE_WEAPON        7
 #define TRIPBOMB_WEAPON      8
 #define DEVISTATOR_WEAPON    9
+#endif
 #define HANDREMOTE_WEAPON    10
 #define GROW_WEAPON          11
+#ifndef DEMO
 #define BOWLING_WEAPON       12
+#endif
 #ifdef RRRA
 #define RA13_WEAPON          13
 #define RA14_WEAPON          14
@@ -420,8 +433,12 @@ typedef struct player_struct
     char toggle_key_flag,knuckle_incs; // ,select_dir;
     char walking_snd_toggle, palookup, hard_landing;
     char max_secret_rooms,secret_rooms,/*fire_flag,*/pals[3];
+#ifdef DEMO
+    char max_actors_killed,actors_killed,return_to_center;
+#else
     short max_actors_killed,actors_killed;
     char return_to_center;
+#endif
     short keys[5];
     short at57c; // hbomb_time
     long at57e; // hbomb_offset
@@ -429,7 +446,9 @@ typedef struct player_struct
     short drunkang, eatang, drink_amt, eat;
     long at58e, at592; // drunk, eat timer
     char at596, at597, at598, at599, at59a; // justdrunk, justeat, unused, shotstate[2]
+#ifndef DEMO
     short at59b, at59d; // recoil, yehaa
+#endif
 #ifdef RRRA
     long OnMotorcycle;
     long MotoOnGround;
@@ -646,11 +665,16 @@ extern short chickenplant, thunderon, ufospawn, ufocnt, cdon, hulkspawn, vixenle
 #endif
 
 extern short ambientfx;
+#ifndef DEMO
 extern char shadedsector[MAXSECTORS];
+#endif
 extern short ambienthitag[64];
 extern short ambientlotag[64];
 extern short ambientsprite[64];
 
+#ifdef DEMO
+extern short cdlotrack;
+#else
 extern short lastlevel, turdlevel;
 
 extern long cdTrackStart[101];
@@ -662,6 +686,7 @@ extern char cdhitrack;
 extern char cdlotrack;
 extern char cdDrive;
 extern short cddrives;
+#endif
 
 #ifdef RRRA
 extern long WindTime;

@@ -61,12 +61,23 @@ void animatesprites(long x,long y,short a,long smoothratio)
         switch(t->picnum)
         {
             case BLOODPOOL:
+#ifdef DEMO
+            case PUKE:
+#endif
             case FOOTPRINTS:
             case FOOTPRINTS2:
             case FOOTPRINTS3:
             case FOOTPRINTS4:
                 if(t->shade == 127) continue;
                 break;
+#ifdef DEMO
+            case RESPAWNMARKERRED:
+            case RESPAWNMARKERYELLOW:
+            case RESPAWNMARKERGREEN:
+                if(ud.marker == 0)
+                    t->xrepeat = t->yrepeat = 0;
+                continue;
+#endif
             case CHAIR3:
 
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
@@ -111,8 +122,22 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case NEON5:
             case NEON6:
                 continue;
+#ifdef DEMO
+            case GREENSLIME:
+            case GREENSLIME+1:
+            case GREENSLIME+2:
+            case GREENSLIME+3:
+            case GREENSLIME+4:
+            case GREENSLIME+5:
+            case GREENSLIME+6:
+            case GREENSLIME+7:
+                break;
+#endif
             default:
                 if( ( (t->cstat&16) ) || ( badguy(t) && t->extra > 0) || t->statnum == 10)
+#ifdef DEMO
+                    continue;
+#else
                 {
                     if (shadedsector[s->sectnum] == 1 && s->statnum != 1)
                     {
@@ -121,15 +146,20 @@ void animatesprites(long x,long y,short a,long smoothratio)
                     }
                     continue;
                 }
+#endif
         }
 
         if (sector[t->sectnum].ceilingstat&1)
+#ifdef DEMO
+            l = sector[t->sectnum].ceilingshade;
+#else
         {
             if (badguy(s))
                 l = s->shade;
             else
                 l = s->shade;
         }
+#endif
         else
             l = sector[t->sectnum].floorshade;
 
@@ -156,6 +186,55 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 else
                     t->xrepeat = t->yrepeat = 0;
                 break;
+#ifdef DEMO
+            case FEM1:
+            case FEM2:
+            case FEM3:
+            case FEM4:
+            case FEM5:
+            case FEM6:
+            case FEM7:
+            case FEM8:
+            case FEM9:
+            case FEM10:
+            case NAKED1:
+            case PODFEM1:
+            case FEMMAG1:
+            case FEMMAG2:
+            case FEMPIC1:
+            case FEMPIC2:
+            case FEMPIC3:
+            case FEMPIC4:
+            case FEMPIC5:
+            case FEMPIC6:
+            case FEMPIC7:
+            case BLOODYPOLE:
+            case FEM6PAD:
+            case STATUE:
+            case STATUEFLASH:
+            case OOZ:
+            case OOZ2:
+            case WALLBLOOD1:
+            case WALLBLOOD2:
+            case WALLBLOOD3:
+            case WALLBLOOD4:
+            case WALLBLOOD5:
+            case WALLBLOOD7:
+            case WALLBLOOD8:
+            case SUSHIPLATE1:
+            case SUSHIPLATE2:
+            case SUSHIPLATE3:
+            case SUSHIPLATE4:
+            case FETUS:
+            case FETUSJIB:
+            case FETUSBROKE:
+            case HOTMEAT:
+            case FOODOBJECT16:
+            case DOLPHIN1:
+            case DOLPHIN2:
+            case TOUGHGAL:
+            case TAMPON:
+#else
             case FEM10:
             case NAKED1:
             case FEMMAG1:
@@ -175,6 +254,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case DOLPHIN1:
             case DOLPHIN2:
             case TOUGHGAL:
+#endif
                 if(ud.lockout)
                 {
                     t->xrepeat = t->yrepeat = 0;
@@ -204,6 +284,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
         switch(s->picnum)
         {
+#ifndef DEMO
             case RESPAWNMARKERRED:
             case RESPAWNMARKERYELLOW:
             case RESPAWNMARKERGREEN:
@@ -217,6 +298,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 if (ud.marker == 0)
                     t->xrepeat = t->yrepeat = 0;
                 break;
+#endif
             case DUKELYINGDEAD:
                 s->xrepeat = 24;
                 s->yrepeat = 17;
@@ -230,15 +312,29 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case FOOTPRINTS4:
                 if(t->pal == 6)
                     t->shade = -127;
+#ifdef DEMO
+            case PUKE:
             case MONEY:
             case MONEY+1:
+            case MAIL:
+            case MAIL+1:
+            case PAPER:
+            case PAPER+1:
+#else
+            case MONEY:
+            case MONEY+1:
+#endif
                 if(ud.lockout && s->pal == 2)
                 {
                     t->xrepeat = t->yrepeat = 0;
                     continue;
                 }
                 break;
+#ifdef DEMO
+            case TRIPBOMB:
+#else
             case TRIPBOMBSPRITE:
+#endif
                 continue;
             case FORCESPHERE:
                 if(t->statnum == 5)
@@ -260,6 +356,9 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 }
                 continue;
             case BURNING:
+#ifdef DEMO
+            case BURNING2:
+#endif
                 if( sprite[s->owner].statnum == 10 )
                 {
                     if( display_mirror == 0 && sprite[s->owner].yvel == screenpeek && ps[sprite[s->owner].yvel].over_shoulder_on == 0 )
@@ -278,6 +377,28 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case ATOMICHEALTH:
                 t->z -= (4<<8);
                 break;
+#ifdef DEMO
+            case CRYSTALAMMO:
+                t->shade = (sintable[(totalclock<<4)&2047]>>10);
+                continue;
+            case VIEWSCREEN:
+            case VIEWSCREEN2:
+                if(camsprite >= 0 && hittype[OW].temp_data[0] == 1)
+                {
+                    t->picnum = STATIC;
+                    t->cstat |= (rand()&12);
+                    t->xrepeat += 8;
+                    t->yrepeat += 8;
+                }
+                break;
+
+            case SHRINKSPARK:
+                t->picnum = SHRINKSPARK+( (totalclock>>4)&3 );
+                break;
+            case GROWSPARK:
+                t->picnum = GROWSPARK+( (totalclock>>4)&3 );
+                break;
+#else
             case CRYSTALAMMO:
                 t->shade = (sintable[(totalclock<<4)&2047]>>10);
                 break;
@@ -345,6 +466,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                  else t->cstat &= ~4;
                  t->picnum = EMPTYBOAT+k;
                  break;
+#endif
 #endif
             case RPG:
                  k = getangle(s->x-x,s->y-y);
@@ -433,11 +555,18 @@ void animatesprites(long x,long y,short a,long smoothratio)
                         case HANDREMOTE_WEAPON:
                         case HANDBOMB_WEAPON:    tsprite[spritesortcnt].picnum = HEAVYHBOMB;           break;
                         case TRIPBOMB_WEAPON:    tsprite[spritesortcnt].picnum = TRIPBOMBSPRITE;       break;
+#ifdef DEMO
+                        case SHRINKER_WEAPON:    tsprite[spritesortcnt].picnum = SHRINKERSPRITE;       break;
+                        case GROW_WEAPON:
+                        case FREEZE_WEAPON:      tsprite[spritesortcnt].picnum = FREEZESPRITE;         break;
+                        case DEVISTATOR_WEAPON:  tsprite[spritesortcnt].picnum = DEVISTATORSPRITE;     break;
+#else
                         case BOWLING_WEAPON:     tsprite[spritesortcnt].picnum = 3437;                 break;
                         case SHRINKER_WEAPON:    tsprite[spritesortcnt].picnum = SHRINKSPARK;          break;
                         case GROW_WEAPON:        tsprite[spritesortcnt].picnum = SHRINKSPARK;          break;
                         case FREEZE_WEAPON:      tsprite[spritesortcnt].picnum = DEVISTATORSPRITE;     break;
                         case DEVISTATOR_WEAPON:  tsprite[spritesortcnt].picnum = FREEZESPRITE;         break;
+#endif
                     }
 
                     if(s->owner >= 0)
@@ -574,6 +703,24 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
                 break;
 
+#ifdef DEMO
+            case JIBS1:
+            case JIBS2:
+            case JIBS3:
+            case JIBS4:
+            case JIBS5:
+            case JIBS6:
+            case HEADJIB1:
+            case LEGJIB1:
+            case ARMJIB1:
+            case HULKHEAD1:
+            case HULKARM1:
+            case HULKLEG1:
+            case DUKELEG:
+            case DUKEGUN:
+            case DUKETORSO:
+
+#else
             case MINJIBA:
             case MINJIBB:
             case MINJIBC:
@@ -620,6 +767,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case MAMAJIBA:
             case MAMAJIBB:
 #endif
+#endif
                 if(ud.lockout)
                 {
                     t->xrepeat = t->yrepeat = 0;
@@ -627,8 +775,10 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 }
                 if(t->pal == 6) t->shade = -120;
 
+#ifndef DEMO
                 if (shadedsector[s->sectnum] == 1)
                     t->shade = 16;
+#endif
                 
             case SCRAP1:
             case SCRAP2:
@@ -644,9 +794,16 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case SCRAP6+6:
             case SCRAP6+7:
 
+#ifdef DEMO
+                if(hittype[i].picnum == BLIMP && t->picnum == SCRAP1 && s->yvel >= 0)
+                    t->picnum = s->yvel;
+                else t->picnum += T1;
+                t->shade -= 6;
+#else
                 if(t->picnum == SCRAP1 && s->yvel >= 0)
                     t->picnum = s->yvel;
                 else t->picnum += T1;
+#endif
 
                 if( sector[sect].floorpal )
                     t->pal = sector[sect].floorpal;
@@ -665,7 +822,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 break;
         }
 
-        if( actorscrptr[s->picnum] && (t->cstat & 48) != 48)
+        if( actorscrptr[s->picnum] && (t->cstat&48) != 48 )
         {
             if(t4)
             {
@@ -746,18 +903,23 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 t->cstat |= 4;
         }
 
-#ifndef RRRA
+#if !defined(RRRA) && !defined(DEMO)
         if (s->picnum == SBMOVE)
             t->shade = -127;
 #endif
 
         if( s->statnum == 13 || badguy(s) || (s->picnum == APLAYER && s->owner >= 0) )
             if( (s->cstat&48) == 0 && t->statnum != 99 )
+#ifdef DEMO
+                if(s->picnum != EXPLOSION2 && s->picnum != HANGLIGHT && s->picnum != DOMELITE)
+                    if(s->picnum != HOTMEAT)
+#else
                 if(s->picnum != EXPLOSION2 && s->picnum != DOMELITE)
                     if(s->picnum != TORNADO)
                         if(s->picnum != EXPLOSION3)
 #ifndef RRRA
                             if(s->picnum != SBMOVE)
+#endif
 #endif
         {
             if( hittype[i].dispicnum < 0 )
@@ -805,6 +967,25 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
         switch(s->picnum)
         {
+#ifdef DEMO
+            case LASERLINE:
+                if(sector[t->sectnum].lotag == 2) t->pal = 8;
+                t->z = sprite[s->owner].z-(3<<8);
+                if(lasermode == 2 && ps[screenpeek].heat_on == 0 )
+                    t->yrepeat = 0;
+#endif
+#ifdef DEMO
+            case EXPLOSION2:
+            case EXPLOSION2BOT:
+            case FREEZEBLAST:
+            case ATOMICHEALTH:
+            case FIRELASER:
+            case SHRINKSPARK:
+            case GROWSPARK:
+            case CHAINGUN:
+            case SHRINKEREXPLOSION:
+            case RPG:
+#else
             case EXPLOSION2:
             case FREEZEBLAST:
             case ATOMICHEALTH:
@@ -820,34 +1001,73 @@ void animatesprites(long x,long y,short a,long smoothratio)
             case RPG2:
             case RRTILE1790:
 #endif
+#endif
                 if(t->picnum == EXPLOSION2)
                 {
                     ps[screenpeek].visibility = -127;
                     lastvisinc = totalclock+32;
                     restorepalette = 1;
+#ifndef DEMO
                     t->pal = 0;
+#endif
                 }
+#ifndef DEMO
                 else if(t->picnum == FIRELASER)
                 {
                     t->picnum = FIRELASER+((totalclock>>2)&5);
                 }
+#endif
                 t->shade = -127;
                 break;
+#ifdef DEMO
+            case FLOORFLAME:
+                if (t->picnum >= FLOORFLAME && t->picnum <= 1573 && s->cstat == 8)
+                {
+                    t->z = sector[s->sectnum].ceilingz + (tilesizy[t->picnum] << 8);
+                }
+                t->shade = -127;
+                break;
+#else
             case UFOBEAM:
+#endif
             case RRTILE3586:
             case RRTILE3587:
                 t->cstat |= 32768;
                 s->cstat |= 32768;
                 break;
+#ifdef DEMO
+            case 39:
+                t->cstat |= 32768;
+                s->cstat |= 32768;
+                s->clipdist = 128;
+                break;
+            case FIRE:
+            case FIRE2:
+            case BURNING:
+            case BURNING2:
+#else
             case DESTRUCTO:
                 t->cstat |= 32768;
                 break;
             case FIRE:
             case BURNING:
+#endif
                 if( sprite[s->owner].picnum != TREE1 && sprite[s->owner].picnum != TREE2 )
                     t->z = sector[t->sectnum].floorz;
                 t->shade = -127;
                 break;
+#ifdef DEMO
+            case COOLEXPLOSION1:
+                t->shade = -127;
+                t->picnum += (s->shade>>1);
+                break;
+            case RRTILE2564:
+            case RRTILE2583:
+            case RRTILE2604:
+            case RRTILE2573:
+                t->shade = -127;
+                break;
+#else
             case RRTILE1878:
             case RRTILE1952:
             case RRTILE1953:
@@ -930,6 +1150,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 t->shade = -127;
                 t->picnum = RRTILE2944+((totalclock>>2)&4);
                 break;
+#endif
             case PLAYERONWATER:
 
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
@@ -942,10 +1163,13 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
                 t->picnum = s->picnum+k+((T1<4)*5);
                 t->shade = sprite[s->owner].shade;
+
                 break;
+#ifndef DEMO
             case MUD:
                 t->picnum = MUD+t1;
                 break;
+#endif
             case WATERSPLASH2:
                 t->picnum = WATERSPLASH2+t1;
                 break;

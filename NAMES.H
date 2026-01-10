@@ -176,7 +176,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define W_HITTECHWALL4 206
 #define W_HITTECHWALL2 207
 #define W_HITTECHWALL1 208
+#ifdef DEMO
+#define FANSPRITE 211
+#else
 #define FANSPRITE 210
+#endif
 #define FANSPRITEBROKE 215
 #define FANSHADOW 216
 #define FANSHADOWBROKE 219
@@ -237,7 +241,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define RESPAWNMARKERRED 866
 #define RESPAWNMARKERYELLOW 876
 #define RESPAWNMARKERGREEN 886
-#define SPINNINGNUKEICON 896
+#define SPINNINGHEAD 896
 #define GUTMETER_LIGHT1 920
 #define GUTMETER_LIGHT2 921
 #define GUTMETER_LIGHT3 922
@@ -601,7 +605,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define RRTILE2074 2074
 #define RRTILE2075 2075
 #define RRTILE2083 2083
+#ifdef DEMO
+#define COOLEXPLOSION1 1363
+#else
 #define COOLEXPLOSION1 2095
+#endif
 #define RRTILE2097 2097
 #define RRTILE2121 2121
 #define RRTILE2122 2122
@@ -907,16 +915,23 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define HANDTHROW 3360
 #define SHOTGUNSHELLS 3372
 #define SCUBAMASK 3374
-#define CHAINGUN 3380
 #define SHRINKER 3384
 #define CIRCLESTUCK 3388
 #define SPIT 3390
+#ifdef DEMO
+#define CHAINGUN 1705
+#define GROWSPARK 1636
+#define SHRINKSPARK 1413
+#define FIRELASER 1396
+#else
+#define CHAINGUN 3380
 #define GROWSPARK 3395
 #define SHRINKSPARK 3400
+#define FIRELASER 3420
+#endif
 #define RRTILE3410 3410
 #define LUMBERBLADE 3411
 #define FREEZE 3415
-#define FIRELASER 3420
 #define BOWLINGBALLH 3428
 #define BOWLINGBALL 3430
 #define BOWLINGBALLSPRITE 3437
@@ -976,9 +991,15 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define APLAYER 3845
 #define PLAYERONWATER 3860
 #define DUKELYINGDEAD 3998
+#ifdef DEMO
+#define DUKETORSO 3960
+#define DUKEGUN 3968
+#define DUKELEG 3976
+#else
 #define DUKEGUN 4041
 #define DUKETORSO 4046
 #define DUKELEG 4055
+#endif
 #define FECES 4802
 #define DRONE 4916
 //#define RRTILE4956 4956
@@ -1264,6 +1285,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 // RR bad guys
 #define BOSS1 4477
+#define BOSS1STAYPUT 4478
 #define BOSS2 4557
 #define BOSS3 4607
 #define BOSS4 4221
@@ -1287,7 +1309,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define BILLYGORE 4228
 #define BILLYJIBA 4235
 #define BILLYJIBB 4244
+#ifdef DEMO
+#define BRAYSNIPER 4234
+#else
 #define BRAYSNIPER 4249
+#endif
 #define DOGRUN 4260
 #define DOGDIE 4295
 #define DOGDEAD 4303
@@ -1342,7 +1368,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define MINJIBA 5290
 #define MINJIBB 5295
 #define MINJIBC 5300
+#ifdef DEMO
+#define COW 5261
+#else
 #define COW 5317
+#endif
 #define COOT 5376
 #define COOTSTAYPUT 5377
 #define COOTSHOOT 5411
@@ -1399,3 +1429,26 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define MAMA 8705
 #define MAMAJIBA 8890
 #define MAMAJIBB 8895
+
+#ifdef DEMO
+#define GREENSLIME 1575
+#define SPINNINGNUKEICON 3300
+#define ORGANTIC 3308
+#define LIZMAN 4733
+#define LIZMANSTAYPUT 4734
+#define LIZMANSPITTING 4763
+#define LIZMANFEEDING 4773
+#define LIZMANJUMP 4778
+#define LIZMANDEADSPRITE 4798
+#define COMMANDER 5246
+#define COMMANDERSTAYPUT 5247
+#define OCTABRAIN 5543
+#define OCTABRAINSTAYPUT 5544
+#define HULKHEAD1 4803
+#define HULKARM1 4807
+#define HULKLEG1 4811
+#define HEADJIB1 5461
+#define ARMJIB1 5465
+#define LEGJIB1 5469
+#define SLIME 1161
+#endif

@@ -43,7 +43,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "lava.h"
 
-#ifdef RRRA
+#ifdef DEMO
+#define VERSION "0.7"
+#define HEAD   "Redneck Rampage "VERSION" - Moonshine"
+#define HEAD2  "Redneck Rampage "VERSION" - Moonshine"
+#elif defined(RRRA)
 #define VERSION "REL 1.0"
 #define HEAD   "REDNECK RAMPAGE RIDES AGAIN(tm) "VERSION" - KENTUCKY BOURBON EDITION"
 #define HEAD2  "REDNECK RAMPAGE RIDES AGAIN(tm) "VERSION" - KENTUCKY BOURBON EDITION"
@@ -125,14 +129,22 @@ void cdecl MVE_gfxMode(short);
         MVE_gfxMode(257);
         playmve("REDINT.MVE",argv[0],1);
     }
-#else
+#elif !defined(DEMO)
 
     initcdrom();
 #endif
 
     setvmode(0x03);
 
-#ifdef RRRA
+#ifdef DEMO
+    printstr(0,0,"                                                                                ",79);
+    printstr(40-(strlen(HEAD2)>>1)-3,0,HEAD2,79);
+
+    ud.multimode = 1;
+    printstr(0,1,"                    Copyright Xatrix Entertainment 1997                         ",79);
+
+    printstr(0,2,"              REDNECK RAMPAGE v"VERSION" TEST VERSION.  ALPHA DEMO.                   ",79);
+#elif defined(RRRA)
     printstr(0,0,"                                                                                ",31);
     printstr(40-(strlen(HEAD2)>>1)-3,0,HEAD2,31);
 
@@ -164,6 +176,7 @@ void cdecl MVE_gfxMode(short);
 
     printf("\n\n\n");
 
+#ifndef DEMO
     {
         char c, *wd;
         wd = getenv("windir");
@@ -180,9 +193,15 @@ void cdecl MVE_gfxMode(short);
                 return;
         }
     }
+#endif
 
     initgroupfile("redneck.grp");
     checkcommandline(argc, argv);
+#ifdef DEMO
+    if(movesperpacket == 4)
+        TENtext();
+#endif
+
     RegisterShutdownFunction( Shutdown );
 
     Startup();
@@ -262,14 +281,34 @@ void cdecl MVE_gfxMode(short);
 
         puts("Loadin' palette/lookups.");
 
+#ifdef DEMO
+    if( setgamemode() < 0 )
+    {
+        printf("\nVESA driver for ( %ld * %ld ) not found/supported!\n",xdim,ydim);
+        puts("Continue usin'  default screen setup?");
+        KB_FlushKeyboardQueue();
+        while (!KB_KeyWaiting());
+        if (KB_KeyPressed(sc_N))
+            gameexit("");
+        KB_FlushKeyboardQueue();
+        vidoption = 2;
+        setgamemode();
+    }
+#else
     if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight) < 0 )
     {
         printf("\nVESA driver for ( %ld * %ld ) not found/supported!\n",xdim,ydim);
         vidoption = ScreenMode = 2;
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight);
     }
+#endif
 
     genspriteremaps();
+#ifdef DEMO
+    cd_uninit();
+    if (!ismscdex())
+        gameexit("Yeehaw");
+#endif
 
 #ifdef RRRA
     if (numplayers < 2)
@@ -283,6 +322,10 @@ void cdecl MVE_gfxMode(short);
 
     setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0]);
 
+#ifdef DEMO
+    initlava();
+#endif
+
     ESCESCAPE;
 
 //    getpackets();
@@ -294,7 +337,14 @@ void cdecl MVE_gfxMode(short);
 
 #ifndef RRRA
     if(ud.warp_on == 0)
+#ifdef DEMO
+    {
+        playcdromsong(cdlotrack+1);
         Logo();
+    }
+#else
+        Logo();
+#endif
     else
 #endif
         if(ud.warp_on == 1)
@@ -374,9 +424,21 @@ void cdecl MVE_gfxMode(short);
         else
             i = 65536;
 
+#ifdef DEMO
+        if ((gotpic[SLIME>>3]&(1<<(SLIME&7))) > 0)
+        {
+            gotpic[SLIME>>3] &= ~(1<<(SLIME&7));
+            if (waloff[SLIME] != 0) movelava((char *)waloff[SLIME]);
+        }
+#endif
         if(ud.multimode < 2)
             if(torchcnt)
             dotorch();
+
+#ifdef DEMO
+        if (jaildoorcnt)
+            dojaildoor();
+#endif
 
         displayrooms(screenpeek,i);
         displayrest(i);

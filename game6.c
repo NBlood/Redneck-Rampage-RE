@@ -93,6 +93,35 @@ char cheatquotes[NUMCHEATCODES][14] = {
 char cheatbuf[12],cheatbuflen;
 #else
 #define NUMCHEATCODES 25
+#ifdef DEMO
+char cheatquotes[NUMCHEATCODES][14] = {
+    {"hounddog"},
+    {"all"},
+    {"fuckngo###"},
+    {"yerat"},
+    {"view"},
+    {"time"},
+    {"unlock"},
+    {"cluk"},
+    {"items"},
+    {"rate"},
+    {"skill#"},
+    {"beta"},
+    {"moonshine"},
+    {"monsters"},
+    {"<RESERVED>"},
+    {"<RESERVED>"},
+    {"rafael"},
+    {"showmap"},
+    {"elvis"},
+    {"maxx"},
+    {"clip"},
+    {"guns"},
+    {"inventory"},
+    {"keys"},
+    {"debug"}
+};
+#else
 char cheatquotes[NUMCHEATCODES][14] = {
     {"hounddog"},
     {"all"},
@@ -120,6 +149,7 @@ char cheatquotes[NUMCHEATCODES][14] = {
     {"keys"},
     {"debug"}
 };
+#endif
 
 
 char cheatbuf[10],cheatbuflen;
@@ -128,12 +158,14 @@ void cheats(void)
 {
     short ch, i, j, k, keystate, weapon, key;
 
+#ifndef DEMO
 #ifdef RRRA
     if (ud.m_player_skill > 3 || ps[myconnectindex].nocheat)
 #else
     if (ud.m_player_skill > 3)
 #endif
         return;
+#endif
 
     if( (ps[myconnectindex].gm&MODE_TYPE) || (ps[myconnectindex].gm&MODE_MENU))
         return;
@@ -186,13 +218,21 @@ void cheats(void)
                 switch(k)
                 {
                     case 21:
+#ifdef DEMO
+                        j = 3;
+#else
                         j = 0;
+#endif
 
                         for ( weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS-j;weapon++ )
                         {
                             addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
                             ps[myconnectindex].gotweapon[weapon]  = 1;
                         }
+#ifdef DEMO
+                        addammo(HANDBOMB_WEAPON, &ps[myconnectindex], max_ammo_amount[HANDREMOTE_WEAPON]);
+                        ps[myconnectindex].gotweapon[HANDBOMB_WEAPON] = 1;
+#endif
 #ifdef RRRA
                         ps[myconnectindex].ammo_amount[RA15_WEAPON] = 1;
 #endif
@@ -205,7 +245,11 @@ void cheats(void)
                         KB_FlushKeyboardQueue();
                         ps[myconnectindex].cheat_phase = 0;
                         ps[myconnectindex].steroids_amount =         400;
+#ifdef DEMO
+                        ps[myconnectindex].boot_amount          =    200;
+#else
                         ps[myconnectindex].boot_amount          =    2000;
+#endif
                         ps[myconnectindex].shield_amount =           100;
                         ps[myconnectindex].scuba_amount =            6400;
                         ps[myconnectindex].holoduke_amount =         2400;
@@ -238,16 +282,22 @@ void cheats(void)
                         return;
 
                     case 15:
+#ifdef DEMO
+                        ps[myconnectindex].gm = MODE_EOL;
+#else
                         FTA(52,&ps[myconnectindex]);
+#endif
                         ps[myconnectindex].cheat_phase = 0;
                         KB_FlushKeyboardQueue();
                         return;
 
+#ifndef DEMO
                     case 14:
                         FTA(51,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
                         KB_FlushKeyboardQueue();
                         return;
+#endif
 
                     case 19:
                         FTA(79,&ps[myconnectindex]);
@@ -301,18 +351,40 @@ void cheats(void)
                     case 1:
                         j = 0;
                         for ( weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS-j;weapon++ )
+#ifdef DEMO
+                        {
+                            if (weapon < 3)
+                                ps[myconnectindex].gotweapon[weapon] = 1;
+                            if (weapon == HANDBOMB_WEAPON)
+                                ps[myconnectindex].gotweapon[weapon] = 1;
+                        }
+#else
                            ps[myconnectindex].gotweapon[weapon]  = 1;
+#endif
 
                         for ( weapon = PISTOL_WEAPON;
                               weapon < (MAX_WEAPONS-j);
                               weapon++ )
+#ifdef DEMO
+                        {
+                            if (weapon < 3)
+                                addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
+                            if (weapon == HANDBOMB_WEAPON)
+                                addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
+                        }
+#else
                             addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
+#endif
 #ifdef RRRA
                         ps[myconnectindex].ammo_amount[RA15_WEAPON] = 1;
 #endif
 
                         ps[myconnectindex].steroids_amount =         400;
+#ifdef DEMO
+                        ps[myconnectindex].boot_amount          =    200;
+#else
                         ps[myconnectindex].boot_amount          =    2000;
+#endif
                         ps[myconnectindex].shield_amount =           100;
                         ps[myconnectindex].scuba_amount =            6400;
                         ps[myconnectindex].holoduke_amount =         2400;
@@ -335,7 +407,9 @@ void cheats(void)
                     case 2:
                     case 10:
 
+#ifndef DEMO
                         lastlevel = 0;
+#endif
                         if(k == 2)
                         {
                             short volnume,levnume;
@@ -363,7 +437,9 @@ void cheats(void)
                             }
                             else
                             {
-#ifdef RRRA
+#ifdef DEMO
+                                if(levnume >= 11)
+#elif defined(RRRA)
                                 if(levnume > 7)
 #else
                                 if(levnume >= 8)
@@ -399,6 +475,9 @@ void cheats(void)
                             for(i=connecthead;i>=0;i=connectpoint2[i])
                                 sendpacket(i,tempbuf,11);
                         }
+#ifdef DEMO
+                        else ps[myconnectindex].gm |= MODE_RESTART;
+#else
                         else
                         {
                             ps[myconnectindex].gm |= MODE_RESTART;
@@ -406,6 +485,7 @@ void cheats(void)
                             clearsoundlocks();
                             FX_SetReverb(0);
                         }
+#endif
 
                         ps[myconnectindex].cheat_phase = 0;
                         KB_FlushKeyboardQueue();
@@ -478,7 +558,11 @@ void cheats(void)
                     case 8:
 
                         ps[myconnectindex].steroids_amount =         400;
+#ifdef DEMO
+                        ps[myconnectindex].boot_amount          =    200;
+#else
                         ps[myconnectindex].boot_amount          =    2000;
+#endif
                         ps[myconnectindex].shield_amount =           100;
                         ps[myconnectindex].scuba_amount =            6400;
                         ps[myconnectindex].holoduke_amount =         2400;
@@ -542,6 +626,13 @@ void cheats(void)
                         ps[screenpeek].cheat_phase = 0;
                         KB_FlushKeyboardQueue();
                         return;
+#ifdef DEMO
+                    case 14:
+                        ud.eog = 5;
+                        ps[myconnectindex].gm |= MODE_EOL;
+                        KB_FlushKeyboardQueue();
+                        return;
+#endif
 #ifdef RRRA
                     case 25:
                         OnMotorcycle(&ps[myconnectindex],0);

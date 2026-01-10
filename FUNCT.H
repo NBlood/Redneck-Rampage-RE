@@ -259,6 +259,8 @@ extern void drawoverheadmap(long cposx,long cposy,long czoom,short cang);
 //#line "menues.c" 2685
 #ifdef RRRA
 extern short playanm(char *fn,char,int);
+#elif defined (DEMO)
+extern void playanm(char *fn,char);
 #else
 extern void playanm(char *fn,char,int);
 #endif

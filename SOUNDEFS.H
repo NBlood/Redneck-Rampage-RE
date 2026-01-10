@@ -49,12 +49,21 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define PISTOL_WEAPON    1
 #define SHOTGUN_WEAPON    2
 #define CHAINGUN_WEAPON    3
+#ifdef DEMO
+#define RPG_WEAPON    4
+#define HANDBOMB_WEAPON    5
+#define SHRINKER_WEAPON    6
+#define DEVISTATOR_WEAPON    7
+#define TRIPBOMB_WEAPON    8
+#define FREEZE_WEAPON    9
+#else
 #define HANDBOMB_WEAPON    4
 #define RPG_WEAPON    5
 #define SHRINKER_WEAPON    6
 #define FREEZE_WEAPON    7
 #define TRIPBOMB_WEAPON    8
 #define DEVISTATOR_WEAPON    9
+#endif
 #define HANDREMOTE_WEAPON   10
 #define GROW_WEAPON   11
 #define BOWLING_WEAPON   12

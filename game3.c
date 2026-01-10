@@ -184,7 +184,7 @@ void displayrest(long smoothratio)
         setbrightness(ud.brightness>>2,&pp->palette[0]);
         restorepalette = 0;
     }
-    else if (pp->loogcnt)
+    else if(pp->loogcnt > 0)
     {
     }
 
@@ -238,9 +238,16 @@ void displayrest(long smoothratio)
     {
         if( ud.overhead_on != 2 )
         {
+#ifdef DEMO
+            if(pp->newowner >= 0)
+                cameratext(pp->newowner);
+            else
+#else
             if(pp->newowner < 0)
+#endif
             {
                 displayweapon(screenpeek);
+
                 if(pp->over_shoulder_on == 0 )
                     displaymasks(screenpeek);
             }
@@ -297,6 +304,13 @@ void displayrest(long smoothratio)
 
                 if(ud.overhead_on == 2)
                 {
+#ifdef DEMO
+                    if(ud.screen_size > 0) a = 147;
+                    else a = 182;
+
+                    minitext(1,a+6,volume_names[ud.volume_number],0,2+8+16);
+                    minitext(1,a+12,level_names[ud.volume_number*11 + ud.level_number],0,2+8+16);
+#else
                     a = 0;
                     if (lastlevel)
                         minitext(1,a+6,"CLOSE ENCOUNTERS",0,2+8+16);
@@ -305,6 +319,7 @@ void displayrest(long smoothratio)
                         minitext(1,a+6,volume_names[ud.volume_number],0,2+8+16);
                         minitext(1,a+12,level_names[ud.volume_number*7 + ud.level_number],0,2+8+16);
                     }
+#endif
                 }
         }
     }
@@ -501,7 +516,11 @@ void drawbackground(void)
           for(x=0;x<xdim;x+=128)
                 rotatesprite(x<<16,y<<16,32768L,0,dapicnum,18,0,8+16+64+128,0,y1,xdim-1,y2-1);
 
+#ifdef DEMO
+     if(ud.screen_size > 8)
+#else
      if(ud.screen_size > 12)
+#endif
      {
           y = 0;
           if(ud.coop != 1)
@@ -773,7 +792,11 @@ void displayrooms(short snum,long smoothratio)
 
         if(screencapt)
         {
+#ifdef DEMO
+            walock[MAXTILES-1] = 255;
+#else
             walock[MAXTILES-1] = 199;
+#endif
             if (waloff[MAXTILES-1] == 0)
                 allocache((long *)&waloff[MAXTILES-1],100*160,&walock[MAXTILES-1]);
             setviewtotile(MAXTILES-1,100L,160L);
@@ -1010,9 +1033,17 @@ void displayrooms(short snum,long smoothratio)
         {
             short gs, tgsect, nextspr, geosect, geoid;
             int spr;
+#ifdef DEMO
+            int oldx, oldy, oldz;
+#endif
             drawrooms(cposx, cposy, cposz, cang, choriz, sect);
             animatesprites(cposx,cposy,cang,smoothratio);
             drawmasks();
+#ifdef DEMO
+            oldx = p->posx;
+            oldy = p->posy;
+            oldz = p->posz;
+#endif
             for (gs = 0; gs < geocnt; gs++)
             {
                 tgsect = geosector[gs];
@@ -1030,11 +1061,20 @@ void displayrooms(short snum,long smoothratio)
                     geoid = gs;
                 }
             }
+#ifdef DEMO
+            cposx = p->posx-geox[geoid];
+            cposy = p->posy-geoy[geoid];
+            drawrooms(cposx, cposy, cposz, cang, choriz, sect);
+            cposx = oldx;
+            cposy = oldy;
+            cposz = oldz;
+#else
             cposx -= geox[geoid];
             cposy -= geoy[geoid];
             drawrooms(cposx, cposy, cposz, cang, choriz, sect);
             cposx += geox[geoid];
             cposy += geoy[geoid];
+#endif
             for (gs = 0; gs < geocnt; gs++)
             {
                 tgsect = geosectorwarp[gs];
@@ -1049,6 +1089,7 @@ void displayrooms(short snum,long smoothratio)
             }
             animatesprites(cposx,cposy,cang,smoothratio);
             drawmasks();
+#ifndef DEMO
             for (gs = 0; gs < geocnt; gs++)
             {
                 tgsect = geosector[gs];
@@ -1085,6 +1126,7 @@ void displayrooms(short snum,long smoothratio)
             }
             animatesprites(cposx,cposy,cang,smoothratio);
             drawmasks();
+#endif
         }
         else
         {
@@ -1282,8 +1324,10 @@ char wallswitchcheck(short i)
         case TECHSWITCH+1:
         case DIPSWITCH3:
         case DIPSWITCH3+1:
+#ifndef DEMO
         case NUKEBUTTON:
         case NUKEBUTTON+1:
+#endif
 #ifdef RRRA
         case MULTISWITCH2:
         case MULTISWITCH2+1:

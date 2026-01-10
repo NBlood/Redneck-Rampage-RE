@@ -267,6 +267,7 @@ void resetplayerstats(short snum)
     p->at28a = 0;
     p->at28e = 0;
     p->at290 = 0;
+#ifndef DEMO
     if (ud.multimode > 1 && ud.coop != 1)
     {
         p->keys[0] = 1;
@@ -276,6 +277,7 @@ void resetplayerstats(short snum)
         p->keys[4] = 1;
     }
     else
+#endif
     {
         p->keys[0] = 0;
         p->keys[1] = 0;

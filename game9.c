@@ -132,6 +132,11 @@ char domovethings(void)
 
           closedemowrite();
 
+#ifdef DEMO
+          if (numplayers < 2)
+              sound(GENERIC_AMBIENCE17);
+#endif
+
           pub = NUMPAGES;
           pus = NUMPAGES;
           vscrn();
@@ -193,8 +198,13 @@ char domovethings(void)
         doanimations();
         movefx();               //ST 11
 
+#ifdef DEMO
+        cdromcontrols();
+        thunder();
+#else
         if(numplayers < 2 && thunderon)
             thunder();
+#endif
     }
 
     fakedomovethingscorrect();
@@ -705,7 +715,28 @@ void dobonus(char bonusonly)
     short t, r, tinc,gfx_offset;
     long i, y,xfragtotal,yfragtotal;
     short bonuscnt;
+
+#ifdef DEMO
+    long breathe[] =
+    {
+         0,  30,VICTORY1+1,176,59,
+        30,  60,VICTORY1+2,176,59,
+        60,  90,VICTORY1+1,176,59,
+        90, 120,0         ,176,59
+    };
+
+    long bossmove[] =
+    {
+         0, 120,VICTORY1+3,86,59,
+       220, 260,VICTORY1+4,86,59,
+       260, 290,VICTORY1+5,86,59,
+       290, 320,VICTORY1+6,86,59,
+       320, 350,VICTORY1+7,86,59,
+       350, 380,VICTORY1+8,86,59
+    };
+#else
     short bg_tile;
+#endif
 
     bonuscnt = 0;
 
@@ -725,6 +756,68 @@ void dobonus(char bonusonly)
         switch(ud.volume_number)
     {
         case 0:
+#ifdef DEMO
+            if(ud.lockout == 0)
+            {
+                clearview(0L);
+                rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                nextpage();
+                ps[myconnectindex].palette = endingpal;
+                for(t=63;t>=0;t--) palto(0,0,0,t);
+
+                KB_FlushKeyboardQueue();
+                totalclock = 0; tinc = 0;
+                while( 1 )
+                {
+                    clearview(0L);
+                    rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+
+                    // boss
+                    if( totalclock > 390 && totalclock < 780 )
+                        for(t=0;t<35;t+=5) if( bossmove[t+2] && (totalclock%390) > bossmove[t] && (totalclock%390) <= bossmove[t+1] )
+                    {
+                        if(t==10 && bonuscnt == 1) { sound(SHOTGUN_FIRE);sound(SQUISHED); bonuscnt++; }
+                        rotatesprite(bossmove[t+3]<<16,bossmove[t+4]<<16,65536L,0,bossmove[t+2],0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                    }
+
+                    // Breathe
+                    if( totalclock < 450 || totalclock >= 750 )
+                    {
+                        if(totalclock >= 750)
+                        {
+                            rotatesprite(86<<16,59<<16,65536L,0,VICTORY1+8,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                            if(totalclock >= 750 && bonuscnt == 2) { sound(DUKETALKTOBOSS); bonuscnt++; }
+                        }
+                        for(t=0;t<20;t+=5)
+                            if( breathe[t+2] && (totalclock%120) > breathe[t] && (totalclock%120) <= breathe[t+1] )
+                        {
+                                if(t==5 && bonuscnt == 0)
+                                {
+                                    bonuscnt++;
+                                }
+                                rotatesprite(breathe[t+3]<<16,breathe[t+4]<<16,65536L,0,breathe[t+2],0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                        }
+                    }
+
+                    getpackets();
+                    nextpage();
+                    if( KB_KeyWaiting() ) break;
+                }
+            }
+
+            for(t=0;t<64;t++) palto(0,0,0,t);
+
+            KB_FlushKeyboardQueue();
+            ps[myconnectindex].palette = palette;
+
+            rotatesprite(0,0,65536L,0,3292,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            nextpage(); for(t=63;t>0;t--) palto(0,0,0,t);
+            while( !KB_KeyWaiting() ) getpackets();
+            for(t=0;t<64;t++) palto(0,0,0,t);
+            MUSIC_StopSong();
+            FX_StopAllSounds();
+            clearsoundlocks();
+#else
             MUSIC_StopSong();
             clearview(0L);
             nextpage();
@@ -751,8 +844,33 @@ void dobonus(char bonusonly)
             MUSIC_StopSong();
             FX_StopAllSounds();
             clearsoundlocks();
+#endif
             break;
         case 1:
+#ifdef DEMO
+            MUSIC_StopSong();
+            clearview(0L);
+            nextpage();
+
+            if(ud.lockout == 0)
+            {
+                playanm("cineov2.anm",1);
+                KB_FlushKeyBoardQueue();
+                clearview(0L);
+                nextpage();
+            }
+
+            sound(PIPEBOMB_EXPLODE);
+
+            for(t=0;t<64;t++) palto(0,0,0,t);
+            setview(0,0,xdim-1,ydim-1);
+            KB_FlushKeyboardQueue();
+            ps[myconnectindex].palette = palette;
+            rotatesprite(0,0,65536L,0,3293,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            nextpage(); for(t=63;t>0;t--) palto(0,0,0,t);
+            while( !KB_KeyWaiting() ) getpackets();
+            for(t=0;t<64;t++) palto(0,0,0,t);
+#else
             MUSIC_StopSong();
             clearview(0L);
             nextpage();
@@ -777,10 +895,70 @@ void dobonus(char bonusonly)
             nextpage(); for(t=63;t>0;t--) palto(0,0,0,t);
             while( !KB_KeyWaiting() ) getpackets();
             for(t=0;t<64;t++) palto(0,0,0,t);
+#endif
 
             break;
 
         case 2:
+#ifdef DEMO
+            MUSIC_StopSong();
+            clearview(0L);
+            nextpage();
+            if(ud.lockout == 0)
+            {
+                for(t=63;t>=0;t--) palto(0,0,0,t);
+                playanm("cineov3.anm",2);
+                KB_FlushKeyBoardQueue();
+                ototalclock = totalclock+200;
+                while(totalclock < ototalclock) getpackets();
+                clearview(0L);
+                nextpage();
+
+                FX_StopAllSounds();
+                clearsoundlocks();
+            }
+
+            playanm("RADLOGO.ANM",3);
+
+            if( ud.lockout == 0 && !KB_KeyWaiting() )
+            {
+                sound(ENDSEQVOL3SND5);
+                while(Sound[ENDSEQVOL3SND5].lock>=200);
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND6);
+                while(Sound[ENDSEQVOL3SND6].lock>=200);
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND7);
+                while(Sound[ENDSEQVOL3SND7].lock>=200);
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND8);
+                while(Sound[ENDSEQVOL3SND8].lock>=200);
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND9);
+                while(Sound[ENDSEQVOL3SND9].lock>=200);
+            }
+
+            KB_FlushKeyboardQueue();
+            while(!KB_KeyWaiting()) getpackets();
+
+            ENDANM:
+
+            FX_StopAllSounds();
+            clearsoundlocks();
+
+            KB_FlushKeyboardQueue();
+            clearview(0L);
+            nextpage();
+            sound(ENDSEQVOL3SND4);
+
+            playanm("LNRDTEAM.ANM",4);
+
+            KB_FlushKeyBoardQueue();
+            while(!KB_KeyWaiting()) getpackets();
+            FX_StopAllSounds();
+            clearsoundlocks();
+            KB_FlushKeyBoardQueue();
+#else
             KB_FlushKeyboardQueue();
             while( !KB_KeyWaiting() ) getpackets();
 
@@ -799,6 +977,7 @@ void dobonus(char bonusonly)
             clearsoundlocks();
 
             KB_FlushKeyboardQueue();
+#endif
 
             break;
     }
@@ -820,9 +999,15 @@ void dobonus(char bonusonly)
             sound(249);
 
         rotatesprite(0,0,65536L,0,MENUSCREEN,16,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+#ifdef DEMO
+        rotatesprite(165<<16,32<<16,32768L,0,INGAMEDUKETHREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
+        gametext(160,58,"MULTIPLAYER TOTALS",0);
+        gametext(160,58+10,level_names[(ud.volume_number*11)+ud.last_level-1],0);
+#else
         rotatesprite(160<<16,24<<16,23592L,0,INGAMEDUKETHREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
         gametext(160,58,"MULTIPLAYER TOTALS",0);
         gametext(160,58+10,level_names[(ud.volume_number*7)+ud.last_level-1],0);
+#endif
 
         gametext(160,175,"PRESS ANY KEY TO CONTINUE",0);
 
@@ -832,7 +1017,11 @@ void dobonus(char bonusonly)
         for(i=0;i<playerswhenstarted;i++)
         {
             sprintf(tempbuf,"%-4ld",i+1);
+#ifdef DEMO
+            minitext(92+(i*23),80,tempbuf,3,2+8+16+128);
+#else
             minitext(92+(i*23),80,tempbuf,0,2+8+16+128);
+#endif
         }
 
         for(i=0;i<playerswhenstarted;i++)
@@ -848,7 +1037,11 @@ void dobonus(char bonusonly)
                 if(i == y)
                 {
                     sprintf(tempbuf,"%-4ld",ps[y].fraggedself);
+#ifdef DEMO
+                    minitext(92+(y*23),90+t,tempbuf,2,2+8+16+128);
+#else
                     minitext(92+(y*23),90+t,tempbuf,0,2+8+16+128);
+#endif
                     xfragtotal -= ps[y].fraggedself;
                 }
                 else
@@ -866,7 +1059,11 @@ void dobonus(char bonusonly)
             }
 
             sprintf(tempbuf,"%-4ld",xfragtotal);
+#ifdef DEMO
+            minitext(101+(8*23),90+t,tempbuf,2,2+8+16+128);
+#else
             minitext(101+(8*23),90+t,tempbuf,0,2+8+16+128);
+#endif
 
             t += 7;
         }
@@ -881,10 +1078,18 @@ void dobonus(char bonusonly)
                 yfragtotal += frags[i][y];
             }
             sprintf(tempbuf,"%-4ld",yfragtotal);
+#ifdef DEMO
+            minitext(92+(y*23),96+(8*7),tempbuf,2,2+8+16+128);
+#else
             minitext(92+(y*23),96+(8*7),tempbuf,0,2+8+16+128);
+#endif
         }
 
+#ifdef DEMO
+        minitext(45,96+(8*7),"DEATHS",8,2+8+16+128);
+#else
         minitext(45,96+(8*7),"DEATHS",0,2+8+16+128);
+#endif
         nextpage();
 
         for(t=0;t<64;t++)
@@ -911,6 +1116,14 @@ void dobonus(char bonusonly)
 
     
     gfx_offset = (ud.volume_number&1)*5;
+#ifdef DEMO
+    rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+
+    menutext(160,20-9,0,0,&level_names[(ud.volume_number*11)+ud.last_level-1][0]);
+    menutext(160,36-9,0,0,"COMPLETED");
+
+    gametext(160,192,"PRESS ANY KEY TO CONTINUE",16);
+#else
     bg_tile = RRTILE403;
     if (ud.volume_number == 0)
         bg_tile = ud.level_number+RRTILE403-1;
@@ -937,6 +1150,7 @@ void dobonus(char bonusonly)
     }
 
     endlvlmenutext(15,192,0,0,"PRESS ANY KEY TO CONTINUE");
+#endif
     nextpage();
     KB_FlushKeyboardQueue();
     for(t=0;t<64;t++) palto(0,0,0,63-t);
@@ -947,19 +1161,41 @@ void dobonus(char bonusonly)
     {
         if(ps[myconnectindex].gm&MODE_EOL)
         {
+#ifdef DEMO
+            rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+#else
             if (boardfilename[0])
                 rotatesprite(0,0,65536L,0,403,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
             else
                 rotatesprite(0,0,65536L,0,bg_tile,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+#endif
 
             if( totalclock > (1000000000L) && totalclock < (1000000320L) )
             {
-                switch( ((unsigned long)totalclock>>4)%15 )
+                switch( (totalclock>>4)%15 )
                 {
                     case 0:
                         if(bonuscnt == 6)
                         {
                             bonuscnt++;
+#ifdef DEMO
+                            sound(SHOTGUN_COCK);
+                            switch(rand()&3)
+                            {
+                                case 0:
+                                    sound(BONUS_SPEECH1);
+                                    break;
+                                case 1:
+                                    sound(BONUS_SPEECH2);
+                                    break;
+                                case 2:
+                                    sound(BONUS_SPEECH3);
+                                    break;
+                                case 3:
+                                    sound(BONUS_SPEECH4);
+                                    break;
+                            }
+#else
                             sound(425);
                             switch(rand()&3)
                             {
@@ -976,12 +1212,20 @@ void dobonus(char bonusonly)
                                     sound(199);
                                     break;
                             }
+#endif
                         }
                     case 1:
                     case 4:
                     case 5:
+#ifdef DEMO
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+3+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                        break;
+#endif
                     case 2:
                     case 3:
+#ifdef DEMO
+                       rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+4+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+#endif
                        break;
                 }
             }
@@ -992,12 +1236,24 @@ void dobonus(char bonusonly)
                 {
                     case 1:
                     case 3:
+#ifdef DEMO
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+1+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+#endif
                         break;
                     case 2:
+#ifdef DEMO
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+2+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+#endif
                         break;
                 }
             }
 
+#ifdef DEMO
+            menutext(160,20-9,0,0,&level_names[(ud.volume_number*11)+ud.last_level-1][0]);
+            menutext(160,36-9,0,0,"COMPLETED");
+
+            gametext(160,192,"PRESS ANY KEY TO CONTINUE",16);
+#else
             if (boardfilename[0])
             {
                 rotatesprite(0,0,65536L,0,403,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
@@ -1015,12 +1271,19 @@ void dobonus(char bonusonly)
             }
 
             endlvlmenutext(15,192,0,0,"PRESS ANY KEY TO CONTINUE");
+#endif
 
             if( totalclock > (60*3) )
             {
+#ifdef DEMO
+                gametext(10,59+9,"Your Time:",0);
+                gametext(10,69+9,"Par time:",0);
+                gametext(10,78+9,"Xatrix' Time:",0);
+#else
                 endlvlmenutext(30,48,0,0,"Yer Time:");
                 endlvlmenutext(30,64,0,0,"Par time:");
                 endlvlmenutext(30,80,0,0,"Xatrix Time:");
+#endif
                 if(bonuscnt == 0)
                     bonuscnt++;
 
@@ -1029,8 +1292,28 @@ void dobonus(char bonusonly)
                     if(bonuscnt == 1)
                     {
                         bonuscnt++;
+#ifdef DEMO
+                        sound(PIPEBOMB_EXPLODE);
+#else
                         sound(404);
+#endif
                     }
+#ifdef DEMO
+                    sprintf(tempbuf,"%02ld:%02ld",
+                        (ps[myconnectindex].player_par/(26*60))%60,
+                        (ps[myconnectindex].player_par/26)%60);
+                    gametext((320>>2)+71,60+9,tempbuf,0);
+
+                    sprintf(tempbuf,"%02ld:%02ld",
+                        (partime[ud.volume_number*11+ud.last_level-1]/(26*60))%60,
+                        (partime[ud.volume_number*11+ud.last_level-1]/26)%60);
+                    gametext((320>>2)+71,69+9,tempbuf,0);
+
+                    sprintf(tempbuf,"%02ld:%02ld",
+                        (designertime[ud.volume_number*11+ud.last_level-1]/(26*60))%60,
+                        (designertime[ud.volume_number*11+ud.last_level-1]/26)%60);
+                    gametext((320>>2)+71,78+9,tempbuf,0);
+#else
                     sprintf(tempbuf,"%02ld : %02ld",
                         (ps[myconnectindex].player_par/(26*60))%60,
                         (ps[myconnectindex].player_par/26)%60);
@@ -1048,44 +1331,77 @@ void dobonus(char bonusonly)
                             (designertime[ud.volume_number*7+ud.last_level-1]/26)%60);
                         endlvlmenutext(191,80,0,0,tempbuf);
                     }
+#endif
 
                 }
             }
             if( totalclock > (60*6) )
             {
+#ifdef DEMO
+                gametext(10,94+9,"Enemies Killed:",0);
+                gametext(10,99+4+9,"Enemies Left:",0);
+
+                if(bonuscnt == 2)
+                {
+                    bonuscnt++;
+                    sound(FLY_BY);
+                }
+#else
                 endlvlmenutext(30,112,0,0,"Varmints Killed:");
                 endlvlmenutext(30,128,0,0,"Varmints Left:");
 
                 if(bonuscnt == 2)
                     bonuscnt++;
+#endif
 
                 if( totalclock > (60*7) )
                 {
                     if(bonuscnt == 3)
                     {
                         bonuscnt++;
+#ifdef DEMO
+                        sound(PIPEBOMB_EXPLODE);
+#else
                         sound(422);
+#endif
                     }
                     sprintf(tempbuf,"%-3ld",ps[myconnectindex].actors_killed);
+#ifdef DEMO
+                    gametext((320>>2)+70,93+9,tempbuf,0);
+#else
                     endlvlmenutext(231,112,0,0,tempbuf);
+#endif
                     if(ud.player_skill > 3 )
                     {
                         sprintf(tempbuf,"N/A");
+#ifdef DEMO
+                        gametext((320>>2)+70,99+4+9,tempbuf,0);
+#else
                         endlvlmenutext(231,128,0,0,tempbuf);
+#endif
                     }
                     else
                     {
                         if( (ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed) < 0 )
                             sprintf(tempbuf,"%-3ld",0);
                         else sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
+#ifdef DEMO
+                        gametext((320>>2)+70,99+4+9,tempbuf,0);
+#else
                         endlvlmenutext(231,128,0,0,tempbuf);
+#endif
                     }
                 }
             }
             if( totalclock > (60*9) )
             {
+#ifdef DEMO
+                gametext(10,120+9,"Secrets Found:",0);
+                gametext(10,130+9,"Secrets Missed:",0);
+#else
                 endlvlmenutext(30,144,0,0,"Secrets Found:");
                 endlvlmenutext(30,160,0,0,"Secrets Missed:");
+#endif
                 if(bonuscnt == 4) bonuscnt++;
 
                 if( totalclock > (60*10) )
@@ -1093,14 +1409,26 @@ void dobonus(char bonusonly)
                     if(bonuscnt == 5)
                     {
                         bonuscnt++;
+#ifdef DEMO
+                        sound(PIPEBOMB_EXPLODE);
+#else
                         sound(404);
+#endif
                     }
                     sprintf(tempbuf,"%-3ld",ps[myconnectindex].secret_rooms);
+#ifdef DEMO
+                    gametext((320>>2)+70,120+9,tempbuf,0);
+#else
                     endlvlmenutext(231,144,0,0,tempbuf);
+#endif
                     if( ps[myconnectindex].secret_rooms > 0 )
                         sprintf(tempbuf,"%-3ld%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
                     sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
+#ifdef DEMO
+                    gametext((320>>2)+70,130+9,tempbuf,0);
+#else
                     endlvlmenutext(231,160,0,0,tempbuf);
+#endif
                 }
             }
 
@@ -1127,10 +1455,37 @@ void dobonus(char bonusonly)
         else break;
         nextpage();
     }
+#ifndef DEMO
     if (turdlevel)
         turdlevel = 0;
     if (vixenlevel)
         vixenlevel = 0;
+#endif
+}
+#endif
+
+#ifdef DEMO
+void cameratext(short i)
+{
+    char flipbits;
+    long x , y;
+
+    if(!T1)
+    {
+        rotatesprite(24<<16,33<<16,65536L,0,CAMCORNER,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        rotatesprite((320-26)<<16,34<<16,65536L,0,CAMCORNER+1,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        rotatesprite(22<<16,163<<16,65536L,512,CAMCORNER+1,0,0,2+4,windowx1,windowy1,windowx2,windowy2);
+        rotatesprite((310-10)<<16,163<<16,65536L,512,CAMCORNER+1,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        if(totalclock&16)
+            rotatesprite(46<<16,32<<16,65536L,0,CAMLIGHT,0,0,2,windowx1,windowy1,windowx2,windowy2);
+    }
+    else
+    {
+        flipbits = (totalclock<<1)&48;
+        for(x=0;x<394;x+=64)
+            for(y=0;y<200;y+=64)
+                rotatesprite(x<<16,y<<16,65536L,0,STATIC,0,0,2+flipbits,windowx1,windowy1,windowx2,windowy2);
+    }
 }
 #endif
 
@@ -1195,6 +1550,7 @@ void lotsofglass(short i,short wallnum,short n)
 	 }
 }
 
+#ifndef DEMO
 void lotsofpopcorn(short i,short wallnum,short n)
 {
      long j, xv, yv, z, x1, y1;
@@ -1242,6 +1598,7 @@ void lotsofpopcorn(short i,short wallnum,short n)
           }
      }
 }
+#endif
 
 void spriteglass(short i,short n)
 {

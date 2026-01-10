@@ -1592,7 +1592,7 @@ void menus(void)
 
                 rotatesprite(101<<16,97<<16,65536,512,MAXTILES-1,-32,0,2+4+8+64,0,0,xdim-1,ydim-1);
                 dispnames();
-                rotatesprite((c+67+strlen(&ud.savegame[current_menu-360][0])*4)<<16,(50+12*probey)<<16,3276L,0,SPINNINGNUKEICON+(((totalclock)>>3)%16),0,0,10,0,0,xdim-1,ydim-1);
+                rotatesprite((c+67+strlen(&ud.savegame[current_menu-360][0])*4)<<16,(50+12*probey)<<16,3276L,0,SPINNINGHEAD+(((totalclock)>>3)%16),0,0,10,0,0,xdim-1,ydim-1);
                 //break;
             }
 
