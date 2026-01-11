@@ -59,34 +59,45 @@ void xyzmirror(short i,short wn)
 
 void vscrn(void)
 {
-     long i, j, ss, x1, x2, y1, y2, unk;
+     long i, j, ss, x1, x2, y1, y2;
+#ifndef DEMO
+     long unk;
+#endif
 
 	 if(ud.screen_size < 0) ud.screen_size = 0;
 	 else if(ud.screen_size > 63) ud.screen_size = 64;
 
      if(ud.screen_size == 0) flushperms();
 
+#ifndef DEMO
      if(ud.screen_size == 12)
      {
 	    ss = max(ud.screen_size-10,0);
         unk = 0;
      }
      else
-	    ss = max(ud.screen_size-8,0);
+#endif
+	 ss = max(ud.screen_size-8,0);
 
-
+     
+#ifndef DEMO
      if (ud.screen_size == 12)
          x1 = scale(unk,xdim,160);
      else
-	     x1 = scale(ss,xdim,160);
+#endif
+	 x1 = scale(ss,xdim,160);
 	 x2 = xdim-x1;
 
+#ifdef DEMO
+	 y1 = ss; y2 = 200;
+#else
      if (ud.screen_size == 12)
          y1 = ss = 0;
      else
          y1 = ss;
 
 	 y2 = 200;
+#endif
 
      if ( ud.screen_size > 0 && ud.coop != 1 && ud.multimode > 1)
 	 {
@@ -99,9 +110,13 @@ void vscrn(void)
          if (j >= 8) y1 += 8;
          if (j >= 12) y1 += 8;
 	 }
-
+     
+#ifdef DEMO
+	 if (ud.screen_size >= 8) y2 -= (ss+34);
+#else
 	 if (ud.screen_size == 8) y2 -= (ss+34);
      else if (ud.screen_size > 8) y2-= (ss+42);
+#endif
 
 	 y1 = scale(y1,ydim,200);
 	 y2 = scale(y2,ydim,200);
@@ -229,7 +244,7 @@ void resetplayerstats(short snum)
     p->jetpack_on =         0;
     p->holoduke_on =       -1;
 
-    p->look_ang          = 512 - ((ud.level_number&1)<<10);
+    p->look_ang          = 512-((ud.level_number&1)<<10);
 
     p->rotscrnang        = 0;
     p->newowner          =-1;
@@ -277,14 +292,16 @@ void resetplayerstats(short snum)
         p->keys[4] = 1;
     }
     else
-#endif
     {
-        p->keys[0] = 0;
-        p->keys[1] = 0;
-        p->keys[2] = 0;
-        p->keys[3] = 0;
-        p->keys[4] = 0;
+#endif
+    p->keys[0] = 0;
+    p->keys[1] = 0;
+    p->keys[2] = 0;
+    p->keys[3] = 0;
+    p->keys[4] = 0;
+#ifndef DEMO
     }
+#endif
     wupass = 0;
     p->at582 = 0;
     p->drunkang = 1647;
@@ -300,6 +317,7 @@ void resetplayerstats(short snum)
     p->at59a = 0;
     p->at57c = 0;
     p->at57e = 0;
+#ifndef DEMO
     p->at59b = 0;
     p->at59d = 0;
 #ifdef RRRA
@@ -378,6 +396,7 @@ void resetplayerstats(short snum)
         hulkspawn = 2;
     }
 #endif
+#endif
 }
 
 
@@ -441,6 +460,7 @@ void resetinventory(short snum)
     p->steroids_amount = 0;
     p->inven_icon = 0;
 
+#ifndef DEMO
     if (ud.multimode > 1 && ud.coop != 1)
     {
         p->keys[0] = 1;
@@ -451,12 +471,15 @@ void resetinventory(short snum)
     }
     else
     {
-        p->keys[0] = 0;
-        p->keys[1] = 0;
-        p->keys[2] = 0;
-        p->keys[3] = 0;
-        p->keys[4] = 0;
+#endif
+    p->keys[0] = 0;
+    p->keys[1] = 0;
+    p->keys[2] = 0;
+    p->keys[3] = 0;
+    p->keys[4] = 0;
+#ifndef DEMO
     }
+#endif
 
     p->at582 = 0;
     p->drunkang = 1647;
@@ -472,6 +495,7 @@ void resetinventory(short snum)
     p->at59a = 0;
     p->at57c = 0;
     p->at57e = 0;
+#ifndef DEMO
     p->at59b = 0;
     p->at59d = 0;
     resetlanepics();
@@ -490,6 +514,7 @@ void resetinventory(short snum)
         ufocnt = 0;
         hulkspawn = 2;
     }
+#endif
 }
 
 
@@ -571,6 +596,7 @@ void resetprestat(short snum,char g)
     p->at28e = 0;
     p->at290 = 0;
 
+#ifndef DEMO
     if (ud.multimode > 1 && ud.coop != 1)
     {
         p->keys[0] = 1;
@@ -581,12 +607,15 @@ void resetprestat(short snum,char g)
     }
     else
     {
-        p->keys[0] = 0;
-        p->keys[1] = 0;
-        p->keys[2] = 0;
-        p->keys[3] = 0;
-        p->keys[4] = 0;
+#endif
+    p->keys[0] = 0;
+    p->keys[1] = 0;
+    p->keys[2] = 0;
+    p->keys[3] = 0;
+    p->keys[4] = 0;
+#ifndef DEMO
     }
+#endif
 
     p->at582 = 0;
     p->drunkang = 1647;
@@ -602,6 +631,7 @@ void resetprestat(short snum,char g)
     p->at59a = 0;
     p->at57c = 0;
     p->at57e = 0;
+#ifndef DEMO
     p->at59b = 0;
     p->at59d = 0;
     resetlanepics();
@@ -620,6 +650,7 @@ void resetprestat(short snum,char g)
         ufocnt = 0;
         hulkspawn = 2;
     }
+#endif
 
 }
 
@@ -694,10 +725,12 @@ void cachespritenum(short i)
             for(j = TOILETWATER; j < (TOILETWATER+4); j++)
                 if(waloff[j] == 0) tloadtile(j);
             break;
+#ifndef DEMO
         case RRTILE2121:
         case RRTILE2122:
             if (waloff[j] == 0) tloadtile(j);
             break;
+#endif
         case TOILET:
             tloadtile(TOILETBROKE);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++)
@@ -717,6 +750,68 @@ void cachespritenum(short i)
         case TOILETWATER:
             maxc = 4;
             break;
+#ifdef DEMO
+        case FEMPIC1:
+            maxc = 44;
+            break;
+        case COOT:
+            for(j=COOT;j<(COOT+69);j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            for(j=COOT+103;j<COOT+150;j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            for(j=HEADJIB1;j<LEGJIB1+3;j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            maxc = 0;
+            break;
+        case BILLYRAY:
+            maxc = 144;
+            for(j = BILLYWALK; j < (BILLYWALK+maxc); j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            maxc = 0;
+            break;
+        case WOODENHORSE:
+            maxc = 5;
+            for(j = HORSEONSIDE; j < (HORSEONSIDE+4); j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            break;
+        case BOSS1:
+        case BOSS2:
+        case BOSS3:
+            maxc = 30;
+            break;
+        case RECON:
+            maxc = 13;
+            break;
+        case SHARK:
+            maxc = 30;
+            break;
+        case COW:
+            maxc = 30;
+            for(j = PN; j < (PN+maxc); j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            maxc = 0;
+            break;
+        case HEN:
+        case HENSTAND:
+            maxc = 34;
+            break;
+        case LIZMAN:
+        case LIZMANSPITTING:
+        case LIZMANFEEDING:
+        case LIZMANJUMP:
+            for(j=HULKHEAD1;j<HULKLEG1+3;j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            maxc = 80;
+            break;
+
+#else
         case BUBBASTAND:
             for(j = BUBBASCRATCH; j <= (BUBBASCRATCH+47); j++)
                 if(waloff[j] == 0)
@@ -872,6 +967,7 @@ void cachespritenum(short i)
         case HENSTAND:
             maxc = 34;
             break;
+#endif
         case APLAYER:
             maxc = 0;
             if(ud.multimode > 1)
@@ -880,9 +976,11 @@ void cachespritenum(short i)
                 for(j = APLAYER;j < APLAYER+220; j++)
                     if(waloff[j] == 0)
                         tloadtile(j);
+#ifndef DEMO
                 for(j = DUKEGUN;j < DUKELEG+4; j++)
                     if(waloff[j] == 0)
                         tloadtile(j);
+#endif
             }
             break;
         case ATOMICHEALTH:
@@ -900,6 +998,22 @@ void cachespritenum(short i)
         case CAMERA1:
             maxc = 5;
             break;
+#ifdef DEMO
+        case HULK:
+            maxc = 40;
+            for(j = PN-41; j < PN+maxc-41; j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            maxc = 0;
+            break;
+        case MINION:
+            maxc = 139;
+            for(j = PN; j < PN+maxc; j++)
+                if(waloff[j] == 0)
+                    tloadtile(j);
+            maxc = 0;
+            break;
+#else
         case VIXEN:
             maxc = 214;
             for(j = PN; j < PN+maxc; j++)
@@ -940,6 +1054,7 @@ void cachespritenum(short i)
                     tloadtile(j);
             maxc = 0;
             break;
+#endif
 
 
     }
@@ -967,7 +1082,9 @@ void cachegoodsprites(void)
         }
     }
 
-    //tloadtile(VIEWSCREEN);
+#ifdef DEMO
+    tloadtile(VIEWSCREEN);
+#endif
 
     for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++)
         if (waloff[i] == 0)
@@ -984,6 +1101,12 @@ void cachegoodsprites(void)
     for( i = BURNING; i < BURNING+14; i++)
         if(waloff[i] == 0)
             tloadtile(i);
+
+#ifdef DEMO
+    for( i = BURNING2; i < BURNING2+14; i++)
+        if(waloff[i] == 0)
+            tloadtile(i);
+#endif
 
     for( i = FIRSTGUN; i < FIRSTGUN+10 ; i++ )
         if(waloff[i] == 0)
@@ -1013,6 +1136,7 @@ void cachegoodsprites(void)
         if(waloff[i] == 0)
             tloadtile(i);
 
+#ifndef DEMO
 #ifdef RRRA
     if (ud.volume_number == 0 && ud.level_number == 4)
     {
@@ -1064,11 +1188,19 @@ void cachegoodsprites(void)
         if (waloff[i] == 0)
             tloadtile(i);
     }
+#endif
 }
 
 void prelevel(char g)
 {
-#ifdef RRRA
+#ifdef DEMO
+    short i, nexti, j, startwall, endwall, lotaglist;
+    short lotags[65];
+    short k;
+    int dist;
+    int speed;
+    short sound = 0;
+#elif defined(RRRA)
     short i;
     short lotaglist;
     short j;
@@ -1138,27 +1270,32 @@ void prelevel(char g)
     clearbufbyte(show2dwall,sizeof(show2dwall),0L);
     clearbufbyte(show2dsprite,sizeof(show2dsprite),0L);
 
+#ifndef DEMO
     for (i = 0; i < MAXSECTORS; i++)
         shadedsector[i] = 0;
+#endif
 
     for (i = 0; i < 64; i++)
     {
         geosectorwarp[i] = -1;
         geosectorwarp2[i] = -1;
     }
-    
+
+#ifndef DEMO
     for (i = 0; i < 64; i++)
     {
         ambienthitag[i] = -1;
         ambientlotag[i] = -1;
         ambientsprite[i] = -1;
     }
+#endif
 
     resetprestat(0,g);
     lightnincnt = 0;
     torchcnt = 0;
     geocnt = 0;
     jaildoorcnt = 0;
+#ifndef DEMO
     minecartcnt = 0;
     ambientfx = 0;
     crashcnt = 0;
@@ -1191,11 +1328,14 @@ void prelevel(char g)
         }
     }
 #endif
+#endif
 
     for(i=0;i<numsectors;i++)
     {
+#ifndef DEMO
         if (sector[i].ceilingpicnum == RRTILE2577)
             thunderon = 1;
+#endif
         sector[i].extra = 256;
 
         switch(sector[i].lotag)
@@ -1236,6 +1376,7 @@ void prelevel(char g)
                     }
                 }
                 break;
+#ifndef DEMO
             case 42:
             {
                 short ii;
@@ -1277,6 +1418,7 @@ void prelevel(char g)
                 minecartcnt++;
                 break;
             }
+#endif
             case 20:
             case 22:
                 if( sector[i].floorz > sector[i].ceilingz)
@@ -1294,7 +1436,6 @@ void prelevel(char g)
                             tloadtile(sector[i].ceilingpicnum+j);
             }
             setupbackdrop(sector[i].ceilingpicnum);
-
             if(ps[0].one_parallax_sectnum == -1)
                 ps[0].one_parallax_sectnum = i;
         }
@@ -1325,9 +1466,11 @@ void prelevel(char g)
         }
         else switch(PN)
         {
+#ifndef DEMO
             case NUKEBUTTON:
                 chickenplant = 1;
                 break;
+#endif
 
             case GPSPEED:
                 sector[SECT].extra = SLT;
@@ -1366,6 +1509,7 @@ void prelevel(char g)
                 deletesprite(i);
                 break;
 
+#ifndef DEMO
             case RRTILE68:
                 shadedsector[SECT] = 1;
                 deletesprite(i);
@@ -1389,6 +1533,7 @@ void prelevel(char g)
                     sprite[i].hitag = 0;
                 }
                 break;
+#endif
         }
         i = nexti;
     }
@@ -1397,7 +1542,11 @@ void prelevel(char g)
     {
         if (sprite[i].picnum == RRTILE19)
         {
+#ifdef DEMO
+            if (geocnt > 64 || geocnt2 > 0)
+#else
             if (geocnt > 64)
+#endif
                 gameexit("\nToo many geometry effects");
             if (sprite[i].hitag == 0)
             {
@@ -1448,6 +1597,9 @@ void prelevel(char g)
             deletesprite(i);
         if (sprite[i].picnum == RRTILE34)
         {
+#ifdef DEMO
+            if (numplayers < 2)
+#endif
             sector[sprite[i].sectnum].filler = sprite[i].lotag;
             deletesprite(i);
         }
@@ -1491,10 +1643,12 @@ void prelevel(char g)
             case POWERSWITCH1+1:
             case LOCKSWITCH1+1:
             case POWERSWITCH2+1:
+#ifndef DEMO
             case NUKEBUTTON:
             case NUKEBUTTON+1:
 #ifdef RRRA
             case RRTILE8464+1:
+#endif
 #endif
                 for(j=0;j<lotaglist;j++)
                     if( SLT == lotags[j] )
@@ -1552,14 +1706,37 @@ void prelevel(char g)
 
         switch(wal->overpicnum)
         {
+#ifdef DEMO
+            case FANSHADOW:
+#endif
             case FANSPRITE:
                 wall->cstat |= 65;
                 animwall[numanimwalls].wallnum = i;
                 numanimwalls++;
                 break;
+
+#ifdef DEMO
+            case W_FORCEFIELD:
+                if(waloff[W_FORCEFIELD] == 0)
+                    for(j=0;j<3;j++)
+                        tloadtile(W_FORCEFIELD+j);
+            case W_FORCEFIELD+1:
+            case W_FORCEFIELD+2:
+                if(wal->shade > 31)
+                    wal->cstat = 0;
+                else wal->cstat |= 85+256;
+
+
+                if(wal->lotag && wal->nextwall >= 0)
+                    wall[wal->nextwall].lotag =
+                        wal->lotag;
+#endif
+
             case BIGFORCE:
+
                 animwall[numanimwalls].wallnum = i;
                 numanimwalls++;
+
                 continue;
         }
 
@@ -1573,6 +1750,7 @@ void prelevel(char g)
                         tloadtile(wal->picnum+j);
                 break;
 
+#ifndef DEMO
             case RRTILE1814:
             case RRTILE1817:
                 if(waloff[wal->picnum] == 0)
@@ -1597,21 +1775,72 @@ void prelevel(char g)
                 if(waloff[wal->picnum] == 0)
                     tloadtile(wal->picnum);
                 break;
+#endif
             case TECHLIGHT2:
             case TECHLIGHT4:
                 if(waloff[wal->picnum] == 0)
                     tloadtile(wal->picnum);
                 break;
+#ifdef DEMO
+            case W_TECHWALL1:
+            case W_TECHWALL2:
+            case W_TECHWALL3:
+            case W_TECHWALL4:
+                animwall[numanimwalls].wallnum = i;
+//                animwall[numanimwalls].tag = -1;
+                numanimwalls++;
+                break;
+#endif
             case SCREENBREAK6:
             case SCREENBREAK7:
             case SCREENBREAK8:
                 if(waloff[SCREENBREAK6] == 0)
+#ifdef DEMO
+                    for(j=SCREENBREAK6;j<SCREENBREAK9;j++)
+#else
                     for(j=SCREENBREAK6;j<=SCREENBREAK8;j++)
+#endif
                         tloadtile(j);
                 animwall[numanimwalls].wallnum = i;
                 animwall[numanimwalls].tag = -1;
                 numanimwalls++;
                 break;
+
+#ifdef DEMO
+            case FEMPIC1:
+            case FEMPIC2:
+            case FEMPIC3:
+
+                wal->extra = wal->picnum;
+                animwall[numanimwalls].tag = -1;
+                if(ud.lockout)
+                {
+                    if(wal->picnum == FEMPIC1)
+                        wal->picnum = BLANKSCREEN;
+                    else wal->picnum = SCREENBREAK6;
+                }
+
+                animwall[numanimwalls].wallnum = i;
+                animwall[numanimwalls].tag = wal->picnum;
+                numanimwalls++;
+                break;
+
+            case SCREENBREAK1:
+            case SCREENBREAK2:
+            case SCREENBREAK3:
+            case SCREENBREAK4:
+            case SCREENBREAK5:
+
+            case SCREENBREAK9:
+            case SCREENBREAK10:
+            case SCREENBREAK11:
+            case SCREENBREAK12:
+            case SCREENBREAK13:
+                animwall[numanimwalls].wallnum = i;
+                animwall[numanimwalls].tag = wal->picnum;
+                numanimwalls++;
+                break;
+#endif
         }
     }
 
@@ -1626,6 +1855,13 @@ void prelevel(char g)
             wall[j].overpicnum = MIRROR;
         }
     }
+#ifdef DEMO
+    for (i = 3643; i < 3647; i++)
+        if (waloff[i] == 0)
+            tloadtile(i);
+    tilesizx[0] = tilesizy[0] = 0;
+    tilesizx[39] = tilesizy[39] = 0;
+#else
     if (!thunderon)
     {
         char brightness = ud.brightness>>2;
@@ -1633,6 +1869,7 @@ void prelevel(char g)
         visibility = p->visibility;
     }
     tilesizx[0] = tilesizy[0] = 0;
+#endif
 }
 
 void newgame(char vn,char ln,char sk)
@@ -1642,6 +1879,21 @@ void newgame(char vn,char ln,char sk)
 
     ready2send = 0;
     waitforeverybody();
+
+#ifdef DEMO
+    if(ln == 0 && vn == 3 && ud.multimode < 2 && ud.recstat == 0 && ud.lockout == 0)
+    {
+        playmusic(&env_music_fn[1][0]);
+
+        clearview(0L);
+        nextpage();
+        playanm("vol4a.anm",6);
+        totalclock = 0;
+        while(KB_KeyWaiting() == 0 && totalclock < 600);
+        clearview(0L);
+        nextpage();
+    }
+#endif
 
     if( ud.m_recstat != 2 && ud.last_level >= 0 && ud.multimode > 1 && ud.coop != 1)
 #ifdef RRRA
@@ -1653,8 +1905,10 @@ void newgame(char vn,char ln,char sk)
     }
 #else
         dobonus(1);
+#ifndef DEMO
     if (turdlevel && !lastlevel)
         dobonus(0);
+#endif
 #endif
 
     show_shareware = 26*34;
@@ -1676,6 +1930,9 @@ void newgame(char vn,char ln,char sk)
         p->gotweapon[PISTOL_WEAPON] = 1;
         p->gotweapon[KNEE_WEAPON] = 1;
         p->ammo_amount[PISTOL_WEAPON] = 48;
+#ifdef DEMO
+        p->gotweapon[HANDREMOTE_WEAPON] = 1;
+#endif
 #ifdef RRRA
         p->gotweapon[RA15_WEAPON] = 1;
         p->ammo_amount[RA15_WEAPON] = 1;
@@ -1814,8 +2071,9 @@ void resetpspritevars(char g)
 
             s->yvel = j;
 
-            if (ud.last_level == -1)
+            if(ud.last_level == -1)
             {
+
                 if(s->pal == 0)
                 {
                     s->pal = ps[j].palookup = which_palookup;
@@ -1823,10 +2081,11 @@ void resetpspritevars(char g)
                     which_palookup++;
                     if( which_palookup == 17 ) which_palookup = 9;
                 }
+
                 else ud.user_pals[j] = ps[j].palookup = s->pal;
+
             }
-            else
-                s->pal = ps[j].palookup = ud.user_pals[j];
+            else s->pal = ps[j].palookup = ud.user_pals[j];
 
             ps[j].i = i;
             ps[j].frag_ps = j;
@@ -1927,6 +2186,7 @@ void genspriteremaps(void)
     makepalookup(31,table,0,0,0,1);
     makepalookup(32,table,0,0,0,1);
     makepalookup(33,table,0,0,0,1);
+#ifndef DEMO
 #ifdef RRRA
     makepalookup(105,table,0,0,0,1);
 #endif
@@ -1952,6 +2212,7 @@ void genspriteremaps(void)
     for (j = 16; j < 32; j++)
         table[j] = j + 192;
     makepalookup(35,table,0,0,0,1);
+#endif
 }
 
 char waitabort;
@@ -2113,7 +2374,10 @@ void dofrontscreens(void)
 
         if( boardfilename[0] != 0 && ud.level_number == 7 && ud.volume_number == 0 )
         {
-#ifdef RRRA
+#ifdef DEMO
+            menutext(160,90,0,0,"ENTERING USER MAP");
+            gametextpal(160,90+10,boardfilename,14,2);
+#elif defined(RRRA)
             menutext(160,140,0,0,"ENTERIN' USER MAP");
             menutext(160,140+20,0,0,boardfilename);
 #else
@@ -2121,6 +2385,13 @@ void dofrontscreens(void)
             menutext(160,90+20,0,0,boardfilename);
 #endif
         }
+#ifdef DEMO
+        else
+        {
+            menutext(160,90,0,0,"ENTERING");
+            menutext(160,90+16+8,0,0,level_names[(ud.volume_number*11) + ud.level_number]);
+        }
+#else
         else if(lastlevel)
         {
 #ifdef RRRA
@@ -2141,6 +2412,7 @@ void dofrontscreens(void)
             menutext(160,90+16+8,0,0,level_names[(ud.volume_number*7) + ud.level_number]);
 #endif
         }
+#endif
 
         nextpage();
 
@@ -2155,7 +2427,9 @@ void dofrontscreens(void)
         ps[myconnectindex].palette = palette;
         palto(0,0,0,0);
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,2,0,2+8+64,0,0,xdim-1,ydim-1);
-#ifdef RRRA
+#ifdef DEMO
+        menutext(160,105,0,0,"LOADING");
+#elif defined(RRRA)
         menutext(160,155,0,0,"LOADIN'");
 #else
         menutext(160,105,0,0,"LOADIN'");
@@ -2212,15 +2486,25 @@ void enterlevel(char g)
     ud.marker = ud.m_marker;
     ud.ffire = ud.m_ffire;
 
-    if( (g&MODE_DEMO) == 0 && ud.recstat == 2)
-        ud.recstat = 0;
+    if( (g&MODE_DEMO) == 0 && ud.recstat == 2) ud.recstat = 0;
 
     i = ud.screen_size;
     ud.screen_size = 0;
+
     dofrontscreens();
     vscrn();
     ud.screen_size = i;
 
+#ifdef DEMO
+    if(ud.recstat != 2)
+    {
+        MUSIC_StopSong();
+        music_select = (ud.volume_number*11) + ud.level_number;
+        playmusic(&music_fn[0][music_select][0]);
+    }
+#endif
+
+#ifndef DEMO
     if (lastlevel)
     {
         if ( loadboard( "endgame.map",&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1 )
@@ -2231,22 +2515,31 @@ void enterlevel(char g)
     }
     else
     {
-        if( boardfilename[0] != 0 && ud.m_level_number == 7 && ud.m_volume_number == 0 )
+#endif
+    if( boardfilename[0] != 0 && ud.m_level_number == 7 && ud.m_volume_number == 0 )
+    {
+        if ( loadboard( boardfilename,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
         {
-            if ( loadboard( boardfilename,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1 )
-            {
-                sprintf(tempbuf,"Map %s not found!",boardfilename);
-                gameexit(tempbuf);
-            }
-        }
-        else if ( loadboard( level_file_names[ (ud.volume_number*7)+ud.level_number],&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
-        {
-            sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*8)+ud.level_number]);
+            sprintf(tempbuf,"Map %s not found!",boardfilename);
             gameexit(tempbuf);
         }
     }
+#ifdef DEMO
+    else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
+    {
+        sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
+        gameexit(tempbuf);
+    }
+#else
+    else if ( loadboard( level_file_names[ (ud.volume_number*7)+ud.level_number],&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
+    {
+        sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*8)+ud.level_number]);
+        gameexit(tempbuf);
+    }
+    }
+#endif
 
-#ifndef RRRA
+#if !defined(RRRA) && !defined(DEMO)
     if (ud.volume_number == 1 && ud.level_number == 1)
     {
         short ii;
@@ -2282,13 +2575,12 @@ void enterlevel(char g)
     automapping = 0;
 
     cacheit();
+
     docacheit();
 
-    if (globalskillsound >= 0)
-    {
-        while (Sound[globalskillsound].lock >= 200);
-    }
-    globalskillsound = -1;
+    if(globalskillsound >= 0)
+        while(Sound[globalskillsound].lock>=200);
+     globalskillsound = -1;
 
     FX_StopAllSounds();
     clearsoundlocks();
@@ -2360,13 +2652,13 @@ void enterlevel(char g)
      vscrn();
      clearview(0L);
      drawbackground();
-     displayrooms(screenpeek,65536);
+     displayrooms(screenpeek,65536L);
      displayrest(screenpeek);
      nextpage();
 
      clearbufbyte(playerquitflag,MAXPLAYERS,0x01010101);
-     if (waitabort == 1)
-         gameexit(" ");
+
+     if(waitabort == 1) gameexit(" ");
      ps[myconnectindex].over_shoulder_on = 0;
 
      clearfrags();

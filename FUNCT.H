@@ -604,7 +604,11 @@ extern void resetlanepics(void);
 //#line "actors.c" 6005
 extern void moveexplosions(void );
 
+#ifdef DEMO
+extern void dofurniture(short wl, short sect);
+#else
 extern void dofurniture(short wl, short sect, short snum);
+#endif
 extern void dotorch(void);
 extern void dojaildoor(void);
 extern void moveminecart(void);

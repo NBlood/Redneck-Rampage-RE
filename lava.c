@@ -26,7 +26,41 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 //-------------------------------------------------------------------------
 #include "duke3d.h"
 
-#ifdef RRRA
+#ifdef DEMO
+
+#define LAVASIZ 128
+#define LAVALOGSIZ 7
+#define LAVAMAXDROPS 32
+static char lavabakpic[(LAVASIZ+4)*(LAVASIZ+4)], lavainc[LAVASIZ];
+static long lavanumdrops, lavanumframes;
+static long lavadropx[LAVAMAXDROPS], lavadropy[LAVAMAXDROPS];
+static long lavadropsiz[LAVAMAXDROPS], lavadropsizlookup[LAVAMAXDROPS];
+static long lavaradx[32][128], lavarady[32][128], lavaradcnt[32];
+#endif
+
+#ifdef DEMO
+
+short torchcnt;
+short jaildoorcnt;
+
+short torchsector[64];
+short torchsectorshade[64];
+short torchtype[64];
+
+short lightnincnt;
+
+short jaildoorsound[32];
+long jaildoordrag[32];
+long jaildoorspeed[32];
+short jaildoorsecthtag[32];
+long jaildoordist[32];
+short jaildoordir[32];
+short jaildooropen[32];
+short jaildoorsect[32];
+
+short lightninsector[64];
+short lightninsectorshade[64];
+#elif defined(RRRA)
 extern int lp1, lp2, lp3, lp4;
 short torchcnt;
 short jaildoorcnt;
@@ -93,6 +127,122 @@ short lightninsector[64];
 short lightninsectorshade[64];
 #endif
 
+#ifdef DEMO
+initlava()
+{
+	long x, y, z, r;
+
+	for(x=-16;x<=16;x++)
+		for(y=-16;y<=16;y++)
+		{
+			r = ksqrt(x*x + y*y);
+			lavaradx[r][lavaradcnt[r]] = x;
+			lavarady[r][lavaradcnt[r]] = y;
+			lavaradcnt[r]++;
+		}
+
+	for(z=0;z<16;z++)
+		lavadropsizlookup[z] = 8 / (ksqrt(z)+1);
+
+	for(z=0;z<LAVASIZ;z++)
+		lavainc[z] = klabs((((z^17)>>4)&7)-4)+12;
+
+	lavanumdrops = 0;
+	lavanumframes = 0;
+}
+
+#pragma aux addlava =\
+	"mov al, byte ptr [ebx-133]",\
+	"mov dl, byte ptr [ebx-1]",\
+	"add al, byte ptr [ebx-132]",\
+	"add dl, byte ptr [ebx+131]",\
+	"add al, byte ptr [ebx-131]",\
+	"add dl, byte ptr [ebx+132]",\
+	"add al, byte ptr [ebx+1]",\
+	"add al, dl",\
+	parm [ebx]\
+	modify exact [eax edx]\
+
+movelava(char *dapic)
+{
+	long i, j, x, y, z, zz, dalavadropsiz, dadropsizlookup;
+	long dalavax, dalavay, *ptr, *ptr2;
+
+	for(z=min(LAVAMAXDROPS-lavanumdrops-1,3);z>=0;z--)
+	{
+		lavadropx[lavanumdrops] = (rand()&(LAVASIZ-1));
+		lavadropy[lavanumdrops] = (rand()&(LAVASIZ-1));
+		lavadropsiz[lavanumdrops] = 1;
+		lavanumdrops++;
+	}
+
+	for(z=lavanumdrops-1;z>=0;z--)
+	{
+		dadropsizlookup = lavadropsizlookup[lavadropsiz[z]]*(((z&1)<<1)-1);
+		dalavadropsiz = lavadropsiz[z];
+		dalavax = lavadropx[z]; dalavay = lavadropy[z];
+		for(zz=lavaradcnt[lavadropsiz[z]]-1;zz>=0;zz--)
+		{
+			i = (((lavaradx[dalavadropsiz][zz]+dalavax)&(LAVASIZ-1))<<LAVALOGSIZ);
+			i += ((lavarady[dalavadropsiz][zz]+dalavay)&(LAVASIZ-1));
+			dapic[i] += dadropsizlookup;
+			if (dapic[i] < 192) dapic[i] = 192;
+		}
+
+		lavadropsiz[z]++;
+		if (lavadropsiz[z] > 10)
+		{
+			lavanumdrops--;
+			lavadropx[z] = lavadropx[lavanumdrops];
+			lavadropy[z] = lavadropy[lavanumdrops];
+			lavadropsiz[z] = lavadropsiz[lavanumdrops];
+		}
+	}
+
+		//Back up dapic with 1 pixel extra on each boundary
+		//(to prevent anding for wrap-around)
+	ptr = (long *)dapic;
+	ptr2 = (long *)((LAVASIZ+4)+1+((long)lavabakpic));
+	for(x=0;x<LAVASIZ;x++)
+	{
+		for(y=(LAVASIZ>>2);y>0;y--) *ptr2++ = ((*ptr++)&0x1f1f1f1f);
+		ptr2++;
+	}
+	for(y=0;y<LAVASIZ;y++)
+	{
+		lavabakpic[y+1] = (dapic[y+((LAVASIZ-1)<<LAVALOGSIZ)]&31);
+		lavabakpic[y+1+(LAVASIZ+1)*(LAVASIZ+4)] = (dapic[y]&31);
+	}
+	for(x=0;x<LAVASIZ;x++)
+	{
+		lavabakpic[(x+1)*(LAVASIZ+4)] = (dapic[(x<<LAVALOGSIZ)+(LAVASIZ-1)]&31);
+		lavabakpic[(x+1)*(LAVASIZ+4)+(LAVASIZ+1)] = (dapic[x<<LAVALOGSIZ]&31);
+	}
+	lavabakpic[0] = (dapic[LAVASIZ*LAVASIZ-1]&31);
+	lavabakpic[LAVASIZ+1] = (dapic[LAVASIZ*(LAVASIZ-1)]&31);
+	lavabakpic[(LAVASIZ+4)*(LAVASIZ+1)] = (dapic[LAVASIZ-1]&31);
+	lavabakpic[(LAVASIZ+4)*(LAVASIZ+2)-1] = (dapic[0]&31);
+
+	ptr = (long *)dapic;
+	for(x=0;x<LAVASIZ;x++)
+	{
+		i = (long)&lavabakpic[(x+1)*(LAVASIZ+4)+1];
+		j = i+LAVASIZ;
+		for(y=i;y<j;y+=4)
+		{
+			*ptr++ = ((addlava(y+0)&0x70)>>3)+
+						((addlava(y+1)&0x70)<<5)+
+						((addlava(y+2)&0x70)<<13)+
+						((addlava(y+3)&0x70)<<21)+
+						0xc2c2c2c2;
+		}
+	}
+
+	lavanumframes++;
+}
+
+#endif
+
 void dotorch(void)
 {
 #ifdef RRRA
@@ -157,18 +307,43 @@ void dotorch(void)
     }
 }
 
+#ifdef DEMO
+int jailtime = 0;
+int oldjailtime = 0;
+#endif
+
 void dojaildoor(void)
 {
     short i, j;
     short startwall, endwall;
     long x, y;
     long speed;
+#ifdef DEMO
+    int tics;
+    int now;
+#endif
+
+#ifdef DEMO
+
+    oldjailtime = jailtime;
+    now = totalclock;
+    tics = now - oldjailtime;
+    jailtime = now;
+
+    if (ud.pause_on == 1)
+        return;
+#endif
+
     for (i = 0; i < jaildoorcnt; i++)
     {
+#ifdef DEMO
+        speed = (jaildoorspeed[i] * tics) >> 4;
+#else
         if (numplayers < 2)
             speed = jaildoorspeed[i];
         else
             speed = jaildoorspeed[i];
+#endif
         if (speed < 2)
             speed = 2;
         if (jaildooropen[i] == 1)
@@ -278,6 +453,7 @@ void dojaildoor(void)
     }
 }
 
+#ifndef DEMO
 void moveminecart(void)
 {
 #ifdef RRRA
@@ -455,3 +631,5 @@ void moveminecart(void)
         }
     }
 }
+
+#endif

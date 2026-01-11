@@ -306,10 +306,10 @@ void move()
             g_sp->zvel -= (sintable[(512+(g_t[0]<<4))&2047]/24);
     }
 #else
-    if ((a&jumptoplayer) == jumptoplayer)
+    if((a&jumptoplayer) == jumptoplayer)
     {
-        if (g_t[0] < 16)
-            g_sp->zvel -= (sintable[(512 + (g_t[0] << 4)) & 2047] >> 5);
+        if(g_t[0] < 16)
+            g_sp->zvel -= (sintable[(512+(g_t[0]<<4))&2047]>>5);
     }
 #endif
 
@@ -334,6 +334,7 @@ void move()
             hittype[g_i].bposy = g_sp->y;
             setsprite(g_i,g_sp->x,g_sp->y,g_sp->z);
         }
+#ifndef DEMO
         if (badguy(g_sp) && g_sp->extra <= 0)
         {
             if (sector[g_sp->sectnum].ceilingstat & 1)
@@ -352,6 +353,7 @@ void move()
                 g_sp->shade += (sector[g_sp->sectnum].floorshade-g_sp->shade)>>1;
             }
         }
+#endif
         return;
     }
 
@@ -372,7 +374,11 @@ void move()
 
     if(g_sp->xvel || g_sp->zvel)
     {
+#ifdef DEMO
+        if(a && g_sp->picnum != ROTATEGUN)
+#else
         if(a)
+#endif
         {
             if( g_sp->picnum == DRONE && g_sp->extra > 0)
             {
@@ -397,17 +403,24 @@ void move()
                     }
                 }
             }
-            if(g_sp->zvel > 0 && hittype[g_i].floorz < g_sp->z)
-                g_sp->z = hittype[g_i].floorz;
-            if( g_sp->zvel < 0)
+#ifdef DEMO
+            else if(g_sp->picnum != ORGANTIC)
             {
-                l = getceilzofslope(g_sp->sectnum,g_sp->x,g_sp->y);
-                if( (g_sp->z-l) < (66<<8) )
+#endif
+                if(g_sp->zvel > 0 && hittype[g_i].floorz < g_sp->z)
+                    g_sp->z = hittype[g_i].floorz;
+                if( g_sp->zvel < 0)
                 {
-                    g_sp->z = l+(66<<8);
-                    g_sp->zvel >>= 1;
+                    l = getceilzofslope(g_sp->sectnum,g_sp->x,g_sp->y);
+                    if( (g_sp->z-l) < (66<<8) )
+                    {
+                        g_sp->z = l+(66<<8);
+                        g_sp->zvel >>= 1;
+                    }
                 }
+#ifdef DEMO
             }
+#endif
         }
         else if(g_sp->picnum == APLAYER)
             if( (g_sp->z-hittype[g_i].ceilingz) < (32<<8) )
@@ -416,7 +429,11 @@ void move()
         daxvel = g_sp->xvel;
         angdif = g_sp->ang;
 
+#ifdef DEMO
+        if( a && g_sp->picnum != ROTATEGUN )
+#else
         if( a )
+#endif
         {
             if( g_x < 960 && g_sp->xrepeat > 16 )
             {
@@ -435,7 +452,9 @@ void move()
                     ps[g_p].posyv = mulscale(ps[g_p].posyv,rdnkfriction-0x2000,16);
                 }
             }
-#ifdef RRRA
+#ifdef DEMO
+            else if(g_sp->picnum != DRONE && g_sp->picnum != SHARK)
+#elif defined(RRRA)
             else if(g_sp->picnum != DRONE && g_sp->picnum != SHARK && g_sp->picnum != UFO1)
 #else
             else if(g_sp->picnum != DRONE && g_sp->picnum != SHARK && g_sp->picnum != UFO1
@@ -487,6 +506,9 @@ void move()
    if( a )
    {
        if (sector[g_sp->sectnum].ceilingstat&1)
+#ifdef DEMO
+           g_sp->shade += (sector[g_sp->sectnum].ceilingshade-g_sp->shade)>>1;
+#else
        {
            if(shadedsector[g_sp->sectnum] == 1)
            {
@@ -497,6 +519,7 @@ void move()
                g_sp->shade += (sector[g_sp->sectnum].ceilingshade-g_sp->shade)>>1;
            }
        }
+#endif
        else g_sp->shade += (sector[g_sp->sectnum].floorshade-g_sp->shade)>>1;
 
        if( sector[g_sp->sectnum].floorpicnum == MIRROR )
@@ -528,7 +551,11 @@ void parseifelse(long condition)
 
 char parse(void)
 {
+#ifdef DEMO
+    long j, l, s;
+#else
     long j, l, s, nextj;
+#endif
 
     if(killit_flag) return 1;
 
@@ -881,6 +908,7 @@ char parse(void)
             shoot(g_i,(short)*insptr);
             insptr++;
             break;
+#ifndef DEMO
         case 127:
             insptr++;
             parseifelse((short)*insptr == ambientlotag[g_sp->ang]);
@@ -902,6 +930,7 @@ char parse(void)
             if (Sound[ambientlotag[g_sp->ang]].num == 0)
                 spritesound(ambientlotag[g_sp->ang],g_i);
             break;
+#endif
         case 87:
             insptr++;
             if( Sound[*insptr].num == 0 )
@@ -920,6 +949,7 @@ char parse(void)
                 spritesound((short) *insptr,ps[screenpeek].i);
             insptr++;
             break;
+#ifndef DEMO
         case 124:
             insptr++;
 #ifdef RRRA
@@ -953,6 +983,7 @@ char parse(void)
             insptr++;
             parseifelse(g_sp->extra < (short)*insptr);
             break;
+#endif
         case 15:
             insptr++;
             spritesound((short) *insptr,g_i);
@@ -982,6 +1013,7 @@ char parse(void)
                 j = 0;
             parseifelse(j > 0);
             break;
+#ifndef DEMO
         case 123:
             insptr++;
             j = headspritesect[g_sp->sectnum];
@@ -996,6 +1028,7 @@ char parse(void)
                 j = nextj;
             }
             break;
+#endif
         case 16:
             insptr++;
             g_sp->xoffset = 0;
@@ -1039,7 +1072,9 @@ char parse(void)
                         deletesprite(g_i);
                         break;
                     }
-#ifdef RRRA
+#ifdef DEMO
+                    if (g_sp->picnum != APLAYER && (badguy(g_sp) || g_sp->picnum == HEN || g_sp->picnum == COW) && g_sp->filler < 128)
+#elif defined(RRRA)
                     if (g_sp->picnum != APLAYER && (badguy(g_sp) || g_sp->picnum == HEN || g_sp->picnum == COW || g_sp->picnum == PIG || g_sp->picnum == DOGRUN || g_sp->picnum == RABBIT) && g_sp->filler < 128)
 #else
                     if (g_sp->picnum != APLAYER && (badguy(g_sp) || g_sp->picnum == HEN || g_sp->picnum == COW || g_sp->picnum == PIG || g_sp->picnum == DOGRUN) && g_sp->filler < 128)
@@ -1136,7 +1171,7 @@ char parse(void)
                             if(j != g_sp->sectnum && j >= 0 && j < MAXSECTORS)
                                 changespritesect(g_i,j);
 
-                            spritesound(158,g_i);
+                            spritesound(THUD,g_i);
                         }
                     }
                     if(sector[g_sp->sectnum].lotag == 1)
@@ -1295,6 +1330,7 @@ char parse(void)
             }
             insptr++;
             break;
+#ifndef DEMO
         case 117:
             insptr++;
             movesprite(g_i,sintable[(g_sp->ang+1024)&2047]>>10,sintable[(g_sp->ang+512)&2047]>>10,g_sp->zvel,CLIPMASK0);
@@ -1424,6 +1460,7 @@ char parse(void)
                 }
             }
             break;
+#endif
         case 114:
             insptr++;
             ps[g_p].eat += *insptr;
@@ -1512,7 +1549,7 @@ char parse(void)
                 {
                     if( ( j - *insptr ) < (max_player_health>>2) &&
                         j >= (max_player_health>>2) )
-                            spritesound(229,ps[g_p].i);
+                            spritesound(DUKE_GOTHEALTHATLOW,ps[g_p].i);
 
                     ps[g_p].last_extra = j;
                 }
@@ -1584,7 +1621,11 @@ char parse(void)
                 if(g_sp->sectnum >= 0 && g_sp->sectnum < MAXSECTORS)
                     for(j=(*insptr)-1;j>=0;j--)
                 {
+#ifdef DEMO
+                    if(g_sp->picnum == BLIMP && dnum == SCRAP1)
+#else
                     if(dnum == SCRAP1)
+#endif
                         s = 0;
                     else s = (TRAND%3);
 
@@ -1593,7 +1634,11 @@ char parse(void)
                             dnum+s,g_sp->shade,32+(TRAND&15),32+(TRAND&15),
                             TRAND&2047,(TRAND&127)+32,
                             -(TRAND&2047),g_i,5);
+#ifdef DEMO
+                    if(g_sp->picnum == BLIMP && dnum == SCRAP1)
+#else
                     if(dnum == SCRAP1)
+#endif
                         sprite[l].yvel = weaponsandammosprites[j%14];
                     else sprite[l].yvel = -1;
                     sprite[l].pal = g_sp->pal;
@@ -1702,12 +1747,14 @@ char parse(void)
             setpal(&ps[g_p]);
 
             break;
+#ifndef DEMO
         case 130:
             parseifelse(ud.coop || numplayers > 2);
             break;
         case 129:
             parseifelse( klabs(g_sp->z-sector[g_sp->sectnum].floorz) < (32<<8) && sector[g_sp->sectnum].floorpicnum == 3073);
             break;
+#endif
         case 43:
             parseifelse( klabs(g_sp->z-sector[g_sp->sectnum].floorz) < (32<<8) && sector[g_sp->sectnum].lotag == 1);
             break;
@@ -1873,6 +1920,12 @@ char parse(void)
 //            else
             parseifelse( hittype[g_i].picnum == *insptr);
             break;
+#ifdef DEMO
+        case 61:
+            insptr++;
+            forceplayerangle(&ps[g_p]);
+            return 0;
+#else
         case 121:
             insptr++;
             forceplayerangle(&ps[g_p]);
@@ -1886,6 +1939,7 @@ char parse(void)
             ps[g_p].jumping_counter = 767;
             ps[g_p].jumping_toggle = 1;
             return 0;
+#endif
         case 62:
             insptr++;
             parseifelse( (( hittype[g_i].floorz - hittype[g_i].ceilingz ) >> 8 ) < *insptr);
@@ -2070,9 +2124,25 @@ char parse(void)
             insptr++;
             switch(g_sp->picnum)
             {
+#ifdef DEMO
+                case FEM1:
+                case FEM2:
+                case FEM3:
+                case FEM4:
+                case FEM5:
+                case FEM6:
+                case FEM7:
+                case FEM8:
+                case FEM9:
+                case FEM10:
+                case PODFEM1:
+                case NAKED1:
+                case STATUE:
+#else
                 case FEM10:
                 case NAKED1:
                 case STATUE:
+#endif
                     if(g_sp->yvel) operaterespawns(g_sp->yvel);
                     break;
                 default:
@@ -2178,6 +2248,9 @@ void execute(short i,short p,long x)
                 case NUKEBARREL:
                 case NUKEBARRELDENTED:
                 case NUKEBARRELLEAKED:
+#ifdef DEMO
+                case TRIPBOMB:
+#endif
                 case EGG:
                     if(hittype[g_i].timetosleep > 1)
                         hittype[g_i].timetosleep--;

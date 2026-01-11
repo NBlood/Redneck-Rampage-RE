@@ -90,6 +90,9 @@ void moveweapons(void)
         switch(s->picnum)
         {
             case RADIUSEXPLOSION:
+#ifdef DEMO
+            case KNEE:
+#endif
                 KILLIT(i);
             case TONGUE:
                 T1 = sintable[(T2)&2047]>>9;
@@ -140,11 +143,13 @@ void moveweapons(void)
             case FIRELASER:
             case SPIT:
             case COOLEXPLOSION1:
+#ifndef DEMO
             case OWHIP:
             case UWHIP:
 #ifdef RRRA
             case RPG2:
             case RRTILE1790:
+#endif
 #endif
                 p = -1;
 
@@ -269,7 +274,9 @@ void moveweapons(void)
 
                 if(s->sectnum < 0) { KILLIT(i); }
 
+#ifndef DEMO
                 if(sector[s->sectnum].filler == 800) { KILLIT(i); }
+#endif
 
                 if( (j&49152) != 49152)
                     if(s->picnum != FREEZEBLAST)
@@ -307,6 +314,16 @@ void moveweapons(void)
 
                 if( j != 0 )
                 {
+#ifdef DEMO
+                    if(s->picnum == COOLEXPLOSION1)
+                    {
+                        if( (j&49152) == 49152 && sprite[j&(MAXSPRITES-1)].picnum != APLAYER)
+                            goto BOLT;
+                        s->xvel = 0;
+                        s->zvel = 0;
+                    }
+#endif
+
                     if( (j&49152) == 49152 )
                     {
                         j &= (MAXSPRITES-1);
@@ -376,7 +393,9 @@ void moveweapons(void)
                     {
                         j &= (MAXWALLS-1);
 
-#ifdef RRRA
+#ifdef DEMO
+                        if(s->picnum != RPG && s->picnum != FREEZEBLAST && s->picnum != SPIT && ( wall[j].overpicnum == MIRROR || wall[j].picnum == MIRROR ) )
+#elif defined(RRRA)
                         if (sprite[s->owner].picnum == MAMA)
                         {
                             guts(s,RABBITJIBA,2,myconnectindex);
@@ -422,6 +441,7 @@ void moveweapons(void)
                                 goto BOLT;
                             }
 #endif
+#ifndef DEMO
                             if (s->picnum == SHRINKSPARK)
                             {
                                 if (wall[j].picnum >= RRTILE3643 && wall[j].picnum < RRTILE3643+3) KILLIT(i);
@@ -461,6 +481,7 @@ void moveweapons(void)
                                 s->ang = ((k<<1) - s->ang)&2047;
                                 goto BOLT;
                             }
+#endif
                         }
                     }
                     else if( (j&49152) == 16384)
@@ -517,10 +538,24 @@ void moveweapons(void)
                             }
                             else if( (j&49152) == 16384)
                             {
+#ifdef DEMO
+                                if( s->zvel > 0)
+                                    spawn(i,EXPLOSION2BOT);
+                                else { sprite[k].cstat |= 8; sprite[k].z += (48<<8); }
+#else
                                 sprite[k].cstat |= 8;
                                 sprite[k].z += (48<<8);
+#endif
                             }
                         }
+#ifdef DEMO
+                        else if(s->picnum == SHRINKSPARK)
+                        {
+                            spawn(i,SHRINKEREXPLOSION);
+                            spritesound(SHRINKER_HIT,i);
+                            hitradius(i,shrinkerblastradius,0,0,0,0);
+                        }
+#endif
 #ifdef RRRA
                         else if(s->picnum == RPG2)
                         {
@@ -560,9 +595,13 @@ void moveweapons(void)
                             }
                         }
 #endif
+#ifdef DEMO
+                        else if( s->picnum != COOLEXPLOSION1 && s->picnum != FREEZEBLAST && s->picnum != FIRELASER)
+#else
                         else if( s->picnum != FREEZEBLAST && s->picnum != FIRELASER && s->picnum != SHRINKSPARK)
+#endif
                         {
-                            k = spawn(i,1441);
+                            k = spawn(i,EXPLOSION2);
                             sprite[k].xrepeat = sprite[k].yrepeat = s->xrepeat>>1;
                             if( (j&49152) == 16384)
                             {
@@ -620,12 +659,25 @@ void moveweapons(void)
                         }
 #endif
                     }
+#ifdef DEMO
+                    if(s->picnum != COOLEXPLOSION1) KILLIT(i);
+#else
                     KILLIT(i);
+#endif
                 }
+#ifdef DEMO
+                if(s->picnum == COOLEXPLOSION1)
+                {
+                    s->shade++;
+                    if(s->shade >= 40) KILLIT(i);
+                }
+                else if(s->picnum == RPG && sector[s->sectnum].lotag == 2 && s->xrepeat >= 10 && rnd(140))
+#else
 #ifdef RRRA
                 if((s->picnum == RPG || s->picnum == RPG2) && sector[s->sectnum].lotag == 2 && s->xrepeat >= 10 && rnd(184))
 #else
                 if(s->picnum == RPG && sector[s->sectnum].lotag == 2 && s->xrepeat >= 10 && rnd(184))
+#endif
 #endif
                     spawn(i,WATERBUBBLE);
 
@@ -805,7 +857,7 @@ void movetransports(void)
                                 FX_StopAllSounds();
                                 clearsoundlocks();
                             }
-                            spritesound(48,ps[p].i);
+                            spritesound(DUKE_UNDERWATER,ps[p].i);
                             ps[p].oposz = ps[p].posz =
                                 sector[sprite[OW].sectnum].ceilingz+(7<<8);
                         }
@@ -819,7 +871,7 @@ void movetransports(void)
                                 FX_StopAllSounds();
                                 clearsoundlocks();
                             }
-                            spritesound(25,ps[p].i);
+                            spritesound(DUKE_GASP,ps[p].i);
 
                             ps[p].oposz = ps[p].posz =
                                 sector[sprite[OW].sectnum].floorz-(7<<8);
@@ -860,12 +912,14 @@ void movetransports(void)
 
                 case 1:
                     if (PN == SHARK) goto JBOLT;
+#ifndef DEMO
 #ifdef RRRA
                     if (PN == CHEERBOAT || PN == HULKBOAT || PN == MINIONBOAT || PN == UFO1)
 #else
                     if (PN == UFO1 || PN == UFO2 || PN == UFO3 || PN == UFO4 || PN == UFO5)
 #endif
                         goto JBOLT;
+#endif
                 case 4:
                 case 5:
                 case 13:
@@ -882,7 +936,7 @@ void movetransports(void)
                         warpspriteto = 0;
                         if( ll && sectlotag == 2 && sprite[j].z < (sector[sect].ceilingz+ll) )
                             warpspriteto = 1;
-                        
+
                         if( ll && sectlotag == 1 && sprite[j].z > (sector[sect].floorz-ll) )
 #ifdef RRRA
                             if (sprite[j].picnum != CHEERBOAT && sprite[j].picnum != HULKBOAT && sprite[j].picnum != MINIONBOAT)
@@ -924,6 +978,17 @@ void movetransports(void)
 
                         if( warpspriteto ) switch(sprite[j].picnum)
                         {
+#ifdef DEMO
+                            case TRANSPORTERSTAR:
+                            case TRANSPORTERBEAM:
+                            case TRIPBOMB:
+                            case BULLETHOLE:
+                            case WATERSPLASH2:
+                            case BURNING:
+                            case BURNING2:
+                            case FIRE:
+                            case FIRE2:
+#else
 #ifndef RRRA
                             case TRIPBOMBSPRITE:
 #endif
@@ -934,6 +999,7 @@ void movetransports(void)
                             case BURNING:
                             case FIRE:
                             case MUD:
+#endif
                                 goto JBOLT;
                             case PLAYERONWATER:
                                 if(sectlotag == 2)

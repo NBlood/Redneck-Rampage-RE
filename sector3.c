@@ -508,6 +508,7 @@ void checkhitsprite(short i,short sn)
             spritesound(439, i);
             break;
 #endif
+#ifndef DEMO
         case RRTILE3114:
             PN = RRTILE3117;
             break;
@@ -569,14 +570,28 @@ void checkhitsprite(short i,short sn)
             sprite[sn].ang -= (TRAND&16);
             spritesound(355,i);
             break;
+#endif
 
-        case STRIPEBALL:
+#ifdef DEMO
+        case OCEANSPRITE1:
+        case OCEANSPRITE2:
+        case OCEANSPRITE3:
+        case OCEANSPRITE4:
+        case OCEANSPRITE5:
+            spawn(i,SMALLSMOKE);
+            deletesprite(i);
+            break;
+#endif
+
         case QUEBALL:
+        case STRIPEBALL:
+#ifndef DEMO
         case RRTILE3440:
         case RRTILE3440+1:
         case HENSTAND:
         case HENSTAND+1:
-            if (sprite[sn].picnum == QUEBALL || sprite[sn].picnum == STRIPEBALL)
+#endif
+            if(sprite[sn].picnum == QUEBALL || sprite[sn].picnum == STRIPEBALL)
             {
                 sprite[sn].xvel = (sprite[i].xvel>>1)+(sprite[i].xvel>>2);
                 sprite[sn].ang -= (SA<<1)+1024;
@@ -584,6 +599,7 @@ void checkhitsprite(short i,short sn)
                 if(Sound[POOLBALLHIT].num < 2)
                     spritesound(POOLBALLHIT,i);
             }
+#ifndef DEMO
             else if (sprite[sn].picnum == RRTILE3440 || sprite[sn].picnum == RRTILE3440+1)
             {
                 sprite[sn].xvel = (sprite[i].xvel>>1)+(sprite[i].xvel>>2);
@@ -598,6 +614,7 @@ void checkhitsprite(short i,short sn)
                 SA = (SA+TRAND)&16;
                 spritesound(355,i);
             }
+#endif
             else
             {
                 if( TRAND&3 )
@@ -612,6 +629,9 @@ void checkhitsprite(short i,short sn)
         case TREE2:
         case TIRE:
         case BOX:
+#ifdef DEMO
+        case CONE:
+#endif
             switch(sprite[sn].picnum)
             {
                 case RADIUSEXPLOSION:
@@ -619,12 +639,14 @@ void checkhitsprite(short i,short sn)
                 case FIRELASER:
                 case HYDRENT:
                 case HEAVYHBOMB:
+#ifndef DEMO
                 case TRIPBOMBSPRITE:
                 case COOLEXPLOSION1:
                 case OWHIP:
                 case UWHIP:
 #ifdef RRRA
                 case RPG2:
+#endif
 #endif
                     if(T1 == 0)
                     {
@@ -645,6 +667,7 @@ void checkhitsprite(short i,short sn)
                 case FIRELASER:
                 case HYDRENT:
                 case HEAVYHBOMB:
+#ifndef DEMO
                 case TRIPBOMBSPRITE:
                 case COOLEXPLOSION1:
                 case OWHIP:
@@ -652,9 +675,14 @@ void checkhitsprite(short i,short sn)
 #ifdef RRRA
                 case RPG2:
 #endif
+#endif
                     for(k=0;k<64;k++)
                     {
+#ifdef DEMO
+                        j = EGS(SECT,SX,SY,SZ-(TRAND%(48<<8)),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(sprite[i].zvel>>2),i,5);
+#else
                         j = EGS(SECT,SX,SY,SZ-(TRAND%(48<<8)),SCRAP6+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(sprite[i].zvel>>2),i,5);
+#endif
                         sprite[j].pal = 8;
                     }
 
@@ -666,10 +694,25 @@ void checkhitsprite(short i,short sn)
             }
             break;
 
+#ifdef DEMO
+        case HANGLIGHT:
+        case GENERICPOLE2:
+            for(k=0;k<6;k++)
+                EGS(SECT,SX,SY,SZ-(8<<8),SCRAP1+(TRAND&15),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(sprite[i].zvel>>2),i,5);
+            spritesound(GLASS_HEAVYBREAK,i);
+            deletesprite(i);
+            break;
+#endif
+
 
         case FANSPRITE:
             PN = FANSPRITEBROKE;
             CS &= (65535-257);
+#ifdef DEMO
+            if( sector[SECT].floorpicnum == FANSHADOW )
+                sector[SECT].floorpicnum = FANSHADOWBROKE;
+#endif
+
             spritesound(GLASS_HEAVYBREAK,i);
             s = &sprite[i];
             for(j=0;j<16;j++) RANDOMSCRAP;
@@ -739,6 +782,21 @@ void checkhitsprite(short i,short sn)
             lotsofglass(i,-1,8);
             deletesprite(i);
             break;
+#ifdef DEMO
+        case FETUS:
+            PN = FETUSBROKE;
+            spritesound(GLASS_BREAKING,i);
+            lotsofglass(i,-1,10);
+            break;
+        case FETUSBROKE:
+            for(j=0;j<48;j++)
+            {
+                shoot(i,BLOODSPLAT1);
+                SA += 333;
+            }
+            spritesound(GLASS_HEAVYBREAK,i);
+            spritesound(SQUISHED,i);
+#endif
         case BOTTLE7:
 #ifdef RRRA
         case RRTILE2654:
@@ -749,6 +807,14 @@ void checkhitsprite(short i,short sn)
             lotsofglass(i,-1,10);
             deletesprite(i);
             break;
+#ifdef DEMO
+        case HYDROPLANT:
+            PN = BROKEHYDROPLANT;
+            spritesound(GLASS_BREAKING,i);
+            lotsofglass(i,-1,10);
+            break;
+#endif
+
         case FORCESPHERE:
             sprite[i].xrepeat = 0;
             hittype[OW].temp_data[0] = 32;
@@ -756,6 +822,19 @@ void checkhitsprite(short i,short sn)
             hittype[OW].temp_data[2] ++;
             spawn(i,EXPLOSION2);
             break;
+
+#ifdef DEMO
+        case BROKEHYDROPLANT:
+            if(CS&1)
+            {
+                spritesound(GLASS_BREAKING,i);
+                SZ += 16<<8;
+                CS = 0;
+                lotsofglass(i,-1,5);
+            }
+            break;
+#endif
+
         case TOILET:
             PN = TOILETBROKE;
             CS |= (TRAND&1)<<2;
@@ -795,6 +874,19 @@ void checkhitsprite(short i,short sn)
             CS &= (65535-256-1);
             spritesound(VENT_BUST,i);
             break;
+#ifdef DEMO
+        case PANNEL1:
+        case PANNEL2:
+            PN = BPANNEL1;
+            CS &= (65535-256-1);
+            spritesound(VENT_BUST,i);
+            break;
+        case PANNEL3:
+            PN = BPANNEL3;
+            CS &= (65535-256-1);
+            spritesound(VENT_BUST,i);
+            break;
+#endif
 
         case PIPE1:
         case PIPE2:
@@ -816,6 +908,41 @@ void checkhitsprite(short i,short sn)
             sprite[j].z = sector[SECT].floorz-(32<<8);
             break;
 
+#ifdef DEMO
+        case MONK:
+        case LUKE:
+        case INDY:
+            spritesound(SLT,i);
+            spawn(i,SHT);
+        case SPACEMARINE:
+            sprite[i].extra -= sprite[sn].extra;
+            if(sprite[i].extra > 0) break;
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT1);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT2);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT3);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT4);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT1);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT2);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT3);
+            SA = TRAND&2047;
+            shoot(i,BLOODSPLAT4);
+            guts(&sprite[i],JIBS1,1,myconnectindex);
+            guts(&sprite[i],JIBS2,2,myconnectindex);
+            guts(&sprite[i],JIBS3,3,myconnectindex);
+            guts(&sprite[i],JIBS4,4,myconnectindex);
+            guts(&sprite[i],JIBS5,1,myconnectindex);
+            guts(&sprite[i],JIBS3,6,myconnectindex);
+            sound(SQUISHED);
+            deletesprite(i);
+            break;
+#endif
         case CHAIR1:
         case CHAIR2:
             PN = BROKENCHAIR;
@@ -830,6 +957,9 @@ void checkhitsprite(short i,short sn)
         case POT1:
         case POT2:
         case POT3:
+#ifdef DEMO
+        case TRIPODCAMERA:
+#endif
             spritesound(GLASS_HEAVYBREAK,i);
             s = &sprite[i];
             for(j=0;j<16;j++) RANDOMSCRAP;
@@ -841,7 +971,11 @@ void checkhitsprite(short i,short sn)
             if( (sprite[i].cstat&16) && SHT == 0 && SLT == 0 && sprite[i].statnum == 0)
                 break;
 
+#ifdef DEMO
+            if( ( sprite[sn].picnum == FREEZEBLAST || sprite[sn].owner != i ) && sprite[i].statnum != 4)
+#else
             if( ( sprite[sn].picnum == SHRINKSPARK || sprite[sn].picnum == FREEZEBLAST || sprite[sn].owner != i ) && sprite[i].statnum != 4)
+#endif
             {
                 if( badguy(&sprite[i]) == 1)
                 {
@@ -850,7 +984,11 @@ void checkhitsprite(short i,short sn)
                     else if(sprite[sn].picnum == RPG2) sprite[sn].extra <<= 1;
 #endif
 
+#ifdef DEMO
+                    if( (PN != DRONE) && (PN != ROTATEGUN) && (PN < GREENSLIME || PN > GREENSLIME+7) )
+#else
                     if( (PN != DRONE) )
+#endif
                         if(sprite[sn].picnum != FREEZEBLAST )
                             if( actortype[PN] == 0 )
                     {
@@ -865,7 +1003,11 @@ void checkhitsprite(short i,short sn)
 
                     j = sprite[sn].owner;
 
+#ifdef DEMO
+                    if( j >= 0 && sprite[j].picnum == APLAYER && PN != ROTATEGUN && PN != DRONE )
+#else
                     if( j >= 0 && sprite[j].picnum == APLAYER && PN != DRONE )
+#endif
                         if( ps[sprite[j].yvel].curr_weapon == SHOTGUN_WEAPON )
                     {
                         shoot(i,BLOODSPLAT3);
@@ -874,14 +1016,34 @@ void checkhitsprite(short i,short sn)
                         shoot(i,BLOODSPLAT4);
                     }
 
+#ifdef DEMO
+                    if( PN != BOSS1 && PN != BOSS2 && PN != BOSS3 && PN != RECON && PN != ROTATEGUN )
+                    {
+#ifdef DEMO
+                        if( (sprite[i].cstat&48) == 0  && PN != COW )
+#else
+                        if( (sprite[i].cstat&48) == 0 )
+#endif
+                            SA = (sprite[sn].ang+1024)&2047;
+                        sprite[i].xvel = -(sprite[sn].extra<<2);
+                        j = SECT;
+                        pushmove(&SX,&SY,&SZ,&j,128L,(4L<<8),(4L<<8),CLIPMASK0);
+                        if(j != SECT && j >= 0 && j < MAXSECTORS)
+                            changespritesect(i,j);
+                    }
+#else
                     if (actortype[PN] == 0) {
                     }
+#endif
 
                     if(sprite[i].statnum == 2)
                     {
                         changespritestat(i,1);
                         hittype[i].timetosleep = SLEEPTIME;
                     }
+#ifdef DEMO
+                    if( ( RX < 24 || PN == SHARK) && sprite[sn].picnum == SHRINKSPARK) return;
+#endif
                 }
 
                 if( sprite[i].statnum != 2 )
@@ -917,6 +1079,11 @@ void checkhitsprite(short i,short sn)
                             j = nextspritestat[j];
                         }
                     }
+
+#ifdef DEMO
+                    if( RX < 24 && sprite[sn].picnum == SHRINKSPARK)
+                        return;
+#endif
 
                     if( sprite[hittype[i].owner].picnum != APLAYER)
                         if(ud.player_skill >= 3)
@@ -962,21 +1129,16 @@ void allignwarpelevators(void)
 int dword_119C08 = 0;
 #endif
 
-
-#ifdef DESYNCCORRECT
-/////Desync fix////
-extern short fakejval;
-///////////////////
-#endif
 void cheatkeys(short snum)
 {
     short i, k;
     char dainv;
     unsigned long sb_snum, j;
     struct player_struct *p;
-    short unk;
+#ifndef DEMO
+    short unk = 0;
+#endif
 
-    unk = 0;
     sb_snum = sync[snum].bits;
     p = &ps[snum];
 
@@ -987,6 +1149,7 @@ void cheatkeys(short snum)
     if(p->aim_mode < i)
         p->return_to_center = 9;
 
+#ifndef DEMO
     if (KB_KeyPressed(sc_Tilde) && p->last_pissed_time == 0)
 #ifdef RRRA
         if (sprite[p->i].extra > 0)
@@ -1003,6 +1166,7 @@ void cheatkeys(short snum)
         else if (sprite[p->i].extra < max_player_health)
             sprite[p->i].extra = max_player_health;
     }
+#endif
 
     if( !(sb_snum&((15<<8)|(1<<12)|(1<<15)|(1<<16)|(1<<22)|(1<<19)|(1<<20)|(1<<21)|(1<<24)|(1<<25)|(1<<27)|(1<<28)|(1<<29)|(1<<30)|(1<<31))) )
         p->interface_toggle_flag = 0;
@@ -1042,7 +1206,9 @@ void cheatkeys(short snum)
                 case 5: sb_snum |= (1<<15);break;
                 case 1: sb_snum |= (1<<16);break;
                 case 2: sb_snum |= (1<<12);break;
+#ifndef DEMO
                 case 8: unk = 1; break;
+#endif
             }
         }
 
@@ -1135,7 +1301,9 @@ void cheatkeys(short snum)
                 case 5: FTA(88,p);break;
                 case 6: FTA(89,p);break;
                 case 7: FTA(6,p);break;
+#ifndef DEMO
                 case 8: FTA(6,p);break;
+#endif
             }
         }
 
@@ -1159,18 +1327,17 @@ void cheatkeys(short snum)
                     j = ( j == 10 ? -1 : 1 );
                     i = 0;
 
-                    while( k >= 0 && k < 10 )
+                    while(k >= 0 && k < 10)
                     {
                         k += j;
                         if(k == -1) k = 9;
                         else if(k == 10) k = 0;
 
-                        if( p->gotweapon[k] && p->ammo_amount[k] > 0 )
+                        if( p->gotweapon[k] && p->ammo_amount[k] > 0)
                         {
                             j = k;
                             break;
                         }
-
                         i++;
                         if(i == 10)
                         {
@@ -1265,18 +1432,19 @@ void cheatkeys(short snum)
                 {
                     if(screenpeek == snum) pus = NUMPAGES;
 
-                    if (p->curr_weapon == SHRINKER_WEAPON || p->ammo_amount[SHRINKER_WEAPON] == 0)
+                    if( p->curr_weapon == SHRINKER_WEAPON || p->ammo_amount[SHRINKER_WEAPON] == 0)
                     {
                         p->subweapon = (1<<GROW_WEAPON);
                         j = GROW_WEAPON;
                     }
-                    else if((p->subweapon&(1<<GROW_WEAPON)) || p->ammo_amount[GROW_WEAPON] == 0)
+                    else if( p->subweapon&(1<<GROW_WEAPON) || p->ammo_amount[GROW_WEAPON] == 0 )
                     {
                         p->subweapon = 0;
                         j = SHRINKER_WEAPON;
                     }
                 }
 
+#ifndef DEMO
                 if(j == TRIPBOMB_WEAPON)
                 {
                     if(screenpeek == snum) pus = NUMPAGES;
@@ -1292,6 +1460,7 @@ void cheatkeys(short snum)
                         j = TRIPBOMB_WEAPON;
                     }
                 }
+#endif
 #endif
 
                 if(p->holster_weapon)
@@ -1391,15 +1560,13 @@ void cheatkeys(short snum)
                         }
                         addweapon( p, j );
                         break;
-                    case SHRINKER_WEAPON:
                     case GROW_WEAPON:
-
+                    case SHRINKER_WEAPON:
                         if( p->ammo_amount[j] == 0 && p->show_empty_weapon == 0)
                         {
                             p->last_full_weapon = p->curr_weapon;
                             p->show_empty_weapon = 32;
                         }
-
                         addweapon(p, j);
                         break;
                     case HANDREMOTE_WEAPON:
@@ -1412,8 +1579,13 @@ void cheatkeys(short snum)
                         break;
                     case HANDBOMB_WEAPON:
                         if( p->ammo_amount[HANDBOMB_WEAPON] > 0 && p->gotweapon[HANDBOMB_WEAPON] )
-                            addweapon( p, HANDBOMB_WEAPON);
+                            addweapon( p, HANDBOMB_WEAPON );
                         break;
+#ifdef DEMO
+                    case TRIPBOMB_WEAPON:
+                        if( p->ammo_amount[TRIPBOMB_WEAPON] > 0 && p->gotweapon[TRIPBOMB_WEAPON] )
+                            addweapon( p, TRIPBOMB_WEAPON );
+#else
                     case TRIPBOMB_WEAPON:
                     case BOWLING_WEAPON:
                         if( p->ammo_amount[j] == 0 && p->show_empty_weapon == 0)
@@ -1424,6 +1596,7 @@ void cheatkeys(short snum)
 
                         addweapon(p, j);
                         break;
+#endif
                 }
             }
 
@@ -1458,7 +1631,9 @@ void cheatkeys(short snum)
 
                 p->drink_amt += 5;
                 p->at596 = 1;
+#ifndef DEMO
                 p->inven_icon = 3;
+#endif
                 if (p->holoduke_amount == 0)
                     checkavailinven(p);
 
@@ -1471,12 +1646,19 @@ void cheatkeys(short snum)
         }
 
         if( (sb_snum&(1<<15)) && p->newowner == -1)
+#ifdef DEMO
+            if (Sound[390].num == 0)
+#else
             if (p->at59d == 0)
+#endif
         {
+#ifndef DEMO
             p->at59d = 126;
+#endif
             spritesound(390,p->i);
             p->at290 = 16384;
             madenoise(snum);
+#ifndef DEMO
             if (sector[p->cursectnum].lotag == 857)
             {
                 if (sprite[p->i].extra <= max_player_health)
@@ -1490,13 +1672,16 @@ void cheatkeys(short snum)
             }
             else
             {
-                if (sprite[p->i].extra+1 <= max_player_health)
-                {
-                    sprite[p->i].extra++;
-                    coolgaugetext(screenpeek);
-                    gutmeter(screenpeek);
-                }
+#endif
+            if (sprite[p->i].extra+1 <= max_player_health)
+            {
+                sprite[p->i].extra++;
+                coolgaugetext(screenpeek);
+                gutmeter(screenpeek);
             }
+#ifndef DEMO
+            }
+#endif
         }
 
         if( sb_snum&(1<<16) )
@@ -1518,8 +1703,10 @@ void cheatkeys(short snum)
                     p->firstaid_amount = 0;
                     checkavailinven(p);
                 }
+#ifndef DEMO
                 if (sprite[p->i].extra > max_player_health)
                     sprite[p->i].extra = max_player_health;
+#endif
                 p->drink_amt += 10;
                 if (p->drink_amt <= 100)
                     if (Sound[DUKE_USEMEDKIT].num == 0)
@@ -1561,11 +1748,17 @@ void cheatkeys(short snum)
             }
         }
 
+#ifndef DEMO
         if(sb_snum&(1<<28) && p->one_eighty_count == 0)
             p->one_eighty_count = -1024;
+#endif
     }
     if (p->at596 || p->at597)
         gutmeter(screenpeek);
+#ifdef DEMO
+    if (numplayers < 2 && p->max_actors_killed - p->actors_killed == 0)
+        FTA(125,p);
+#endif
 }
 
 void checksectors(short snum)
@@ -1581,9 +1774,6 @@ void checksectors(short snum)
 
         case 32767:
             sector[p->cursectnum].lotag = 0;
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-            fakejval = 0;
-#endif
             FTA(9,p);
             p->secret_rooms++;
             return;
@@ -1621,7 +1811,11 @@ void checksectors(short snum)
             else
             {
                 ud.level_number++;
+#ifdef DEMO
+                if( (ud.volume_number && ud.level_number > 10 ) || ud.level_number > 5 )
+#else
                 if( ud.level_number > 6 )
+#endif
                     ud.level_number = 0;
                 ud.m_level_number = ud.level_number;
             }
@@ -1635,10 +1829,6 @@ void checksectors(short snum)
         default:
             if(sector[p->cursectnum].lotag >= 10000)
             {
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                if(snum == screenpeek || ud.coop == 1 )
-                    fakejval = -1;
-#endif
                 if(snum == screenpeek || ud.coop == 1 )
                     spritesound(sector[p->cursectnum].lotag-10000,p->i);
                 sector[p->cursectnum].lotag = 0;
@@ -1650,36 +1840,43 @@ void checksectors(short snum)
     //After this point the the player effects the map with space
 
     if(p->gm&MODE_TYPE || sprite[p->i].extra <= 0) return;
-    
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-    if( ud.cashman && sync[snum].bits&(1<<29) )
-        fakejval = -1;
-#endif
+
     if( ud.cashman && sync[snum].bits&(1<<29) )
         lotsofmoney(&sprite[p->i],2);
+
+#ifdef DEMO
+    if(p->newowner >= 0)
+    {
+        if( klabs(sync[snum].svel) > 768 || klabs(sync[snum].fvel) > 768 )
+        {
+            i = -1;
+            goto CLEARCAMERAS;
+        }
+    }
+#endif
 
     if( !(sync[snum].bits&(1<<29)) && !(sync[snum].bits&(1<<31)))
         p->toggle_key_flag = 0;
 
     else if(!p->toggle_key_flag)
     {
+
+#ifdef DEMO
+        if( (sync[snum].bits&(1<<31)) )
+        {
+            if( p->newowner >= 0 )
+            {
+                i = -1;
+                goto CLEARCAMERAS;
+            }
+            return;
+        }
+#endif
+
         neartagsprite = -1;
         p->toggle_key_flag = 1;
         hitscanwall = -1;
-        
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-        {
-            long sx,sy,sz;
-            short sect,hs,hw;
 
-            hitscan(p->posx,p->posy,p->posz,p->cursectnum,
-                sintable[(p->ang+512)&2047],
-                sintable[p->ang&2047],
-                0,&sect,hw,&hs,&sx,&sy,&sz,CLIPMASK0);
-            fakejval &= ~0xffff;
-            fakejval |= sect;
-        }
-#endif
         hitawall(p,&hitscanwall);
 
 #ifdef RRRA
@@ -1706,23 +1903,15 @@ void checksectors(short snum)
         if(hitscanwall >= 0 && wall[hitscanwall].overpicnum == MIRROR)
             if( wall[hitscanwall].lotag > 0 && Sound[wall[hitscanwall].lotag].num == 0 && snum == screenpeek)
         {
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-            fakejval = -1;
-#endif
             spritesound(wall[hitscanwall].lotag,p->i);
             return;
         }
 #endif
 
-        if(hitscanwall >= 0 && (wall[hitscanwall].cstat&16) )
-            switch(wall[hitscanwall].overpicnum)
+        if(hitscanwall >= 0 && (wall[hitscanwall].cstat&16) ) switch(wall[hitscanwall].overpicnum)
         {
             default:
-#if defined(DESYNCCORRECT) && defined(RRRA)
-                fakejval = hitscanwall*32;
-#endif
-                if(wall[hitscanwall].lotag)
-                    return;
+                if(wall[hitscanwall].lotag) return;
         }
 
 #ifdef RRRA
@@ -1747,9 +1936,6 @@ void checksectors(short snum)
         neartag(p->oposx,p->oposy,p->oposz,sprite[p->i].sectnum,p->oang,&neartagsector,&neartagwall,&neartagsprite,&neartaghitdist,1280L,3);
 #endif
         
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-        fakejval = -1;
-#endif
         if(p->newowner >= 0)
             neartag(p->oposx,p->oposy,p->oposz,sprite[p->i].sectnum,p->oang,&neartagsector,&neartagwall,&neartagsprite,&neartaghitdist,1280L,1);
         else
@@ -1766,10 +1952,27 @@ void checksectors(short snum)
                 {
                     switch(sprite[neartagsprite].picnum)
                     {
+#ifdef DEMO
+                        case FEM1:
+                        case FEM2:
+                        case FEM3:
+                        case FEM4:
+                        case FEM5:
+                        case FEM6:
+                        case FEM7:
+                        case FEM8:
+                        case FEM9:
+                        case FEM10:
+                        case PODFEM1:
+                        case NAKED1:
+                        case STATUE:
+                        case TOUGHGAL:
+#else
                         case FEM10:
                         case NAKED1:
                         case STATUE:
                         case TOUGHGAL:
+#endif
                             return;
                         case COW:
                             sprite[neartagsprite].filler = 1;
@@ -1791,17 +1994,16 @@ void checksectors(short snum)
             return;
 
         if( neartagsprite == -1 && neartagwall == -1)
+        {
             if(sector[p->cursectnum].lotag == 2 )
             {
                 oldz = hitasprite(p->i,&neartagsprite);
                 if(oldz > 1280) neartagsprite = -1;
             }
+        }
 
         if(neartagsprite >= 0)
         {
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-            fakejval = snum;
-#endif
             if( checkhitswitch(snum,neartagsprite,1) ) return;
 
             switch(sprite[neartagsprite].picnum)
@@ -1851,11 +2053,17 @@ void checksectors(short snum)
 #endif
                 case TOILET:
                 case STALL:
+#ifndef DEMO
                 case RRTILE2121:
                 case RRTILE2122:
+#endif
                     if(p->last_pissed_time == 0)
                     {
+#ifdef DEMO
+                        if(ud.lockout == 0) spritesound(DUKE_URINATE,p->i);
+#else
                         if(ud.lockout == 0) spritesound(435,p->i);
+#endif
                         
                         p->last_pissed_time = 26*220;
                         p->last_pissed_time = 26*220;
@@ -1873,16 +2081,31 @@ void checksectors(short snum)
                         else if(sprite[p->i].extra < max_player_health )
                              sprite[p->i].extra = max_player_health;
                     }
-                    else if(Sound[DUKE_GRUNT].num == 0)
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                    {
-                        fakejval = -1;
-                        spritesound(DUKE_GRUNT, p->i);
-                    }
+#ifdef DEMO
+                    else if(Sound[FLUSH_TOILET].num == 0)
+                        spritesound(FLUSH_TOILET,p->i);
 #else
+                    else if(Sound[DUKE_GRUNT].num == 0)
                         spritesound(DUKE_GRUNT,p->i);
 #endif
                     return;
+
+#ifdef DEMO
+                case NUKEBUTTON:
+
+                    hitawall(p,&j);
+                    if(j >= 0 && wall[j].overpicnum == 0)
+                        if(hittype[neartagsprite].temp_data[0] == 0)
+                    {
+                        hittype[neartagsprite].temp_data[0] = 1;
+                        sprite[neartagsprite].owner = p->i;
+                        p->buttonpalette = sprite[neartagsprite].pal;
+                        if(p->buttonpalette)
+                            ud.secretlevel = sprite[neartagsprite].lotag;
+                        else ud.secretlevel = 0;
+                    }
+                    return;
+#endif
                 case WATERFOUNTAIN:
                     if(hittype[neartagsprite].temp_data[0] != 1)
                     {
@@ -1892,17 +2115,11 @@ void checksectors(short snum)
                         if(sprite[p->i].extra < max_player_health)
                         {
                             sprite[p->i].extra++;
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                            fakejval = -1;
-#endif
                             spritesound(DUKE_DRINKING,p->i);
                         }
                     }
                     return;
                 case PLUG:
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                    fakejval = -1;
-#endif
                     spritesound(SHORT_CIRCUIT,p->i);
                     sprite[p->i].extra -= 2+(TRAND&3);
                     p->pals[0] = 48;
@@ -1910,23 +2127,76 @@ void checksectors(short snum)
                     p->pals[2] = 64;
                     p->pals_time = 32;
                     break;
+#ifdef DEMO
+                case VIEWSCREEN:
+                case VIEWSCREEN2:
+                    {
+                        i = headspritestat[1];
+
+                        while(i >= 0)
+                        {
+                            if( PN == CAMERA1 && SP == 0 && sprite[neartagsprite].hitag == SLT )
+                            {
+                                SP = 1; //Using this camera
+                                spritesound(MONITOR_ACTIVE,neartagsprite);
+
+                                sprite[neartagsprite].owner = i;
+                                sprite[neartagsprite].yvel = 1;
+
+
+                                j = p->cursectnum;
+                                p->cursectnum = SECT;
+                                setpal(p);
+                                p->cursectnum = j;
+
+                                // parallaxtype = 2;
+                                p->newowner = i;
+                                return;
+                            }
+                            i = nextspritestat[i];
+                       }
+                    }
+
+                    CLEARCAMERAS:
+
+                    if(i < 0)
+                    {
+                        p->posx = p->oposx;
+                        p->posy = p->oposy;
+                        p->posz = p->oposz;
+                        p->ang = p->oang;
+                        p->newowner = -1;
+
+                        updatesector(p->posx,p->posy,&p->cursectnum);
+                        setpal(p);
+
+
+                        i = headspritestat[1];
+                        while(i >= 0)
+                        {
+                            if(PN==CAMERA1) SP = 0;
+                            i = nextspritestat[i];
+                        }
+                    }
+                    else if(p->newowner >= 0)
+                        p->newowner = -1;
+
+                    if( KB_KeyPressed(sc_Escape) )
+                        KB_ClearKeyDown(sc_Escape);
+
+                    return;
+#endif
             }
         }
 
         if( (sync[snum].bits&(1<<29)) == 0 ) return;
-
-
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-        if (neartagwall == -1 && neartagsector == -1 && neartagsprite == -1)
-            fakejval = snum;
+#ifdef DEMO
+        else if(p->newowner >= 0) { i = -1; goto CLEARCAMERAS; }
 #endif
 
         if(neartagwall == -1 && neartagsector == -1 && neartagsprite == -1)
             if( klabs(hits(p->i)) < 512 )
         {
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-            fakejval = -1;
-#endif
             if( (TRAND&255) < 16 )
                 spritesound(DUKE_SEARCH2,p->i);
             else spritesound(DUKE_SEARCH,p->i);
@@ -1938,16 +2208,16 @@ void checksectors(short snum)
             if( wall[neartagwall].lotag > 0 && isadoorwall(wall[neartagwall].picnum) )
             {
                 if(hitscanwall == neartagwall || hitscanwall == -1)
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                {
-                    fakejval = snum;
-                    checkhitswitch(snum, neartagwall, 0);
-                }
-#else
                     checkhitswitch(snum,neartagwall,0);
-#endif
                 return;
             }
+#ifdef DEMO
+            else if(p->newowner >= 0)
+            {
+                i = -1;
+                goto CLEARCAMERAS;
+            }
+#endif
         }
 
         if( neartagsector >= 0 && (sector[neartagsector].lotag&16384) == 0 && isanearoperator(sector[neartagsector].lotag) )
@@ -1960,24 +2230,20 @@ void checksectors(short snum)
                     return;
                 i = nextspritesect[i];
             }
-            if (haskey(neartagsector,snum))
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-            {
-                fakejval = -1;
-                operatesectors(neartagsector,p->i);
-            }
+#ifdef DEMO
+            if (haskey(neartagsector,p->i))
 #else
-                operatesectors(neartagsector,p->i);
+            if (haskey(neartagsector,snum))
 #endif
+                operatesectors(neartagsector,p->i);
             else
             {
+#ifndef DEMO
                 if (sector[neartagsector].filler > 3)
                     spritesound(99,p->i);
                 else
-                    spritesound(419,p->i);
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                fakejval = snum;
 #endif
+                    spritesound(419,p->i);
                 FTA(41,p);
             }
         }
@@ -1991,39 +2257,52 @@ void checksectors(short snum)
                     if(PN == ACTIVATOR || PN == MASTERSWITCH) return;
                     i = nextspritesect[i];
                 }
-                if (haskey(neartagsector,snum))
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                {
-                    fakejval = -1;
-                    operatesectors(sprite[p->i].sectnum,p->i);
-                }
+#ifdef DEMO
+                if (haskey(neartagsector,p->i))
 #else
-                    operatesectors(sprite[p->i].sectnum,p->i);
+                if (haskey(neartagsector,snum))
 #endif
+                    operatesectors(sprite[p->i].sectnum,p->i);
                 else
                 {
+#ifndef DEMO
                     if (sector[neartagsector].filler > 3)
                         spritesound(99,p->i);
                     else
-                        spritesound(419,p->i);
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-                    fakejval = snum;
 #endif
+                        spritesound(419,p->i);
                     FTA(41,p);
                 }
             }
-#if defined(DESYNCCORRECT) && !defined(RRRA)
-            else { fakejval = snum; checkhitswitch(snum,neartagwall,0); }
-#else
             else checkhitswitch(snum,neartagwall,0);
-#endif
         }
     }
 }
 
+#ifdef DEMO
+
+int scraped;
+int scrape_t;
+
+void dofurniture(short wl, short sect)
+#else
 void dofurniture(short wl, short sect, short snum)
+#endif
 {
-#ifdef RRRA
+#ifdef DEMO
+    short startwall;
+    short endwall;
+    short i;
+    short var_C;
+    long x;
+    long y;
+    long max_x;
+    long max_y;
+    long min_x;
+    long min_y;
+    long ins;
+    long var_cx;
+#elif defined(RRRA)
     short startwall;
     short endwall;
     short i;
@@ -2054,8 +2333,13 @@ void dofurniture(short wl, short sect, short snum)
     startwall = sector[wall[wl].nextsector].wallptr;;
     endwall = startwall + sector[wall[wl].nextsector].wallnum;
     var_C = 1;
+#ifdef DEMO
+    min_x = min_y = 65565;
+    max_x = max_y = 0;
+#else
     max_x = max_y = -0x20000;
     min_x = min_y = 0x20000;
+#endif
     var_cx = sector[sect].hitag;
     if (var_cx > 16)
         var_cx = 16;
@@ -2092,8 +2376,17 @@ void dofurniture(short wl, short sect, short snum)
         var_C = 0;
     if (var_C)
     {
+#ifdef DEMO
+        if (!scrape_t)
+        {
+            scraped = 1;
+            scrape_t = 68;
+            sound(389);
+        }
+#else
         if (Sound[389].num == 0)
             callsound2(389,snum);
+#endif
         for (i = startwall; i < endwall; i++)
         {
             x = wall[i].x;
@@ -2121,6 +2414,9 @@ void dofurniture(short wl, short sect, short snum)
     }
     else
     {
+#ifdef DEMO
+        scraped = 0;
+#endif
         for (i = startwall; i < endwall; i++)
         {
             x = wall[i].x;

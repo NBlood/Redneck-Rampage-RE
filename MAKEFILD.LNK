@@ -12,3 +12,4 @@ file premap,sector1,sector2,sector3,global,rts,sounds,config,animlib
 file lava,warpfx,noise,cdrom
 library build.lib
 library audio_wf.lib,mact\mact386.lib
+library butwcd4.lib

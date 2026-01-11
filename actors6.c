@@ -32,7 +32,11 @@ extern char actor_tog;
 void moveeffectors(void)   //STATNUM 3
 {
     long q, l, m, x, st, j, *t;
+#ifdef DEMO
+    short i, k, nexti, nextk, p, sh, nextj;
+#else
     short i, k, nexti, nextk, p, sh, nextj, ns, pn;
+#endif
     spritetype *s;
     sectortype *sc;
     walltype *wal;
@@ -182,6 +186,9 @@ void moveeffectors(void)   //STATNUM 3
                     while(p >= 0)
                     {
                         if(sprite[p].statnum != 3 && sprite[p].statnum != 4)
+#ifdef DEMO
+                            if( sprite[p].picnum != LASERLINE )
+#endif
                         {
                             if(sprite[p].picnum == APLAYER && sprite[p].owner >= 0)
                             {
@@ -242,6 +249,7 @@ void moveeffectors(void)   //STATNUM 3
                     {
                         t[4] = 0;
                         s->xvel = k;
+#ifndef DEMO
 #ifdef RRRA
                         if (lastlevel)
 #endif
@@ -265,8 +273,12 @@ void moveeffectors(void)   //STATNUM 3
                                 KILLIT(i);
                             }
                         }
+#endif
                     }
                 }
+#ifdef DEMO
+                else s->xvel = k;
+#else
                 else
                 {
                     s->xvel = k;
@@ -319,6 +331,7 @@ void moveeffectors(void)   //STATNUM 3
                         j = nextj;
                     }
                 }
+#endif
 
                 j = headspritestat[3];
                 while( j >= 0)
@@ -1815,6 +1828,9 @@ void moveeffectors(void)   //STATNUM 3
                             switch(sprite[j].picnum)
                             {
                                 case BLOODPOOL:
+#ifdef DEMO
+                                case PUKE:
+#endif
                                 case FOOTPRINTS:
                                 case FOOTPRINTS2:
                                 case FOOTPRINTS3:
@@ -1822,10 +1838,16 @@ void moveeffectors(void)   //STATNUM 3
                                     k = 1;
                                     break;
                                 case BULLETHOLE:
+#ifdef DEMO
+                                case LASERLINE:
+#endif
                                     j = nextj;
                                     continue;
                             }
                         case 6:
+#ifdef DEMO
+                            if(sprite[j].picnum == TRIPBOMB) break;
+#endif
                         case 1:
                         case 0:
                             if(
@@ -1833,6 +1855,12 @@ void moveeffectors(void)   //STATNUM 3
                                 sprite[j].picnum == BOLT1+1 ||
                                 sprite[j].picnum == BOLT1+2 ||
                                 sprite[j].picnum == BOLT1+3 ||
+#ifdef DEMO
+                                sprite[j].picnum == SIDEBOLT1 ||
+                                sprite[j].picnum == SIDEBOLT1+1 ||
+                                sprite[j].picnum == SIDEBOLT1+2 ||
+                                sprite[j].picnum == SIDEBOLT1+3 ||
+#endif
                                 wallswitchcheck(j)
                               )
                               break;

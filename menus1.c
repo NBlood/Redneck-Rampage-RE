@@ -117,6 +117,15 @@ void cmenu(short cm)
 
 void savetemp(char *fn,long daptr,long dasiz)
 {
+#ifdef DEMO
+    int fp;
+
+    fp = open(fn,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+
+    write(fp,(char *)daptr,dasiz);
+
+    close(fp);
+#else
     FILE* fp;
 
     fp = fopen(fn,"wb");
@@ -127,6 +136,7 @@ void savetemp(char *fn,long daptr,long dasiz)
     fwrite((char *)daptr,dasiz,1,fp);
 
     fclose(fp);
+#endif
 }
 
 void getangplayers(short snum)
@@ -220,7 +230,10 @@ loadplayer(signed char spot)
         fnptr = fn;
         fn[4] = spot + '0';
      }
-
+     
+#ifdef DEMO
+     waitforeverybody();
+#endif
      if ((fil = kopen4load(fnptr,0)) == -1) return(-1);
 
      ready2send = 0;
@@ -236,7 +249,11 @@ loadplayer(signed char spot)
      }
 
      kdfread(&nump,sizeof(nump),1,fil);
+#ifdef DEMO
+     if(nump != ud.multimode)
+#else
      if(nump != numplayers)
+#endif
      {
         kclose(fil);
         ototalclock = totalclock;
@@ -245,6 +262,7 @@ loadplayer(signed char spot)
         return 1;
      }
 
+#ifndef DEMO
      if(numplayers > 1)
      {
          pub = NUMPAGES;
@@ -256,14 +274,17 @@ loadplayer(signed char spot)
     }
 
      waitforeverybody();
+#endif
 
          FX_StopAllSounds();
      clearsoundlocks();
          MUSIC_StopSong();
 
+#ifndef DEMO
      if(numplayers > 1)
          kdfread(&buf,19,1,fil);
      else
+#endif
          kdfread(&ud.savegame[spot][0],19,1,fil);
 
      music_changed = (music_select != (ud.volume_number*11) + ud.level_number);
@@ -399,6 +420,7 @@ loadplayer(signed char spot)
      kdfread(&jaildoorspeed[0],sizeof(jaildoorspeed[0]),32,fil);
      kdfread(&jaildoorsound[0],sizeof(jaildoorsound[0]),32,fil);
      kdfread(&jaildoorcnt,sizeof(jaildoorcnt),1,fil);
+#ifndef DEMO
      kdfread(&shadedsector[0],sizeof(shadedsector[0]),MAXSECTORS,fil);
      kdfread(&minecartsect[0],sizeof(minecartsect[0]),16,fil);
      kdfread(&minecartchildsect[0],sizeof(minecartchildsect[0]),16,fil);
@@ -443,6 +465,7 @@ loadplayer(signed char spot)
      else if (ps[myconnectindex].fogtype == 0)
          sub_86730(0);
 #endif
+#endif
 
      kclose(fil);
 
@@ -476,8 +499,18 @@ loadplayer(signed char spot)
          for(x=0;x<numanimwalls;x++)
              switch(wall[animwall[x].wallnum].picnum)
          {
+#ifdef DEMO
+             case FEMPIC1:
+                 wall[animwall[x].wallnum].picnum = BLANKSCREEN;
+                 break;
+             case FEMPIC2:
+             case FEMPIC3:
+                 wall[animwall[x].wallnum].picnum = SCREENBREAK6;
+                 break;
+#else
              default:
                  break;
+#endif
          }
      }
 
@@ -551,7 +584,11 @@ saveplayer(signed char spot)
         return -1;
      }
 
+#ifdef DEMO
+     ready2send = 0;
+#else
      waitforeverybody();
+#endif
 
      if( multiflag == 2 && multiwho != myconnectindex )
      {
@@ -573,7 +610,9 @@ saveplayer(signed char spot)
 
      if ((fil = fopen(fnptr,"wb")) == 0) return(-1);
 
+#ifndef DEMO
      ready2send = 0;
+#endif
 
      dfwrite(&bv,4,1,fil);
      dfwrite(&ud.multimode,sizeof(ud.multimode),1,fil);
@@ -735,6 +774,7 @@ saveplayer(signed char spot)
      dfwrite(&jaildoorspeed[0],sizeof(jaildoorspeed[0]),32,fil);
      dfwrite(&jaildoorsound[0],sizeof(jaildoorsound[0]),32,fil);
      dfwrite(&jaildoorcnt,sizeof(jaildoorcnt),1,fil);
+#ifndef DEMO
      dfwrite(&shadedsector[0],sizeof(shadedsector[0]),MAXSECTORS,fil);
      dfwrite(&minecartsect[0],sizeof(minecartsect[0]),16,fil);
      dfwrite(&minecartchildsect[0],sizeof(minecartchildsect[0]),16,fil);
@@ -773,6 +813,7 @@ saveplayer(signed char spot)
      dfwrite(&WindDir,4,1,fil);
      dfwrite(&word_119BD8,2,1,fil);
      dfwrite(&word_119BDA,2,1,fil);
+#endif
 #endif
 
          fclose(fil);
@@ -841,6 +882,7 @@ int probe(int x,int y,int i,int n, int t)
             probey++;
             minfo.dz = 0;
         }
+#ifndef DEMO
         if (t == 3)
         {
             if (KB_KeyPressed(sc_LeftArrow) || KB_KeyPressed(sc_kpad_4))
@@ -919,6 +961,7 @@ int probe(int x,int y,int i,int n, int t)
                 probey = 7;
             }
         }
+#endif
     }
 
     if(probey >= n)
@@ -940,19 +983,28 @@ int probe(int x,int y,int i,int n, int t)
         case 2:
             rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,13107L,0,SPINNINGHEAD+(((totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
             break;
+#ifndef DEMO
         case 3:
             break;
+#endif
         default:
             rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,6553L,0,SPINNINGHEAD+(((totalclock>>3))%16),sh,0,10,0,0,xdim-1,ydim-1);
             break;
         }
     }
 
+#ifdef DEMO
+    if( KB_KeyPressed(sc_Space) || KB_KeyPressed( sc_kpad_Enter ) || KB_KeyPressed( sc_Enter ) || (LMB && !onbar) )
+#else
     if( KB_KeyPressed( sc_kpad_Enter ) || KB_KeyPressed( sc_Enter ) || (LMB && !onbar) )
+#endif
     {
         if(current_menu != 110)
             sound(341);
         KB_ClearKeyDown( sc_Enter );
+#ifdef DEMO
+        KB_ClearKeyDown( sc_Space );
+#endif
         KB_ClearKeyDown( sc_kpad_Enter );
         return(probey);
     }
@@ -1083,6 +1135,7 @@ int menutext(int x,int y,short s,short p,char *t)
     return (x);
 }
 
+#ifndef DEMO
 int endlvlmenutext(int x,int y,short s,short p,char *t)
 {
     short i, ac, centre;
@@ -1191,6 +1244,7 @@ int endlvlmenutext(int x,int y,short s,short p,char *t)
     }
     return (x);
 }
+#endif
 
 int menutextc(int x,int y,short s,short p,char *t)
 {
@@ -1288,6 +1342,120 @@ int menutextc(int x,int y,short s,short p,char *t)
     return (x);
 }
 
+#ifdef DEMO
+int Xatrix_menutext(int x,int y,short s,short p,char *t,int a6)
+{
+    short i, ac, centre;
+
+    y -= 12;
+
+    i = centre = 0;
+
+    if( x == (320>>1) )
+    {
+        while( *(t+i) )
+        {
+            if(*(t+i) == ' ')
+            {
+                centre += 5;
+                i++;
+                continue;
+            }
+            ac = 0;
+            if(*(t+i) >= '0' && *(t+i) <= '9')
+                ac = *(t+i) - '0' + BIGALPHANUM-10;
+            else if(*(t+i) >= 'a' && *(t+i) <= 'z')
+                ac = toupper(*(t+i)) - 'A' + BIGALPHANUM;
+            else if(*(t+i) >= 'A' && *(t+i) <= 'Z')
+                ac = *(t+i) - 'A' + BIGALPHANUM;
+            else switch(*(t+i))
+            {
+                case '.':
+                    ac = BIGPERIOD;
+                    break;
+                case '\'':
+                    ac = BIGAPPOS;
+                    break;
+                case ',':
+                    ac = BIGCOMMA;
+                    break;
+                case '!':
+                    ac = BIGX;
+                    break;
+                case '?':
+                    ac = BIGQ;
+                    break;
+                case ';':
+                    ac = BIGSEMI;
+                    break;
+                case ':':
+                    ac = BIGSEMI;
+                    break;
+                default:
+                    centre += 5;
+                    i++;
+                    continue;
+            }
+
+            centre += tilesizx[ac]-1;
+            i++;
+        }
+    }
+
+    if(centre)
+        x = (320-centre-10)>>1;
+
+    while(*t)
+    {
+        if(*t == ' ') {x+=5;t++;continue;}
+        ac = 0;
+        if(*t >= '0' && *t <= '9')
+            ac = *t - '0' + BIGALPHANUM-10;
+        else if(*t >= 'a' && *t <= 'z')
+            ac = toupper(*t) - 'A' + BIGALPHANUM;
+        else if(*t >= 'A' && *t <= 'Z')
+            ac = *t - 'A' + BIGALPHANUM;
+        else switch(*t)
+        {
+            case '.':
+                ac = BIGPERIOD;
+                break;
+            case ',':
+                ac = BIGCOMMA;
+                break;
+            case '!':
+                ac = BIGX;
+                break;
+            case '\'':
+                ac = BIGAPPOS;
+                break;
+            case '?':
+                ac = BIGQ;
+                break;
+            case ';':
+                ac = BIGSEMI;
+                break;
+            case ':':
+                ac = BIGCOLIN;
+                break;
+            default:
+                x += 5;
+                t++;
+                continue;
+        }
+
+        if (a6 < 610)
+            rotatesprite(x<<16,y<<16,(67-i)*a6*4,(a6<<6)&2047,ac,s,p,10+16,0,0,xdim-1,ydim-1);
+        else
+            rotatesprite(x<<16,y<<16,131072L,0,ac,s,p,10+16,0,0,xdim-1,ydim-1);
+
+        x += tilesizx[ac] * 2;
+        t++;
+    }
+    return (x);
+}
+#endif
+
 
 void bar(int x,int y,short *p,short dainc,char damodify,short s, short pa)
 {
@@ -1350,11 +1518,19 @@ void bar(int x,int y,short *p,short dainc,char damodify,short s, short pa)
 
     xloc = *p;
 
+#ifdef DEMO
+    rotatesprite( (x+22)<<16,(y-3)<<16,65536L,0,SLIDEBAR,s,pa,10,0,0,xdim-1,ydim-1);
+    if(rev == 0)
+        rotatesprite( (x+xloc+1)<<16,(y+1)<<16,65536L,0,SLIDEBAR+1,s,pa,10,0,0,xdim-1,ydim-1);
+    else
+        rotatesprite( (x+(65-xloc) )<<16,(y+1)<<16,65536L,0,SLIDEBAR+1,s,pa,10,0,0,xdim-1,ydim-1);
+#else
     rotatesprite( (x+32)<<16,(y-3)<<16,65536L,0,SLIDEBAR,s,pa,10,0,0,xdim-1,ydim-1);
     if(rev == 0)
         rotatesprite( (x+xloc+1)<<16,(y+1)<<16,32768L,0,BIGALPHANUM-9,s,pa,10,0,0,xdim-1,ydim-1);
     else
         rotatesprite( (x+(65-xloc) )<<16,(y+1)<<16,32768L,0,BIGALPHANUM-9,s,pa,10,0,0,xdim-1,ydim-1);
+#endif
 }
 
 #define SHX(X) 0

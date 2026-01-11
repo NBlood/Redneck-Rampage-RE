@@ -549,7 +549,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define SHOTSPARK1 1764
 #define RPG 1774
 #define RPG2 1781
-// #define LASERSITE 1781
 #define RRTILE1790 1790
 #define RRTILE1792 1792
 #define RRTILE1801 1801
@@ -910,35 +909,43 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define ORGANTIC 3308
 #define FIRSTGUN 3328
 #define FIRSTGUNRELOAD 3336
-#define KNEE 3340
 #define SHOTGUN 3350
 #define HANDTHROW 3360
 #define SHOTGUNSHELLS 3372
-#define SCUBAMASK 3374
-#define SHRINKER 3384
 #define CIRCLESTUCK 3388
-#define SPIT 3390
 #ifdef DEMO
-#define CHAINGUN 1705
-#define GROWSPARK 1636
-#define SHRINKSPARK 1413
 #define FIRELASER 1396
+#define SPIT 1404
+#define SHRINKSPARK 1413
+#define GROWSPARK 1636
+#define DEVISTATOR 1687
+#define KNEE 1690
+#define CHAINGUN 1705
+#define RPGGUN 1713
+#define FREEZE 1717
+#define SHRINKER 1725
+#define SCUBAMASK 1750
 #else
+#define KNEE 3340
+#define SCUBAMASK 3374
 #define CHAINGUN 3380
+#define SHRINKER 3384
+#define SPIT 3390
 #define GROWSPARK 3395
 #define SHRINKSPARK 3400
+#define FREEZE 3415
 #define FIRELASER 3420
+#define DEVISTATOR 3445
+#define RPGGUN 3452
 #endif
+#define NEWCROWBAR 3340
 #define RRTILE3410 3410
 #define LUMBERBLADE 3411
-#define FREEZE 3415
 #define BOWLINGBALLH 3428
 #define BOWLINGBALL 3430
 #define BOWLINGBALLSPRITE 3437
 #define POWDERH 3438
 #define RRTILE3440 3440
-#define DEVISTATOR 3445
-#define RPGGUN 3452
 #define RRTILE3462 3462
 #define OWHIP 3471
 #define UWHIP 3475
@@ -1451,4 +1458,5 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define ARMJIB1 5465
 #define LEGJIB1 5469
 #define SLIME 1161
+#define LASERSITE 1781
 #endif

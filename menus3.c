@@ -131,7 +131,33 @@ void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
                 if( (spr->cstat&257) != 0) switch (spr->cstat&48)
                                 {
                     case 0: break;
-                    case 16: break;
+                    case 16:
+#ifdef DEMO
+                        if( spr->picnum == LASERLINE )
+                        {
+                            x1 = sprx; y1 = spry;
+                            tilenum = spr->picnum;
+                            xoff = (long)((signed char)((picanm[tilenum]>>8)&255))+((long)spr->xoffset);
+                            if ((spr->cstat&4) > 0) xoff = -xoff;
+                            k = spr->ang; l = spr->xrepeat;
+                            dax = sintable[k&2047]*l; day = sintable[(k+1536)&2047]*l;
+                            l = tilesizx[tilenum]; k = (l>>1)+xoff;
+                            x1 -= mulscale16(dax,k); x2 = x1+mulscale16(dax,l);
+                            y1 -= mulscale16(day,k); y2 = y1+mulscale16(day,l);
+
+                            ox = x1-cposx; oy = y1-cposy;
+                            x1 = dmulscale16(ox,xvect,-oy,yvect);
+                            y1 = dmulscale16(oy,xvect2,ox,yvect2);
+
+                            ox = x2-cposx; oy = y2-cposy;
+                            x2 = dmulscale16(ox,xvect,-oy,yvect);
+                            y2 = dmulscale16(oy,xvect2,ox,yvect2);
+
+                            drawline256(x1+(xdim<<11),y1+(ydim<<11),
+										x2+(xdim<<11),y2+(ydim<<11),col);
+                        }
+#endif
+                        break;
                     case 32:
 
                                                 tilenum = spr->picnum;
@@ -338,6 +364,11 @@ void endanimsounds(long fr)
     }
 }
 
+#ifdef DEMO
+void logoanimsounds(long fr)
+{
+}
+#else
 void logoanimsounds(long fr, short s)
 {
 #ifdef RRRA
@@ -392,9 +423,12 @@ void logoanimsounds(long fr, short s)
     }
 #endif
 }
+#endif
 
 
-#ifdef RRRA
+#ifdef DEMO
+void playanm(char *fn,char t)
+#elif defined(RRRA)
 short playanm(char *fn,char t, short s)
 #else
 void playanm(char *fn,char t, short s)
@@ -423,7 +457,9 @@ void playanm(char *fn,char t, short s)
 
     walock[MAXTILES-3-t] = 219+t;
 
+#ifndef DEMO
     if(anim == 0)
+#endif
         allocache((long *)&anim,length+sizeof(anim_t),&walock[MAXTILES-3-t]);
 
     animbuf = (char *)(FP_OFF(anim)+sizeof(anim_t));
@@ -462,6 +498,9 @@ void playanm(char *fn,char t, short s)
        while(totalclock < ototalclock)
        {
           if( KB_KeyWaiting() )
+#ifdef DEMO
+              goto ENDOFANIMLOOP;
+#else
           {
               FX_StopAllSounds();
               clearsoundlocks();
@@ -473,6 +512,7 @@ void playanm(char *fn,char t, short s)
               goto ENDOFANIMLOOP;
 #endif
           }
+#endif
           getpackets();
        }
 
@@ -490,7 +530,11 @@ void playanm(char *fn,char t, short s)
        rotatesprite(0<<16,0<<16,65536L,512,MAXTILES-3-t,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
        nextpage();
 
+#ifdef DEMO
+       if(t == 5) logoanimsounds(i);
+#else
        if(t == 5) logoanimsounds(i,s);
+#endif
        else if(t < 4) endanimsounds(i);
         }
 

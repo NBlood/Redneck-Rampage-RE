@@ -34,6 +34,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 char haltsoundhack;
 
+#ifndef DEMO
 short callsound2(short sn, short snum)
 {
     short i;
@@ -43,6 +44,8 @@ short callsound2(short sn, short snum)
     spritesound(sn,i);
     return 1;
 }
+#endif
+
 short callsound(short sn,short whatsprite)
 {
     short i;
@@ -155,6 +158,9 @@ char isadoorwall(short dapic)
         case DOORTILE20:
         case DOORTILE21:
         case DOORTILE22:
+#ifdef DEMO
+        case DOORTILE23:
+#endif
         case RRTILE1856:
         case RRTILE1877:
             return 1;
@@ -162,6 +168,7 @@ char isadoorwall(short dapic)
     return 0;
 }
 
+#ifndef DEMO
 char isablockdoor(short dapic)
 {
     switch (dapic)
@@ -276,6 +283,7 @@ char isablockdoor(short dapic)
     }
     return 0;
 }
+#endif
 
 
 char isanunderoperator(short lotag)
@@ -561,6 +569,13 @@ void animatewalls(void)
                 case SCREENBREAK11:
                 case SCREENBREAK12:
                 case SCREENBREAK13:
+#ifdef DEMO
+                case SCREENBREAK14:
+                case SCREENBREAK15:
+                case SCREENBREAK16:
+                case SCREENBREAK17:
+                case SCREENBREAK18:
+#endif
 
                     if( (TRAND&255) < 16)
                     {
@@ -574,7 +589,11 @@ void animatewalls(void)
                 case SCREENBREAK7:
                 case SCREENBREAK8:
 
+#ifdef DEMO
+                    if(animwall[p].tag >= 0 && wall[i].extra != FEMPIC2 && wall[i].extra != FEMPIC3 )
+#else
                     if(animwall[p].tag >= 0)
+#endif
                         wall[i].picnum = animwall[p].tag;
                     else
                     {
@@ -717,19 +736,27 @@ void operatesectors(short sn,short ii)
                     {
                         jaildooropen[i] = 1;
                         jaildoordrag[i] = jaildoordist[i];
+#ifdef DEMO
+                        sound(jaildoorsound[i]);
+#else
 #ifdef RRRA
                         if (jaildoorsound[i] != 0)
 #endif
                         callsound2(jaildoorsound[i],screenpeek);
+#endif
                     }
                     if (jaildooropen[i] == 2)
                     {
                         jaildooropen[i] = 3;
                         jaildoordrag[i] = jaildoordist[i];
+#ifdef DEMO
+                        sound(jaildoorsound[i]);
+#else
 #ifdef RRRA
                         if (jaildoorsound[i] != 0)
 #endif
                         callsound2(jaildoorsound[i],screenpeek);
+#endif
                     }
                 }
             }

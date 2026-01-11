@@ -27,8 +27,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 //-------------------------------------------------------------------------
 
 //#define RRRA
-//#define DESYNCCORRECT
-//#define RANDCORRECT
 
 #include <stdio.h>
 #include <string.h>
@@ -114,22 +112,7 @@ extern int wp1,wp2,wp3,wp4;
 
 #define    ALT_IS_PRESSED ( KB_KeyPressed( sc_RightAlt ) || KB_KeyPressed( sc_LeftAlt ) )
 #define    SHIFTS_IS_PRESSED ( KB_KeyPressed( sc_RightShift ) || KB_KeyPressed( sc_LeftShift ) )
-#ifdef RANDCORRECT
-#define    RANDOMSCRAP                \
-{                                     \
-    short r1, r2, r3, r4, r5, r6, r7; \
-    r1 = TRAND;                       \
-    r2 = TRAND;                       \
-    r3 = TRAND;                       \
-    r4 = TRAND;                       \
-    r5 = TRAND;                       \
-    r6 = TRAND;                       \
-    r7 = TRAND;                       \
-    EGS(s->sectnum,s->x+(r7&255)-128,s->y+(r6&255)-128,s->z-(8<<8)-(r5&8191),SCRAP6+(r4&15),-8,16,16,r3&2047,(r2&63)+64,-512-(r1&2047),i,5); \
-}
-#else
 #define    RANDOMSCRAP EGS(s->sectnum,s->x+(TRAND&255)-128,s->y+(TRAND&255)-128,s->z-(8<<8)-(TRAND&8191),SCRAP6+(TRAND&15),-8,16,16,TRAND&2047,(TRAND&63)+64,-512-(TRAND&2047),i,5)
-#endif
 
 #define    BLACK 0
 #define    DARKBLUE 1
@@ -647,7 +630,11 @@ extern char pus,pub,camerashitable,freezerhurtowner,lasermode;
 extern char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 extern signed char multiwho, multipos, multiwhat, multiflag;
 extern long syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
+#ifdef DEMO
+extern long numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+#else
 extern long numfreezebounces,rpgblastradius,pipebombblastradius,powderkegblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+#endif
 extern char stereo,eightytwofifty,playerswhenstarted,playonten;
 extern long myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
 

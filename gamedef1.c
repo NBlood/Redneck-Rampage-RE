@@ -35,7 +35,9 @@ static short num_squigilly_brackets;
 static long last_used_size;
 static long parsing_state;
 
-#ifdef RRRA
+#ifdef DEMO
+#define NUMKEYWORDS     115
+#elif defined(RRRA)
 #define NUMKEYWORDS     147
 #else
 #define NUMKEYWORDS     131
@@ -158,6 +160,7 @@ char *keyw[NUMKEYWORDS] =
     "iftipcow", // 112
     "isdrunk", // 113
     "iseat", // 114
+#ifndef DEMO
     "destroyit", // 115
     "larrybird", // 116
     "strafeleft", // 117
@@ -191,6 +194,7 @@ char *keyw[NUMKEYWORDS] =
     "motoloopsnd", // 144
     "ifsizedown", // 145
     "rndmove" // 146
+#endif
 #endif
 };
 
@@ -1076,10 +1080,12 @@ char parsecommand(void)
         case 78:
         case 85:
         case 94:
+#ifndef DEMO
         case 119:
         case 120:
         case 127:
         case 128:
+#endif
             transnum();
         case 43:
         case 44:
@@ -1104,6 +1110,7 @@ char parsecommand(void)
         case 110:
         case 111:
         case 112:
+#ifndef DEMO
         case 129:
         case 130:
 #ifdef RRRA
@@ -1112,6 +1119,7 @@ char parsecommand(void)
         case 134:
         case 135:
         case 145:
+#endif
 #endif
 
             if(tw == 51)
@@ -1236,7 +1244,11 @@ char parsecommand(void)
             i = 0;
             while( *textptr != ' ' && *textptr != 0x0a )
             {
+#ifdef DEMO
+                level_file_names[j*11+k][i] = *textptr;
+#else
                 level_file_names[j*7+k][i] = *textptr;
+#endif
                 textptr++,i++;
                 if(i > 127)
                 {
@@ -1246,18 +1258,30 @@ char parsecommand(void)
                     break;
                 }
             }
+#ifdef DEMO
+            level_names[j*11+k][i-1] = '\0';
+#else
             level_names[j*7+k][i-1] = '\0';
+#endif
 
             while( *textptr == ' ' ) textptr++;
 
+#ifdef DEMO
+            partime[j*11+k] =
+#else
             partime[j*7+k] =
+#endif
                 (((*(textptr+0)-'0')*10+(*(textptr+1)-'0'))*26*60)+
                 (((*(textptr+3)-'0')*10+(*(textptr+4)-'0'))*26);
 
             textptr += 5;
             while( *textptr == ' ' ) textptr++;
 
+#ifdef DEMO
+            designertime[j*11+k] =
+#else
             designertime[j*7+k] =
+#endif
                 (((*(textptr+0)-'0')*10+(*(textptr+1)-'0'))*26*60)+
                 (((*(textptr+3)-'0')*10+(*(textptr+4)-'0'))*26);
 
@@ -1268,7 +1292,11 @@ char parsecommand(void)
 
             while( *textptr != 0x0a )
             {
+#ifdef DEMO
+                level_names[j*11+k][i] = toupper(*textptr);
+#else
                 level_names[j*7+k][i] = toupper(*textptr);
+#endif
                 textptr++,i++;
                 if(i >= 32)
                 {
@@ -1278,7 +1306,11 @@ char parsecommand(void)
                     break;
                 }
             }
+#ifdef DEMO
+            level_names[j*11+k][i-1] = '\0';
+#else
             level_names[j*7+k][i-1] = '\0';
+#endif
             return 0;
 
         case 79:
@@ -1389,6 +1421,7 @@ char parsecommand(void)
         case 97:
         case 104:
         case 106:
+#ifndef DEMO
         case 115:
         case 116:
         case 117:
@@ -1410,10 +1443,13 @@ char parsecommand(void)
         case 144:
         case 146:
 #endif
+#endif
             return 0;
         case 60:
             j = 0;
-#ifdef RRRA
+#ifdef DEMO
+            while(j < 30)
+#elif defined(RRRA)
             while(j < 34)
 #else
             while(j < 31)
@@ -1447,7 +1483,11 @@ char parsecommand(void)
                     case 8:rpgblastradius = *scriptptr;break;
                     case 9:pipebombblastradius = *scriptptr;break;
                     case 10:shrinkerblastradius = *scriptptr; break;
+#ifdef DEMO
+                    case 11:tripbombblastradius = *scriptptr; break;
+#else
                     case 11:powderkegblastradius = *scriptptr; break;
+#endif
                     case 12:morterblastradius = *scriptptr;break;
                     case 13:bouncemineblastradius = *scriptptr;break;
                     case 14:seenineblastradius = *scriptptr;break;
@@ -1462,6 +1502,29 @@ char parsecommand(void)
                     case 22:
                     case 23:
                     case 24:
+#ifdef DEMO
+                        if(j == 24)
+                            max_ammo_amount[11] = *scriptptr;
+                        else max_ammo_amount[j-14] = *scriptptr;
+                        break;
+                    case 25:
+                        camerashitable = *scriptptr;
+                        break;
+                    case 26:
+                        numfreezebounces = *scriptptr;
+                        break;
+                    case 27:
+                        freezerhurtowner = *scriptptr;
+                        break;
+                    case 28:
+                        spriteqamount = *scriptptr;
+                        if(spriteqamount > 1024) spriteqamount = 1024;
+                        else if(spriteqamount < 0) spriteqamount = 0;
+                        break;
+                    case 29:
+                        lasermode = *scriptptr;
+                        break;
+#else
                     case 25:
                         if(j == 24)
                             max_ammo_amount[11] = *scriptptr;
@@ -1496,6 +1559,7 @@ char parsecommand(void)
                     case 33:
                         max_ammo_amount[RA16_WEAPON] = *scriptptr;
                         break;
+#endif
 #endif
                 }
                 j++;

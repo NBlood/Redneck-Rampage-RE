@@ -58,13 +58,32 @@ long quittimer = 0;
 short word_1D7EF8;
 #endif
 
+#ifdef DEMO
+
+/* Error codes */
+#define eTenBnNotInWindows 3801
+#define eTenBnBadGameIni 3802
+#define eTenBnBadTenIni 3803
+#define eTenBnBrowseCancel 3804
+#define eTenBnBadTenInst 3805
+
+int  tenBnStart(void);
+void tenBnSetBrowseRtn(char *(*rtn)(char *str, int len));
+void tenBnSetExitRtn(void (*rtn)(void));
+void tenBnSetEndRtn(void (*rtn)(void));
+
+void dummyfunc(void);
+#endif
+
 void menus(void)
 {
     short c,x;
     volatile long l;
-    int tenerr, unk, tx, ty;
-
+    int tenerr;
+#ifndef DEMO
+    int unk, tx, ty;
     unk = 0;
+#endif
 
     if(ControllerType == 1 && CONTROL_MousePresent)
     {
@@ -90,15 +109,14 @@ void menus(void)
 
     x = 0;
 
-    if (numplayers > 1)
+    if( numplayers > 1 )
     {
         getpackets();
-        if (ps[myconnectindex].gm == MODE_GAME)
-            return;
+        if( ps[myconnectindex].gm == MODE_GAME ) return;
     }
 
     sh = 4-(sintable[(totalclock<<4)&2047]>>11);
-    
+
     if(current_menu < 1000 || current_menu > 2999)
         if(!(current_menu >= 300 && current_menu <= 369))
             vscrn();
@@ -106,8 +124,13 @@ void menus(void)
     switch(current_menu)
     {
         case 25000:
+#ifdef DEMO
+            gametext(160,90,"SELECT A SAVE SPOT BEFORE",0);
+            gametext(160,90+9,"YOU QUICK RESTORE.",0);
+#else
             gametext(160,100,"SELECT A SAVE SPOT BEFORE",0);
             gametext(160,110,"YOU QUICK RESTORE.",0);
+#endif
 
             x = probe(186,124,0,0,0);
             if(x >= -1)
@@ -141,12 +164,18 @@ void menus(void)
             break;
         case 20001:
             x = probe(161,144,0,0,0);
+#ifdef DEMO
+            gametext(160,78,"RECTUM YER GONNA HAFTA BUY THE",0);
+            gametext(160,86,"FULL DAMN GAME!",0);
+            gametext(160,118,"WHACK YER ANY KEY...",0);
+#else
             gametext(160,56,"PLAY REDNECK RAMPAGE OVER THE INTERNET!",0);
             gametext(160,66,"IF YA'S TIRED OF PLAYING WITH YERSELF,",0);
             gametext(160,76,"GET YER INTERNET VERSION OF REDNECK",0);
             gametext(160,86,"RAMPAGE AT WWW.ENGAGEGAMES.COM TO BEAT",0);
             gametext(160,96,"THE HELL OUT OF REDNECKS WORLDWIDE!",0);
             gametext(160,116,"WHACK YER ESC KEY...",0);
+#endif
             if(x >= -1) cmenu(0);
             break;
 
@@ -179,12 +208,21 @@ void menus(void)
         case 15001:
         case 15000:
 
+#ifdef DEMO
+            gametext(160,90,"LOAD last game:",0);
+
+            sprintf(tempbuf,"\"%s\"",ud.savegame[lastsavedpos]);
+            gametext(160,99,tempbuf,0);
+
+            gametext(160,99+9,"(Y/N)",0);
+#else
             gametext(160,60,"LOAD last game:",0);
 
             sprintf(tempbuf,"\"%s\"",ud.savegame[lastsavedpos]);
             gametext(160,70,tempbuf,0);
 
             gametext(160,80,"(Y/N)",0);
+#endif
 
             if( KB_KeyPressed(sc_Escape) || KB_KeyPressed(sc_N) || RMB)
             {
@@ -205,7 +243,11 @@ void menus(void)
                 }
             }
 
+#ifdef DEMO
+            if(  KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#else
             if(  KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#endif
             {
                 KB_FlushKeyboardQueue();
                 FX_StopAllSounds();
@@ -300,6 +342,15 @@ void menus(void)
                         for(x=0;x<numanimwalls;x++)
                             switch(wall[animwall[x].wallnum].picnum)
                             {
+#ifdef DEMO
+                                case FEMPIC1:
+                                    wall[animwall[x].wallnum].picnum = BLANKSCREEN;
+                                    break;
+                                case FEMPIC2:
+                                case FEMPIC3:
+                                    wall[animwall[x].wallnum].picnum = SCREENBREAK6;
+                                    break;
+#endif
                             }
                     }
                 }
@@ -324,7 +375,9 @@ void menus(void)
         case 1007:
         case 1008:
         case 1009:
+#ifndef DEMO
             unk = 1;
+#endif
 
             rotatesprite(160<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
@@ -339,12 +392,23 @@ void menus(void)
             sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+volnum,1+levnum,plrskl);
             gametext(160,170,tempbuf,0);
 
+#ifdef DEMO
+            gametext(160,90,"LOAD game:",0);
+            sprintf(tempbuf,"\"%s\"",ud.savegame[current_menu-1000]);
+            gametext(160,99,tempbuf,0);
+            gametext(160,99+9,"(Y/N)",0);
+#else
             gametext(160,60,"LOAD game:",0);
             sprintf(tempbuf,"\"%s\"",ud.savegame[current_menu-1000]);
             gametext(160,70,tempbuf,0);
             gametext(160,80,"(Y/N)",0);
+#endif
 
+#ifdef DEMO
+            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#else
             if( KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#endif
             {
                 KB_FlushKeyboardQueue();
                 if(ud.multimode < 2 && ud.recstat != 2)
@@ -387,7 +451,11 @@ void menus(void)
 
         case 1500:
 
+#ifdef DEMO
+            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#else
             if( KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#endif
             {
                 KB_FlushKeyboardQueue();
                 cmenu(100);
@@ -411,7 +479,11 @@ void menus(void)
             probe(186,124,0,0,0);
 #endif
             gametext(160,90,"ABORT this game?",0);
+#ifdef DEMO
+            gametext(160,90+9,"(Y/N)",0);
+#else
             gametext(160,110,"(Y/N)",0);
+#endif
 
             break;
 
@@ -425,7 +497,9 @@ void menus(void)
         case 2007:
         case 2008:
         case 2009:
+#ifndef DEMO
             unk = 2;
+#endif
 
             rotatesprite(160<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
@@ -440,10 +514,19 @@ void menus(void)
 
             dispnames();
 
+#ifdef DEMO
+            gametext(160,90,"OVERWRITE previous SAVED game?",0);
+            gametext(160,90+9,"(Y/N)",0);
+#else
             gametext(160,60,"OVERWRITE previous SAVED game?",0);
             gametext(160,70,"(Y/N)",0);
+#endif
 
+#ifdef DEMO
+            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#else
             if( KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#endif
             {
 #ifdef RRRA
                 KB_ClearKeyDown(sc_Enter);
@@ -471,6 +554,28 @@ void menus(void)
 
             break;
 
+#ifdef DEMO
+        case 980:
+        case 981:
+        case 982:
+        case 983:
+        case 984:
+        case 985:
+        case 986:
+        case 987:
+        case 988:
+        case 989:
+        case 990:
+        case 991:
+        case 992:
+        case 993:
+        case 994:
+        case 995:
+        case 996:
+        case 997:
+        case 998:
+        case 999:
+#else
         case 960:
         case 961:
         case 962:
@@ -503,6 +608,7 @@ void menus(void)
         case 988:
         case 989:
 #endif
+#endif
             c = 320>>1;
             rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(c,24,0,0,"CREDITS");
@@ -523,7 +629,9 @@ void menus(void)
 
                 sound(335);
                 current_menu--;
-#ifdef RRRA
+#ifdef DEMO
+                if(current_menu < 980) current_menu = 999;
+#elif defined(RRRA)
                 if(current_menu < 960) current_menu = 989;
 #else
                 if(current_menu < 960) current_menu = 982;
@@ -532,6 +640,9 @@ void menus(void)
             else if(
                 KB_KeyPressed( sc_PgDn ) ||
                 KB_KeyPressed( sc_Enter ) ||
+#ifdef DEMO
+                KB_KeyPressed( sc_Space ) ||
+#endif
                 KB_KeyPressed( sc_kpad_Enter ) ||
                 KB_KeyPressed( sc_RightArrow ) ||
                 KB_KeyPressed( sc_DownArrow ) ||
@@ -547,9 +658,14 @@ void menus(void)
                 KB_ClearKeyDown(sc_kpad_9);
                 KB_ClearKeyDown(sc_kpad_2);
                 KB_ClearKeyDown(sc_DownArrow);
+#ifdef DEMO
+                KB_ClearKeyDown(sc_Space);
+#endif
                 sound(335);
                 current_menu++;
-#ifdef RRRA
+#ifdef DEMO
+                if(current_menu > 999) current_menu = 980;
+#elif defined(RRRA)
                 if(current_menu > 989) current_menu = 960;
 #else
                 if(current_menu > 982) current_menu = 960;
@@ -558,7 +674,144 @@ void menus(void)
 
             switch(current_menu)
             {
-#ifdef RRRA
+#ifdef DEMO
+                case 980:
+                    gametext(c,40,"ORIGINAL CONCEPT, DESIGN AND DIRECTION",0);
+                    gametext(c,49,"DREW MARKHAM",0);
+                    break;
+                case 981:
+                    gametext(c,40,"PRODUCED BY",0);
+                    gametext(c,149,"GREG GOODRICH",0);
+                    break;
+                case 982:
+                    gametext(c,40,"GAME PROGRAMMING",0);
+                    gametext(c,49,"RAFAEL PAIZ",0);
+                    break;
+                case 983:
+                    gametext(c,40,"ART DIRECTORS",0);
+                    gametext(c,49,"CLAIRE PRADERIE     MAXX KAUFMAN ",0);
+                    break;
+                case 984:
+                    gametext(c,40,"LEVEL DESIGN",0);
+                    gametext(c,49,"ALEX MAYBERRY",0);
+                    gametext(c,49+9,"SVERRE KVERNMO",0);
+                    break;
+                case 985:
+                    gametext(c,40,"CG SUPERVISOR",0);
+                    gametext(c,49,"BARRY DEMPSEY",0);
+                    break;
+                case 986:
+                    gametext(c,40,"ANIMATORS",0);
+                    gametext(c,49,"JASON HOOVER",0);
+                    gametext(c,49+9,"GEORGE KARL",0);
+                    gametext(c,49+9+9,"AMIT DORAN",0);
+                    gametext(c,49+9+9+9+9,"MAP PAINTER",0);
+                    gametext(c,49+9+9+9+9+9,"MATTHIAS BEEGUER",0);
+                    break;
+                case 987:
+                    gametext(c,40,"MUSIC",0);
+                    gametext(c,49,"MOJO NIXON",0);
+                    gametext(c,49+9,"THE BEAT FARMERS",0);
+                    gametext(c,49+9+9,"THE REVEREND HORTON HEAT",0);
+                    gametext(c,49+9+9+9,"CEMENT POND",0);
+                    gametext(c,49+9+9+9+9+9,"SOUND DESIGN",0);
+                    gametext(c,49+9+9+9+9+9+9,"JIM SPURGIN",0);
+                    break;
+                case 988:
+                    gametext(c,40,"VOICE OF LEONARD",0);
+                    gametext(c,49,"BURTON GILLIAM",0);
+                    gametext(c,49+9+9,"ENEMY VOICES",0);
+                    gametext(c,49+9+9+9,"DREW MARKHAM",0);
+                    gametext(c,49+9+9+9+9,"MOJO NIXON",0);
+                    break;
+                case 989:
+                    gametext(c,40,"MOTION CAPTURE ACTOR",0);
+                    gametext(c,49,"J.P. MANOUX",0);
+                    gametext(c,49+9+9,"MOTION CAPTURE VIXEN",0);
+                    gametext(c,49+9+9+9,"SHAWN WOLFE",0);
+                    break;
+                case 990:
+                    gametext(c,40,"CHARACTER DESIGN",0);
+                    gametext(c,49,"CORKY LEHMKUHL",0);
+                    gametext(c,49+9+9,"SCULPTORS",0);
+                    gametext(c,49+9+9+9,"GEORGE ENGEL",0);
+                    gametext(c,49+9+9+9+9,"JEFF HIMMEL",0);
+                    gametext(c,49+9+9+9+9+9,"JAKE GARBER",0);
+                    break;
+                case 991:
+                    gametext(c,40,"LOCATION MANAGER, LOUISIANA",0);
+                    gametext(c,49,"RICK SKINNER",0);
+                    gametext(c,49+9+9,"LOCATION SCOUT, LOUISIANA",0);
+                    gametext(c,49+9+9+9,"BRIAN BENOS",0);
+                    break;
+                case 992:
+                    gametext(c,40,"ADDITIONAL 3D MODELING",0);
+                    gametext(c,49,"VIEWPOINT DATALABS INTERNATIONAL",0);
+                    gametext(c,49+9,"3 NAME 3D",0);
+                    gametext(c,49+9+9+9,"AUDIO RECORDED AT",0);
+                    gametext(c,49+9+9+9+9,"PACIFIC OCEAN POST, SANTA MONICA, C.A.",0);
+                    break;
+                case 993:
+                    gametext(c,40,"3D BUILD ENGINE LICENSED FROM",0);
+                    gametext(c,49,"3D REALMS ENTERTAINMENT",0);
+                    gametext(c,49+9+9,"BUILD ENGINE AND RELATED TOOLS",0);
+                    gametext(c,49+9+9+9,"CREATED BY KEN SILVERMAN",0);
+                    break;
+                case 994:
+                    gametext(c,40,"FOR INTERPLAY",0);
+                    gametext(c,49+9,"LEAD TESTER",0);
+                    gametext(c,49+9+9,"DARRELL JONES",0);
+                    gametext(c,49+9+9+9+9,"TESTERS",0);
+                    gametext(c,49+9+9+9+9+9,"TIM ANDERSON",0);
+                    gametext(c,49+9+9+9+9+9+9,"ERICK LUJAN",0);
+                    gametext(c,49+9+9+9+9+9+9+9,"TIEN TRAN",0);
+                    break;
+                case 995:
+                    gametext(c,40,"IS TECHS",0);
+                    gametext(c,49,"BILL DELK",0);
+                    gametext(c,49+9,"AARON MEYERS",0);
+                    gametext(c,49+9+9+9,"COMPATIBILITY TECHS",0);
+                    gametext(c,49+9+9+9+9,"MARC DURAN",0);
+                    gametext(c,49+9+9+9+9+9,"DAN FORSYTH",0);
+                    gametext(c,49+9+9+9+9+9+9,"DEREK GIBBS",0);
+                    gametext(c,49+9+9+9+9+9+9+9,"PHUONG NGUYEN",0);
+                    gametext(c,49+9+9+9+9+9+9+9+9,"AARON OLAIZ",0);
+                    gametext(c,49+9+9+9+9+9+9+9+9+9,"JACK PARKER",0);
+                    break;
+                case 996:
+                    gametext(c,40,"DIRECTOR OF COMPATIBILITY",0);
+                    gametext(c,49,"JOHN WERNER",0);
+                    gametext(c,49+9+9,"ASSISTANT QA DIRECTOR",0);
+                    gametext(c,49+9+9+9,"COLIN TOTMAN",0);
+                    gametext(c,49+9+9+9+9+9,"QA DIRECTOR",0);
+                    gametext(c,49+9+9+9+9+9+9,"CHAD ALLISON",0);
+                    break;
+                case 997:
+                    gametext(c,40,"INTERPLAY LINE PRODUCER",0);
+                    gametext(c,49,"CHRIS 'HICK' BENSON",0);
+                    gametext(c,49+9+9,"INTERPLAY PRODUCER",0);
+                    gametext(c,49+9+9+9,"BILL DUGAN",0);
+                    break;
+                case 998:
+                    gametext(c,40,"SPECIAL THANKS",0);
+                    gametext(c,49,"JIM GAUER",0);
+                    gametext(c,49+9,"PAUL VAIS",0);
+                    gametext(c,49+9+9,"SCOTT MILLER",0);
+                    gametext(c,49+9+9+9,"TODD REPLOGLE",0);
+                    gametext(c,49+9+9+9+9,"CHUCK BUECHE",0);
+                    gametext(c,49+9+9+9+9+9,"CARTER LIPSCOMB",0);
+                    gametext(c,49+9+9+9+9+9+9,"JOHN CONLEY",0);
+                    gametext(c,49+9+9+9+9+9+9+9,"DON MAGGI",0);
+                    gametext(c,49+9+9+9+9+9+9+9+9,"MAX YOSHIKAWA",0);
+                    gametext(c,49+9+9+9+9+9+9+9+9+9,"STEVE GOLDBERG",0);
+                    break;
+                case 999:
+                    gametext(c,40,"REDNECK RAMPAGE IS A TRADEMARK OF",0);
+                    gametext(c,49,"INTERPLAY PRODUCTIONS",0);
+                    gametext(c,49+9+9,"REDNECK RAMPAGE",0);
+                    gametext(c,49+9+9+9,"(C) 1997 XATRIX ENTERTAINMENT",0);
+                    break;
+#elif defined(RRRA)
                 case 960:
                     gametext(c,80,"ORIGINAL CONCEPT, DESIGN AND DIRECTION",0);
                     gametext(c,100,"DREW MARKHAM",0);
@@ -948,7 +1201,34 @@ void menus(void)
                             if(movesperpacket == 4)
                                 break;
 
+#ifdef DEMO
+                            tenBnSetExitRtn(dummyfunc);
+                            tenerr = tenBnStart();
+                            switch(tenerr)
+                            {
+                                case eTenBnNotInWindows:
+                                    cmenu(20001);
+                                    break;
+                                case eTenBnBadGameIni:
+                                    cmenu(20002);
+                                    break;
+                                case eTenBnBadTenIni:
+                                    cmenu(20003);
+                                    break;
+                                case eTenBnBrowseCancel:
+                                    cmenu(20004);
+                                    break;
+                                case eTenBnBadTenInst:
+                                    cmenu(20005);
+                                    break;
+                                default:
+                                    playonten = 1;
+                                    gameexit(" ");
+                                    break;
+                            }
+#else
                             cmenu(20001);
+#endif
                             break;
                         case 2: cmenu(200);break;
                         case 3:
@@ -957,7 +1237,11 @@ void menus(void)
                             cmenu(300);
                             break;
                         case 4: KB_FlushKeyboardQueue();cmenu(400);break;
+#ifdef DEMO
+                        case 5: cmenu(980);break;
+#else
                         case 5: cmenu(960);break;
+#endif
                         case 6: cmenu(500);break;
 #endif
                     }
@@ -993,9 +1277,23 @@ void menus(void)
             menutext(c,63+16+16+16+16,SHX(-7),PHX(-7),"CREDITS");
             menutext(c,63+16+16+16+16+16,SHX(-8),PHX(-8),"QUIT");
 #else
+#ifdef DEMO
+            if (movesperpacket == 4)
+                menutext(c,63+16,SHX(-3),PHX(-3),"COMING SOON!");
+            else
+                menutext(c,63+16,SHX(-3),1,"PLAY ON ENGAGE");
+#else
             menutext(c,63+16,SHX(-3),PHX(-3),"PLAY ON ENGAGE");
+#endif
             menutext(c,63+16+16,SHX(-4),PHX(-4),"OPTIONS");
+#ifdef DEMO
+            if (movesperpacket == 4 && connecthead != myconnectindex)
+                menutext(c,63+16+16+16,SHX(-5),1,"LOAD GAME");
+            else
+                menutext(c,63+16+16+16,SHX(-5),PHX(-5),"LOAD GAME");
+#else
             menutext(c,63+16+16+16,SHX(-5),PHX(-5),"LOAD GAME");
+#endif
             menutext(c,63+16+16+16+16,SHX(-6),PHX(-6),"HELP");
             menutext(c,63+16+16+16+16+16,SHX(-7),PHX(-7),"CREDITS");
             menutext(c,63+16+16+16+16+16+16,SHX(-8),PHX(-8),"QUIT");
@@ -1092,6 +1390,12 @@ void menus(void)
 
         case 100:
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+#ifdef DEMO
+            menutext(160,24,0,0,"SELECT AN EPISODE");
+            if(boardfilename[0])
+                x = probe(160,60,20,5,0);
+            else x = probe(160,60,20,4,0);
+#else
             menutext(160,24,0,0,"SELECT YER EPISODE");
 #ifdef RRRA
             x = probe(160,80,20,2,0);
@@ -1100,8 +1404,19 @@ void menus(void)
                 x = probe(160,80,20,3,0);
             else x = probe(160,80,20,2,0);
 #endif
+#endif
             if(x >= 0)
             {
+#ifdef DEMO
+                if(x > 0)
+                    cmenu(20000);
+                else
+                {
+                    ud.m_volume_number = x;
+                    ud.m_level_number = 0;
+                    cmenu(110);
+                }
+#else
                 if(x == 4 && boardfilename[0])
                 {
                     ud.m_volume_number = 0;
@@ -1113,6 +1428,7 @@ void menus(void)
                     ud.m_level_number = 0;
                 }
                 cmenu(110);
+#endif
             }
             else if(x == -1)
             {
@@ -1120,9 +1436,18 @@ void menus(void)
                 else cmenu(0);
             }
 
+#ifdef DEMO
+            menutext(160,60,SHX(-2),PHX(-2),volume_names[0]);
+#else
             menutext(160,80,SHX(-2),PHX(-2),volume_names[0]);
+#endif
 
             c = 80;
+#ifdef DEMO
+            menutext(160,60+20,SHX(-3),1,volume_names[1]);
+            menutext(160,60+20+20,SHX(-4),1,volume_names[2]);
+            menutext(160,60+20+20,SHX(-5),1,volume_names[3]);
+#else
             menutext(160,80+20,SHX(-3),PHX(-3),volume_names[1]);
 #ifndef RRRA
             if(boardfilename[0])
@@ -1130,13 +1455,18 @@ void menus(void)
                 menutext(160,80+20+20,SHX(-4),PHX(-4),boardfilename);
             }
 #endif
+#endif
             break;
 
         case 110:
             c = (320>>1);
             rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(c,24,0,0,"SELECT SKILL");
+#ifdef DEMO
+            x = probe(c,70,19,4,0);
+#else
             x = probe(c,70,19,5,0);
+#endif
             if(x >= 0)
             {
                 switch(x)
@@ -1145,7 +1475,9 @@ void menus(void)
                     case 1: globalskillsound = 428;break;
                     case 2: globalskillsound = 196;break;
                     case 3: globalskillsound = 195;break;
+#ifndef DEMO
                     case 4: globalskillsound = 197;break;
+#endif
                 }
 
                 sound(globalskillsound);
@@ -1182,7 +1514,9 @@ void menus(void)
             menutext(c,70+19,SHX(-3),PHX(-3),skill_names[1]);
             menutext(c,70+19+19,SHX(-4),PHX(-4),skill_names[2]);
             menutext(c,70+19+19+19,SHX(-5),PHX(-5),skill_names[3]);
+#ifndef DEMO
             menutext(c,70+19+19+19+19,SHX(-6),PHX(-6),skill_names[4]);
+#endif
 #ifdef RRRA
             }
 #endif
@@ -1195,14 +1529,30 @@ void menus(void)
 
             c = (320>>1)-120;
 
+#ifdef DEMO
+            onbar = (probey == 3 || probey == 4 || probey == 5);
+            x = probe(c+6,31,15,10,0);
+#else
             onbar = (probey == 2 || probey == 3 || probey == 4);
             x = probe(c+6,49,15,9,0);
+#endif
 
             if(x == -1)
                 { if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0); }
 
             if(onbar == 0) switch(x)
             {
+#ifdef DEMO
+                case 0:
+                    ud.detail = 1-ud.detail;
+                    break;
+                case 1:
+                    ud.shadows = 1-ud.shadows;
+                    break;
+                case 2:
+                    ud.screen_tilting = 1-ud.screen_tilting;
+                    break;
+#else
                 case 0:
                     ud.shadows = 1-ud.shadows;
                     break;
@@ -1213,6 +1563,7 @@ void menus(void)
                     if ( ControllerType == controltype_keyboardandmouse )
                         ud.mouseflip = 1-ud.mouseflip;
                     break;
+#endif
                 case 6:
                     cmenu(700);
                     break;
@@ -1229,6 +1580,11 @@ void menus(void)
                     break;
             }
 
+#ifdef DEMO
+            if(ud.detail) menutext(c+160+40,31,0,0,"HIGH");
+            else menutext(c+160+40,31,0,0,"LOW");
+#endif
+
             if(ud.shadows) menutext(c+160+40,31+15,0,0,"ON");
             else menutext(c+160+40,31+15,0,0,"OFF");
 
@@ -1238,10 +1594,17 @@ void menus(void)
                 case 1: menutext(c+160+40,31+15+15,0,0,"ON");break;
                 case 2: menutext(c+160+40,31+15+15,0,0,"FULL");break;
             }
-
+            
+#ifdef DEMO
+            menutext(c,31,SHX(-2),PHX(-2),"DETAIL");
+            menutext(c,31+15,SHX(-3),PHX(-3),"SHADOWS");
+            menutext(c,31+15+15,SHX(-4),PHX(-4),"SCREEN TILTING");
+            menutext(c,31+15+15+15,SHX(-5),PHX(-5),"SCREEN SIZE");
+#else
             menutext(c,31+15,SHX(-3),PHX(-3),"SHADDERS");
             menutext(c,31+15+15,SHX(-4),PHX(-4),"SCREEN TILTIN'");
             menutext(c,31+15+15+15,SHX(-5),PHX(-5),"SCREEN SIZE");
+#endif
 
                 bar(c+167+40,31+15+15+15,(short *)&ud.screen_size,-4,x==2,SHX(-5),PHX(-5));
 
@@ -1254,10 +1617,19 @@ void menus(void)
                 short sense;
                 sense = CONTROL_GetMouseSensitivity()>>10;
 
+#ifdef DEMO
+                menutext(c,31+15+15+15+15+15,SHX(-7),PHX(-7),"MOUSE SENSITIVITY");
+                bar(c+167+40,31+15+15+15+15+15,&sense,4,x==5,SHX(-7),PHX(-7));
+#else
                 menutext(c,31+15+15+15+15+15,SHX(-7),PHX(-7),"RAT SENSITIVITY");
                 bar(c+167+40,31+15+15+15+15+15,&sense,4,x==4,SHX(-7),PHX(-7));
+#endif
                 CONTROL_SetMouseSensitivity( sense<<10 );
+#ifdef DEMO
+                menutext(c,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"MOUSE AIMING FLIP");
+#else
                 menutext(c,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"RAT AIMIN' FLIP");
+#endif
 
                 if(ud.mouseflip) menutext(c+160+40,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"ON");
                 else menutext(c+160+40,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"OFF");
@@ -1268,9 +1640,15 @@ void menus(void)
                 short sense;
                 sense = CONTROL_GetMouseSensitivity()>>10;
 
+#ifdef DEMO
+                menutext(c,31+15+15+15+15+15,SHX(-7),1,"MOUSE SENSITIVITY");
+                bar(c+167+40,31+15+15+15+15+15,&sense,4,x==99,SHX(-7),1);
+                menutext(c,31+15+15+15+15+15+15,SHX(-7),1,"MOUSE AIMING FLIP");
+#else
                 menutext(c,31+15+15+15+15+15,SHX(-7),1,"RAT SENSITIVITY");
                 bar(c+167+40,31+15+15+15+15+15,&sense,4,x==99,SHX(-7),1);
                 menutext(c,31+15+15+15+15+15+15,SHX(-7),1,"RAT AIMIN' FLIP");
+#endif
 
                 if(ud.mouseflip) menutext(c+160+40,31+15+15+15+15+15+15,SHX(-7),1,"ON");
                 else menutext(c+160+40,31+15+15+15+15+15+15,SHX(-7),1,"OFF");
@@ -1294,6 +1672,7 @@ void menus(void)
 
             break;
 
+#ifndef DEMO
         case 800:
 #ifdef RRRA
             if (numplayers > 1)
@@ -1410,14 +1789,21 @@ void menus(void)
                     whichtrack = cdlotrack + x + 1;
             }
             break;
+#endif
 
         case 700:
             c = (320>>1)-120;
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"SOUNDS");
+#ifdef DEMO
+            onbar = ( probey == 2 || probey == 3 );
+
+            x = probe(c,50,16,7,0);
+#else
             onbar = ( probey == 2 );
 
             x = probe(c,50,16,6,0);
+#endif
             switch(x)
             {
                 case -1:
@@ -1446,19 +1832,49 @@ void menus(void)
                     }
                     break;
                 case 1:
+#ifdef DEMO
+
+                    if(eightytwofifty == 0 || numplayers < 2)
+                        if(MusicDevice != NumSoundCards)
+                    {
+                        MusicToggle = 1-MusicToggle;
+                        if( MusicToggle == 0 ) MUSIC_Pause();
+                        else
+                        {
+                            if(ud.recstat != 2 && ps[myconnectindex].gm&MODE_GAME)
+                                playmusic(&music_fn[0][music_select][0]);
+                            else playmusic(&env_music_fn[0][0]);
+
+                            MUSIC_Continue();
+                        }
+                    }
+#else
                     cmenu(800);
+#endif
                     onbar = 0;
 
                     break;
+#ifdef DEMO
+                case 4:
+#else
                 case 3:
+#endif
                     if(SoundToggle && (FXDevice != NumSoundCards)) VoiceToggle = 1-VoiceToggle;
                     onbar = 0;
                     break;
+#ifdef DEMO
+                case 5:
+#else
                 case 4:
+#endif
                     if(SoundToggle && (FXDevice != NumSoundCards)) AmbienceToggle = 1-AmbienceToggle;
                     onbar = 0;
                     break;
+#ifdef DEMO
+                case 6:
+#else
                 case 5:
+#endif
                     if(SoundToggle && (FXDevice != NumSoundCards))
                     {
                         ReverseStereo = 1-ReverseStereo;
@@ -1474,7 +1890,16 @@ void menus(void)
             if(SoundToggle && FXDevice != NumSoundCards) menutext(c+160+40,50,0,0,"ON");
             else menutext(c+160+40,50,0,0,"OFF");
 
+#ifdef DEMO
+            if(MusicToggle && (MusicDevice != NumSoundCards) && (!eightytwofifty||numplayers<2))
+                menutext(c+160+40,50+16,0,0,"ON");
+            else menutext(c+160+40,50+16,0,0,"OFF");
+
+            menutext(c,50,SHX(-2),(MusicDevice == NumSoundCards),"SOUND");
+#else
             menutext(c,50,SHX(-2),0,"SOUND");
+#endif
+
             menutext(c,50+16+16,SHX(-4),(FXDevice==NumSoundCards)||SoundToggle==0,"SOUND VOLUME");
             {
                 l = FXVolume;
@@ -1485,6 +1910,35 @@ void menus(void)
                 if(l != FXVolume)
                     FX_SetVolume( (short) FXVolume );
             }
+#ifdef DEMO
+            menutext(c,50+16,SHX(-3),(MusicDevice==NumSoundCards),"MUSIC");
+            menutext(c,50+16+16+16,SHX(-5),(MusicDevice==NumSoundCards)||(numplayers > 1 && eightytwofifty)||MusicToggle==0,"MUSIC VOLUME");
+            {
+                l = MusicVolume;
+                MusicVolume >>= 2;
+                bar(c+167+40,50+16+16+16,
+                    (short *)&MusicVolume,4,
+                    (eightytwofifty==0||numplayers < 2) && (MusicDevice!=NumSoundCards) && x==3,SHX(-5),
+                    (numplayers > 1 && eightytwofifty)||MusicToggle==0||(MusicDevice==NumSoundCards));
+                MusicVolume <<= 2;
+                if(l != MusicVolume)
+                    Music_SetVolume( (short) MusicVolume );
+
+            }
+            menutext(c,50+16+16+16+16,SHX(-6),SoundToggle==0,"LEONARD TALK");
+            menutext(c,50+16+16+16+16+16,SHX(-7),SoundToggle==0,"AMBIENCE");
+
+            menutext(c,50+16+16+16+16+16+16,SHX(-8),SoundToggle==0,"FLIP STEREO");
+
+            if(VoiceToggle) menutext(c+160+40,50+16+16+16+16,0,0,"ON");
+            else menutext(c+160+40,50+16+16+16+16,0,0,"OFF");
+
+            if(AmbienceToggle) menutext(c+160+40,50+16+16+16+16+16,0,0,"ON");
+            else menutext(c+160+40,50+16+16+16+16+16,0,0,"OFF");
+
+            if(ReverseStereo) menutext(c+160+40,50+16+16+16+16+16+16,0,0,"ON");
+            else menutext(c+160+40,50+16+16+16+16+16+16,0,0,"OFF");
+#else
             if (cddrives == 0)
                 menutext(c,50+16,SHX(-3),1,"8 TRACK PLAYER");
             else
@@ -1502,6 +1956,7 @@ void menus(void)
 
             if(ReverseStereo) menutext(c+160+40,50+16+16+16+16+16,0,0,"ON");
             else menutext(c+160+40,50+16+16+16+16+16,0,0,"OFF");
+#endif
 
 
             break;
@@ -1530,6 +1985,7 @@ void menus(void)
             c = 320>>1;
             rotatesprite(c<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
             rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+#ifndef DEMO
 #ifdef RRRA
             if (ud.m_player_skill == 4)
 #else
@@ -1540,6 +1996,7 @@ void menus(void)
                 FTA(53,&ps[0]);
                 break;
             }
+#endif
 
             if(current_menu == 300) menutext(c,24,0,0,"LOAD GAME");
             else menutext(c,24,0,0,"SAVE GAME");
@@ -1692,21 +2149,27 @@ void menus(void)
             break;
 
         case 370:
-            c = 320>>1;
+            c = 160;
             rotatesprite(c<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
             rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(c,24,0,0,"DELETE GAME!");
-            if (KB_KeyPressed(sc_Y) || LMB)
+
+            if( KB_KeyPressed(sc_Y) || LMB )
             {
                 char *fn = "game0.sav";
-                fn[4] = deletespot + '0';
+                fn[4] = (deletespot)+'0';
+
                 KB_FlushKeyboardQueue();
                 current_menu = last_menu;
                 probey = lastprobey;
                 ud.savegame[deletespot][0] = 0;
                 unlink(fn);
             }
+#ifdef DEMO
+            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_N) || KB_KeyPressed(sc_Escape) || RMB)
+#else
             if (KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_N) || KB_KeyPressed(sc_Escape) || RMB)
+#endif
             {
                 KB_FlushKeyboardQueue();
                 current_menu = last_menu;
@@ -1715,11 +2178,19 @@ void menus(void)
             }
             dispnames();
             rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-            probe(186,133,0,0,0);
+            probe(186,124+9,0,0,0);
+
+#ifdef DEMO
+            gametext(160,90,"Delete game:",0);
+            sprintf(tempbuf,"\"%s\"",ud.savegame[deletespot]);
+            gametext(160,99,tempbuf,0);
+            gametext(160,99+9,"(Y/N)",0);
+#else
             gametext(160,60,"Delete game:",0);
             sprintf(tempbuf,"\"%s\"",ud.savegame[deletespot]);
             gametext(160,70,tempbuf,0);
             gametext(160,80,"(Y/N)",0);
+#endif
             break;
 
         case 400:
@@ -1758,6 +2229,9 @@ void menus(void)
                 KB_KeyPressed( sc_DownArrow ) ||
                 KB_KeyPressed( sc_kpad_2 ) ||
                 KB_KeyPressed( sc_kpad_9 ) ||
+#ifdef DEMO
+                KB_KeyPressed( sc_Space ) ||
+#endif
                 KB_KeyPressed( sc_kpad_6 ) )
             {
                 KB_ClearKeyDown(sc_PgDn);
@@ -1768,6 +2242,9 @@ void menus(void)
                 KB_ClearKeyDown(sc_kpad_9);
                 KB_ClearKeyDown(sc_kpad_2);
                 KB_ClearKeyDown(sc_DownArrow);
+#ifdef DEMO
+                KB_ClearKeyDown(sc_Space);
+#endif
                 sound(335);
                 current_menu++;
 #ifdef RRRA
@@ -1807,9 +2284,17 @@ void menus(void)
             c = 320>>1;
 
             gametext(c,90,"Quit? You ain't done yet",0);
+#ifdef DEMO
+            gametext(c,99,"(Y/N)",0);
+#else
             gametext(c,100,"(Y/N)",0);
+#endif
 
+#ifdef DEMO
+            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#else
             if( KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#endif
             {
                 KB_FlushKeyboardQueue();
 
@@ -1855,9 +2340,17 @@ void menus(void)
         case 501:
             c = 320>>1;
             gametext(c,90,"Quit to Title?",0);
+#ifdef DEMO
+            gametext(c,99,"(Y/N)",0);
+#else
             gametext(c,100,"(Y/N)",0);
+#endif
 
+#ifdef DEMO
+            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#else
             if( KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+#endif
             {
                 KB_FlushKeyboardQueue();
                 ps[myconnectindex].gm = MODE_DEMO;
@@ -1999,18 +2492,30 @@ void menus(void)
                     if(ud.m_coop == 3) ud.m_coop = 0;
                     break;
                 case 1:
+#ifndef DEMO
                     ud.m_volume_number++;
                     if(ud.m_volume_number > 2) ud.m_volume_number = 0;
+#endif
                     break;
                 case 2:
                     ud.m_level_number++;
+#ifdef DEMO
+                    if(ud.m_volume_number == 0 && ud.m_level_number > 5)
+                        ud.m_level_number = 0;
+                    if(ud.m_level_number > 10) ud.m_level_number = 0;
+#else
                     if(ud.m_level_number > 6) ud.m_level_number = 0;
+#endif
                     break;
                 case 3:
                     if(ud.m_monsters_off == 0)
                     {
                         ud.m_player_skill++;
+#ifdef DEMO
+                        if(ud.m_player_skill > 3)
+#else
                         if(ud.m_player_skill > 4)
+#endif
                         {
                             ud.m_player_skill = 0;
                             ud.m_monsters_off = 1;
@@ -2111,6 +2616,60 @@ void menus(void)
 
             c += 40;
 
+#ifdef DEMO
+            if(ud.m_coop==1) gametext(c+70,57-7-9,"COOPERATIVE PLAY",0);
+            else if(ud.m_coop==2) gametext(c+70,57-7-9,"REDNECK MATCH (NO SPAWN)",0);
+            else gametext(c+70,57-7-9,"REDNECK MATCH (SPAWN)",0);
+
+            gametext(c+70,57+16-7-9,volume_names[ud.m_volume_number],0);
+
+            gametext(c+70,57+16+16-7-9,&level_names[11*ud.m_volume_number+ud.m_level_number][0],0);
+
+            if(ud.m_monsters_off == 0)
+                gametext(c+70,57+16+16+16-7-9,skill_names[ud.m_player_skill],0);
+            else gametext(c+70,57+16+16+16-7-9,"NONE",0);
+
+            if(ud.m_coop == 0)
+            {
+                if(ud.m_marker)
+                    gametext(c+70,57+16+16+16+16-7-9,"ON",0);
+                else gametext(c+70,57+16+16+16+16-7-9,"OFF",0);
+            }
+
+            if(ud.m_coop == 1)
+            {
+                if(ud.m_ffire)
+                    gametext(c+70,57+16+16+16+16+16-7-9,"ON",0);
+                else gametext(c+70,57+16+16+16+16+16-7-9,"OFF",0);
+            }
+
+            c -= 44;
+
+            menutext(c,57-9,SHX(-2),PHX(-2),"GAME TYPE");
+
+            sprintf(tempbuf,"EPISODE %ld",ud.m_volume_number+1);
+            menutext(c,57+16-9,SHX(-3),1,tempbuf);
+
+            sprintf(tempbuf,"LEVEL %ld",ud.m_level_number+1);
+            menutext(c,57+16+16-9,SHX(-4),PHX(-4),tempbuf);
+
+            menutext(c,57+16+16+16-9,SHX(-5),PHX(-5),"MONSTERS");
+
+            if(ud.m_coop == 0)
+                menutext(c,57+16+16+16+16-9,SHX(-6),PHX(-6),"MARKERS");
+            else
+                menutext(c,57+16+16+16+16-9,SHX(-6),1,"MARKERS");
+
+            if(ud.m_coop == 1)
+                menutext(c,57+16+16+16+16+16-9,SHX(-6),PHX(-6),"FR. FIRE");
+            else menutext(c,57+16+16+16+16+16-9,SHX(-6),1,"FR. FIRE");
+
+            if(boardfilename[0] != 0)
+                menutext(c,57+16+16+16+16+16+16-9,SHX(-7),PHX(-7),boardfilename);
+            else menutext(c,57+16+16+16+16+16+16-9,SHX(-7),1,"USER MAP");
+
+            menutext(c,57+16+16+16+16+16+16+16-9,SHX(-8),PHX(-8),"START GAME");
+#else
             if(ud.m_coop==1) gametext2(c+70,57-7-9,"COOPERATIVE PLAY",0);
             else if(ud.m_coop==2) gametext2(c+70,57-7-9,"REDNECK MATCH NO SPAWN",0);
             else gametext2(c+70,57-7-9,"REDNECK MATCH SPAWN",0);
@@ -2162,6 +2721,7 @@ void menus(void)
                 gametext2(c,57+16+16+16+16+16+16-7-9,"USER MAP",0);
 
             gametext2(c,57+16+16+16+16+16+16+16-7-9,"START GAME",0);
+#endif
 
             break;
     }

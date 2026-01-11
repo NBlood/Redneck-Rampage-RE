@@ -165,7 +165,11 @@ long myhorizbak[MOVEFIFOSIZ],rdnkfriction = 0xcc00, show_shareware;
 short myangbak[MOVEFIFOSIZ];
 char myname[13],camerashitable,freezerhurtowner=0,lasermode;
 char networkmode = 255, movesperpacket = 1,gamequit = 0,playonten = 0;
+#ifdef DEMO
+long numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+#else
 long numfreezebounces=3,rpgblastradius,pipebombblastradius,powderkegblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+#endif
 STATUSBARTYPE sbar;
 
 long myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;

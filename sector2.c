@@ -145,6 +145,11 @@ void operateforcefields(short s, short low)
         if(low == wall[i].lotag || low == -1)
             switch(wall[i].overpicnum)
         {
+#ifdef DEMO
+            case W_FORCEFIELD  :
+            case W_FORCEFIELD+1:
+            case W_FORCEFIELD+2:
+#endif
             case BIGFORCE:
 
                 animwall[p].tag = 0;
@@ -292,6 +297,7 @@ char checkhitswitch(short snum,long w,char switchtype)
         case LOCKSWITCH1+1:
         case POWERSWITCH2:
         case POWERSWITCH2+1:
+#ifndef DEMO
         case NUKEBUTTON:
         case NUKEBUTTON+1:
         case RRTILE2214:
@@ -306,6 +312,7 @@ char checkhitswitch(short snum,long w,char switchtype)
         case MULTISWITCH2+3:
         case RRTILE8464:
         case RRTILE8660:
+#endif
 #endif
             if( check_activator_motion( lotag ) ) return 0;
             break;
@@ -341,6 +348,7 @@ char checkhitswitch(short snum,long w,char switchtype)
                 if( sprite[i].picnum > (MULTISWITCH+3) )
                     sprite[i].picnum = MULTISWITCH;
                 break;
+#ifndef DEMO
 #ifdef RRRA
             case MULTISWITCH2:
             case MULTISWITCH2+1:
@@ -356,6 +364,7 @@ char checkhitswitch(short snum,long w,char switchtype)
                     ud.level_number = 0;
                 sprite[i].picnum++;
                 break;
+#endif
             case ACCESSSWITCH:
             case ACCESSSWITCH2:
             case SLOTDOOR:
@@ -371,6 +380,7 @@ char checkhitswitch(short snum,long w,char switchtype)
             case PULLSWITCH:
             case DIPSWITCH2:
             case DIPSWITCH3:
+#ifndef DEMO
             case NUKEBUTTON:
             case RRTILE2697:
             case RRTILE2707:
@@ -408,6 +418,7 @@ char checkhitswitch(short snum,long w,char switchtype)
                     word_119BE0 = i;
                 }
 #endif
+#endif
                 sprite[i].picnum++;
                 break;
             case PULLSWITCH+1:
@@ -423,13 +434,15 @@ char checkhitswitch(short snum,long w,char switchtype)
             case FRANKENSTINESWITCH+1:
             case DIPSWITCH2+1:
             case DIPSWITCH3+1:
+#ifndef DEMO
             case NUKEBUTTON+1:
             case RRTILE2697+1:
             case RRTILE2707+1:
                 if (PN == NUKEBUTTON+1)
                     chickenplant = 1;
                 if (SHT != 999)
-                    sprite[i].picnum--;
+#endif
+                sprite[i].picnum--;
                 break;
         }
         i = nextspritestat[i];
@@ -487,10 +500,12 @@ char checkhitswitch(short snum,long w,char switchtype)
             case HANDSWITCH:
             case DIPSWITCH2:
             case DIPSWITCH3:
+#ifndef DEMO
             case RRTILE2697:
             case RRTILE2707:
 #ifdef RRRA
             case RRTILE8660:
+#endif
 #endif
                 wall[x].picnum++;
                 break;
@@ -506,8 +521,10 @@ char checkhitswitch(short snum,long w,char switchtype)
             case SPACEDOORSWITCH+1:
             case DIPSWITCH2+1:
             case DIPSWITCH3+1:
+#ifndef DEMO
             case RRTILE2697+1:
             case RRTILE2707+1:
+#endif
                 wall[x].picnum--;
                 break;
         }
@@ -525,10 +542,17 @@ char checkhitswitch(short snum,long w,char switchtype)
         else
         {
             ud.level_number++;
+#ifdef DEMO
+            if( (ud.volume_number && ud.level_number > 10 ) || ( ud.volume_number == 0 && ud.level_number > 5 ) )
+#else
             if( (ud.volume_number && ud.level_number > 6 ) || ( ud.volume_number == 0 && ud.level_number > 6 ) )
+#endif
                 ud.level_number = 0;
             ud.m_level_number = ud.level_number;
         }
+#ifdef DEMO
+        return 1;
+#endif
     }
 
     switch(picnum)
@@ -592,6 +616,7 @@ char checkhitswitch(short snum,long w,char switchtype)
         case HANDSWITCH+1:
         case PULLSWITCH:
         case PULLSWITCH+1:
+#ifndef DEMO
         case RRTILE2697:
         case RRTILE2697+1:
         case RRTILE2707:
@@ -603,6 +628,7 @@ char checkhitswitch(short snum,long w,char switchtype)
         case MULTISWITCH2+3:
         case RRTILE8464:
         case RRTILE8660:
+#endif
 #endif
 #ifdef RRRA
             if (picnum == RRTILE8660)
@@ -800,6 +826,33 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
            if( sector[wal->nextsector].floorz-sector[wal->nextsector].ceilingz )
                switch(wal->overpicnum)
     {
+#ifdef DEMO
+        case W_FORCEFIELD:
+        case W_FORCEFIELD+1:
+        case W_FORCEFIELD+2:
+            wal->extra = 1; // tell the forces to animate
+        case BIGFORCE:
+            updatesector(x,y,&sn);
+            if( sn < 0 ) return;
+
+            if(atwith == -1)
+                i = EGS(sn,x,y,z,FORCERIPPLE,-127,8,8,0,0,0,spr,5);
+            else
+            {
+                if(atwith == CHAINGUN)
+                    i = EGS(sn,x,y,z,FORCERIPPLE,-127,16+sprite[spr].xrepeat,16+sprite[spr].yrepeat,0,0,0,spr,5);
+                else i = EGS(sn,x,y,z,FORCERIPPLE,-127,32,32,0,0,0,spr,5);
+            }
+
+            CS |= 18+128;
+            SA = getangle(wal->x-wall[wal->point2].x,
+                wal->y-wall[wal->point2].y)-512;
+
+            spritesound(SOMETHINGHITFORCE,i);
+
+            return;
+#endif
+
         case FANSPRITE:
             wal->overpicnum = FANSPRITEBROKE;
             wal->cstat &= 65535-65;
@@ -812,6 +865,7 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
             spritesound(GLASS_BREAKING,spr);
             return;
 
+#ifndef DEMO
         case RRTILE1973:
             updatesector(x,y,&sn); if( sn < 0 ) return;
             wal->overpicnum=GLASS2;
@@ -825,6 +879,7 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
             SLT = 128; T2 = 2; T3 = dawallnum;
             spritesound(GLASS_BREAKING,i);
             return;
+#endif
 
         case GLASS:
             updatesector(x,y,&sn); if( sn < 0 ) return;
@@ -836,7 +891,11 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
                 wall[wal->nextwall].cstat = 0;
 
             i = EGS(sn,x,y,z,SECTOREFFECTOR,0,0,0,ps[0].ang,0,0,spr,3);
+#ifdef DEMO
+            SLT = 128; T2 = 5; T3 = dawallnum;
+#else
             SLT = 128; T2 = 2; T3 = dawallnum;
+#endif
             spritesound(GLASS_BREAKING,i);
             return;
         case STAINGLASS1:
@@ -1005,14 +1064,42 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
             case COLAMACHINE:
             case VENDMACHINE:
                 breakwall(wal->picnum+2,spr,dawallnum);
+#ifdef DEMO
+                spritesound(VENT_BUST,spr);
+#else
                 spritesound(GLASS_BREAKING,spr);
+#endif
                 return;
 
             case OJ:
+#ifdef DEMO
+            case FEMPIC2:
+            case FEMPIC3:
+#endif
 
             case SCREENBREAK6:
             case SCREENBREAK7:
             case SCREENBREAK8:
+
+#ifdef DEMO
+            case SCREENBREAK1:
+            case SCREENBREAK2:
+            case SCREENBREAK3:
+            case SCREENBREAK4:
+            case SCREENBREAK5:
+
+            case SCREENBREAK9:
+            case SCREENBREAK10:
+            case SCREENBREAK11:
+            case SCREENBREAK12:
+            case SCREENBREAK13:
+            case SCREENBREAK14:
+            case SCREENBREAK15:
+            case SCREENBREAK16:
+            case SCREENBREAK17:
+            case SCREENBREAK18:
+            case BORNTOBEWILDSCREEN:
+#endif
 
                 lotsofglass(spr,dawallnum,30);
 #ifdef RRRA
@@ -1023,6 +1110,51 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
                 spritesound(GLASS_HEAVYBREAK,spr);
                 return;
 
+#ifdef DEMO
+            case W_TECHWALL5:
+            case W_TECHWALL6:
+            case W_TECHWALL7:
+            case W_TECHWALL8:
+            case W_TECHWALL9:
+                breakwall(wal->picnum+1,spr,dawallnum);
+                return;
+            case W_MILKSHELF:
+                breakwall(W_MILKSHELFBROKE,spr,dawallnum);
+                return;
+
+            case W_TECHWALL10:
+                breakwall(W_HITTECHWALL10,spr,dawallnum);
+                return;
+
+            case W_TECHWALL1:
+            case W_TECHWALL11:
+            case W_TECHWALL12:
+            case W_TECHWALL13:
+            case W_TECHWALL14:
+                breakwall(W_HITTECHWALL1,spr,dawallnum);
+                return;
+
+            case W_TECHWALL15:
+                breakwall(W_HITTECHWALL15,spr,dawallnum);
+                return;
+
+            case W_TECHWALL16:
+                breakwall(W_HITTECHWALL16,spr,dawallnum);
+                return;
+
+            case W_TECHWALL2:
+                breakwall(W_HITTECHWALL2,spr,dawallnum);
+                return;
+
+            case W_TECHWALL3:
+                breakwall(W_HITTECHWALL3,spr,dawallnum);
+                return;
+
+            case W_TECHWALL4:
+                breakwall(W_HITTECHWALL4,spr,dawallnum);
+                return;
+#endif
+
             case ATM:
                 wal->picnum = ATMBROKE;
                 lotsofmoney(&sprite[spr],1+(TRAND&7));
@@ -1030,10 +1162,14 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
                 break;
 
             case WALLLIGHT1:
+#ifdef DEMO
+            case WALLLIGHT2:
+#endif
             case WALLLIGHT3:
             case WALLLIGHT4:
             case TECHLIGHT2:
             case TECHLIGHT4:
+#ifndef DEMO
             case RRTILE1814:
             case RRTILE1939:
             case RRTILE1986:
@@ -1048,12 +1184,14 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
             case RRTILE3204:
             case RRTILE3206:
             case RRTILE3208:
+#endif
 
                 if( rnd(128) )
                     spritesound(GLASS_HEAVYBREAK,spr);
                 else spritesound(GLASS_BREAKING,spr);
                 lotsofglass(spr,dawallnum,30);
 
+#ifndef DEMO
                 if(wal->picnum == RRTILE1814)
                     wal->picnum = RRTILE1817;
 
@@ -1095,9 +1233,15 @@ void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
 
                 if(wal->picnum == RRTILE2636)
                     wal->picnum = RRTILE2637;
+#endif
 
                 if(wal->picnum == WALLLIGHT1)
                     wal->picnum = WALLLIGHTBUST1;
+
+#ifdef DEMO
+                if(wal->picnum == WALLLIGHT2)
+                    wal->picnum = WALLLIGHTBUST2;
+#endif
 
                 if(wal->picnum == WALLLIGHT3)
                     wal->picnum = WALLLIGHTBUST3;
@@ -1183,6 +1327,30 @@ void checkplayerhurt(struct player_struct *p,short j)
     if( p->hurt_delay > 0 ) p->hurt_delay--;
     else if( wall[j].cstat&85 ) switch(wall[j].overpicnum)
     {
+#ifdef DEMO
+        case W_FORCEFIELD:
+        case W_FORCEFIELD+1:
+        case W_FORCEFIELD+2:
+             sprite[p->i].extra -= 5;
+
+             p->hurt_delay = 16;
+             p->pals_time = 32;
+             p->pals[0] = 32;
+             p->pals[1] = 0;
+             p->pals[2] = 0;
+
+             p->posxv = -(sintable[(p->ang+512)&2047]<<8);
+             p->posyv = -(sintable[(p->ang)&2047]<<8);
+             spritesound(DUKE_LONGTERM_PAIN,p->i);
+
+             checkhitwall(p->i,j,
+                 p->posx+(sintable[(p->ang+512)&2047]>>9),
+                 p->posy+(sintable[p->ang&2047]>>9),
+                 p->posz,-1);
+
+            break;
+#endif
+
         case BIGFORCE:
             p->hurt_delay = 26;
             checkhitwall(p->i,j,
@@ -1204,10 +1372,14 @@ char checkhitceiling(short sn)
     switch(sector[sn].ceilingpicnum)
     {
         case WALLLIGHT1:
+#ifdef DEMO
+        case WALLLIGHT2:
+#endif
         case WALLLIGHT3:
         case WALLLIGHT4:
         case TECHLIGHT2:
         case TECHLIGHT4:
+#ifndef DEMO
         case RRTILE1939:
         case RRTILE1986:
         case RRTILE1988:
@@ -1215,6 +1387,7 @@ char checkhitceiling(short sn)
         case RRTILE2125:
         case RRTILE2878:
         case RRTILE2898:
+#endif
 
 
                 ceilingglass(ps[myconnectindex].i,sn,10);
@@ -1222,6 +1395,11 @@ char checkhitceiling(short sn)
 
                 if(sector[sn].ceilingpicnum == WALLLIGHT1)
                     sector[sn].ceilingpicnum = WALLLIGHTBUST1;
+
+#ifdef DEMO
+                if(sector[sn].ceilingpicnum == WALLLIGHT2)
+                    sector[sn].ceilingpicnum = WALLLIGHTBUST2;
+#endif
 
                 if(sector[sn].ceilingpicnum == WALLLIGHT3)
                     sector[sn].ceilingpicnum = WALLLIGHTBUST3;
@@ -1235,6 +1413,7 @@ char checkhitceiling(short sn)
                 if(sector[sn].ceilingpicnum == TECHLIGHT4)
                     sector[sn].ceilingpicnum = TECHLIGHTBUST4;
 
+#ifndef DEMO
                 if(sector[sn].ceilingpicnum == RRTILE1986)
                     sector[sn].ceilingpicnum = RRTILE1987;
 
@@ -1255,6 +1434,7 @@ char checkhitceiling(short sn)
 
                 if(sector[sn].ceilingpicnum == RRTILE2125)
                     sector[sn].ceilingpicnum = RRTILE2126;
+#endif
 
 
                 if(!sector[sn].hitag)

@@ -81,7 +81,8 @@ void moveexplosions(void)  // STATNUM 5
                 if( (t[0]%9) == 0 ) s->yrepeat++;
                 goto BOLT;
 
-            /*case NUKEBUTTON:
+#ifdef DEMO
+            case NUKEBUTTON:
             case NUKEBUTTON+1:
             case NUKEBUTTON+2:
             case NUKEBUTTON+3:
@@ -98,7 +99,8 @@ void moveexplosions(void)  // STATNUM 5
                     if( ps[sprite[s->owner].yvel].fist_incs == 26 )
                         s->picnum = NUKEBUTTON+3;
                 }
-                goto BOLT;*/
+                goto BOLT;
+#endif
 
             case FORCESPHERE:
 
@@ -142,6 +144,7 @@ void moveexplosions(void)  // STATNUM 5
                     ssp(i,CLIPMASK0);
                 goto BOLT;
 
+#ifndef DEMO
             case MUD:
 
                 t[0]++;
@@ -160,6 +163,7 @@ void moveexplosions(void)  // STATNUM 5
                 if(t[1] == 5)
                     deletesprite(i);
                 goto BOLT;
+#endif
 
             case WATERSPLASH2:
 
@@ -216,22 +220,39 @@ void moveexplosions(void)  // STATNUM 5
                     sprite[ps[p].i].extra -= 4;
                 }
 
+#ifdef DEMO
+            case FIRELASER:
+#else
             case COOLEXPLOSION1:
             case FIRELASER:
             case OWHIP:
             case UWHIP:
+#endif
                 if(s->extra != 999)
                     s->extra = 999;
                 else KILLIT(i);
                 break;
             case TONGUE:
                 KILLIT(i);
+#ifdef DEMO
+            case MONEY+1:
+            case MAIL+1:
+            case PAPER+1:
+                s->z = getflorzofslope(s->sectnum,s->x,s->y);
+#else
             case MONEY+1:
                 hittype[i].floorz = s->z = getflorzofslope(s->sectnum,s->x,s->y);
+#endif
                 if (sector[s->sectnum].lotag == 800)
                     KILLIT(i);
                 break;
+#ifdef DEMO
             case MONEY:
+            case MAIL:
+            case PAPER:
+#else
+            case MONEY:
+#endif
 
                 s->xvel = (TRAND&7)+(sintable[T1&2047]>>9);
                 T1 += (TRAND&63);
@@ -249,10 +270,14 @@ void moveexplosions(void)  // STATNUM 5
 
                 ssp(i,CLIPMASK0);
 
+#ifdef DEMO
+                setsprite(i,s->x,s->y,s->z);
+#else
                 if( (TRAND&3) == 0 )
                     setsprite(i,s->x,s->y,s->z);
 
                 if(s->sectnum == -1) KILLIT(i);
+#endif
                 l = getflorzofslope(s->sectnum,s->x,s->y);
 
                 if( s->z > l )
@@ -283,6 +308,23 @@ void moveexplosions(void)  // STATNUM 5
 
                 break;
 
+#ifdef DEMO
+            case JIBS1:
+            case JIBS2:
+            case JIBS3:
+            case JIBS4:
+            case JIBS5:
+            case JIBS6:
+            case HEADJIB1:
+            case ARMJIB1:
+            case LEGJIB1:
+            case HULKLEG1:
+            case HULKHEAD1:
+            case HULKARM1:
+            case DUKETORSO:
+            case DUKEGUN:
+            case DUKELEG:
+#else
             case BILLYJIBA:
             case BILLYJIBB:
             case HULKJIBA:
@@ -325,6 +367,7 @@ void moveexplosions(void)  // STATNUM 5
             case MAMAJIBA:
             case MAMAJIBB:
 #endif
+#endif
 
                 if(s->xvel > 0) s->xvel--;
                 else s->xvel = 0;
@@ -336,7 +379,9 @@ void moveexplosions(void)  // STATNUM 5
                     sect = s->sectnum;
                 }
 
+#ifndef DEMO
                 setsprite(i,s->x,s->y,s->z);
+#endif
 
                 l = getflorzofslope(sect,s->x,s->y);
                 x = getceilzofslope(sect,s->x,s->y);
@@ -376,8 +421,10 @@ void moveexplosions(void)  // STATNUM 5
                     s->y += (s->xvel*sintable[s->ang&2047])>>14;
                     s->z += s->zvel;
 
+#ifndef DEMO
                     if (s->z >= sector[s->sectnum].floorz)
                         KILLIT(i);
+#endif
                 }
                 else
                 {
@@ -413,6 +460,9 @@ void moveexplosions(void)  // STATNUM 5
                 goto BOLT;
 
             case BLOODPOOL:
+#ifdef DEMO
+            case PUKE:
+#endif
 
                 if(t[0] == 0)
                 {
@@ -450,7 +500,11 @@ void moveexplosions(void)  // STATNUM 5
 
                 if(x < 844 && s->xrepeat > 6 && s->yrepeat > 6)
                 {
+#ifdef DEMO
+                    if( s->pal == 0 && (TRAND&255) < 16 && s->picnum != PUKE)
+#else
                     if( s->pal == 0 && (TRAND&255) < 16)
+#endif
                     {
                         if(ps[p].boot_amount > 0)
                             ps[p].boot_amount--;
@@ -489,6 +543,21 @@ void moveexplosions(void)  // STATNUM 5
                     KILLIT(i);
                 goto BOLT;
 
+#ifdef DEMO
+            case BURNING:
+            case BURNING2:
+            case FECES:
+            case WATERBUBBLE:
+            case SMALLSMOKE:
+            case EXPLOSION2:
+            case SHRINKEREXPLOSION:
+            case EXPLOSION2BOT:
+            case BLOOD:
+            case LASERSITE:
+            case FORCERIPPLE:
+            case TRANSPORTERSTAR:
+            case TRANSPORTERBEAM:
+#else
             case BURNING:
             case WATERBUBBLE:
             case SMALLSMOKE:
@@ -498,6 +567,7 @@ void moveexplosions(void)  // STATNUM 5
             case FORCERIPPLE:
             case TRANSPORTERSTAR:
             case TRANSPORTERBEAM:
+#endif
                 p = findplayer(s,&x);
                 execute(i,p,x);
                 goto BOLT;
@@ -544,7 +614,9 @@ void moveexplosions(void)  // STATNUM 5
             case GLASSPIECES:
             case GLASSPIECES+1:
             case GLASSPIECES+2:
+#ifndef DEMO
             case POPCORN:
+#endif
 
                 makeitfall(i);
 

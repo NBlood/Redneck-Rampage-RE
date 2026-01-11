@@ -48,12 +48,8 @@ void computergetinput(long snum, input *syn)
 {
     long i, j, k, l, x1, y1, z1, x2, y2, z2, x3, y3, z3, dx, dy;
     long dist, daang, zang, fightdist, damyang;
-    long startsect, endsect;
-    long splc, send;
-    long startwall, endwall;
-    short dasect;
-    short dawall;
-    short daspr;
+    long startsect, endsect, splc, send, startwall, endwall;
+    short dasect, dawall, daspr;
     char show2dsector_[(MAXSECTORS+7)>>3];
     struct player_struct *p;
     walltype *wal;
@@ -176,7 +172,9 @@ void computergetinput(long snum, input *syn)
                 break;
             case HANDREMOTE_WEAPON: fightdist = 4096; break;
             case SHRINKER_WEAPON: fightdist = 512; break;
+#ifndef DEMO
             case GROW_WEAPON: fightdist = 256; break;
+#endif
             case DEVISTATOR_WEAPON: fightdist = 1024; break;
 #ifdef RRRA
             case RA13_WEAPON: fightdist = 512; break;
@@ -184,7 +182,9 @@ void computergetinput(long snum, input *syn)
 #endif
             case TRIPBOMB_WEAPON: fightdist = 128; break;
             case FREEZE_WEAPON: fightdist = 512; break;
+#ifndef DEMO
             case BOWLING_WEAPON: fightdist = 512; break;
+#endif
         }
         dist = ksqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)); if (dist == 0) dist = 1;
         daang = getangle(x2-x1,y2-y1);

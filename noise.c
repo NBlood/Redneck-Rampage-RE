@@ -45,7 +45,9 @@ int wakeup(short i, short snum)
     p = &ps[snum];
     if (!p->at28e)
         return 0;
-#ifdef RRRA
+#ifdef DEMO
+    if (sprite[i].pal == 30 || sprite[i].pal == 32)
+#elif defined(RRRA)
     if (sprite[i].pal == 30 || sprite[i].pal == 32 || sprite[i].pal == 33 || sprite[i].pal == 8)
 #else
     if (sprite[i].pal == 30 || sprite[i].pal == 32 || sprite[i].pal == 33)

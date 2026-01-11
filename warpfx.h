@@ -34,6 +34,9 @@ extern long geox2[64];
 extern long geoy2[64];
 extern long geoz2[64];
 extern short geocnt;
+#ifdef DEMO
+extern short geocnt2;
+#endif
 extern long thunderflash;
 extern long thundertime;
 extern long winderflash;

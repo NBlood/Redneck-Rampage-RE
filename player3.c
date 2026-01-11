@@ -97,17 +97,27 @@ void getinput(short snum)
 
     loc.bits =   BUTTON(gamefunc_Jump);
     loc.bits |=   BUTTON(gamefunc_Crouch)<<1;
+#ifndef DEMO
     if (loc.bits & 2)
         loc.bits &= ~1;
+#endif
     loc.bits |=   BUTTON(gamefunc_Fire)<<2;
     loc.bits |=   BUTTON(gamefunc_Aim_Up)<<3;
     loc.bits |=   BUTTON(gamefunc_Aim_Down)<<4;
     loc.bits |=   BUTTON(gamefunc_Run)<<5;
+#ifdef DEMO
+    loc.bits |=   BUTTON(gamefunc_Look_Left)<<6;
+    if (ps[snum].drink_amt > 88)
+        loc.bits |= 128;
+    else
+        loc.bits |=   BUTTON(gamefunc_Look_Right)<<7;
+#else
     if (ps[snum].drink_amt > 88)
         loc.bits |= 64;
     else
         loc.bits |=   BUTTON(gamefunc_Look_Left)<<6;
     loc.bits |=   BUTTON(gamefunc_Look_Right)<<7;
+#endif
 
 #ifdef RRRA
     {
@@ -132,6 +142,16 @@ void getinput(short snum)
     if (BUTTON(gamefunc_Next_Weapon))
         j = 12;
 
+#ifdef DEMO
+    if (BUTTON(gamefunc_Weapon_7))
+        j = 6;
+    if (BUTTON(gamefunc_Weapon_8))
+       j = 6;
+    if (BUTTON(gamefunc_Weapon_9))
+       j = 6;
+    if (BUTTON(gamefunc_Weapon_10))
+       j = 6;
+#else
     if (BUTTON(gamefunc_Weapon_7))
         j = 7;
     if (BUTTON(gamefunc_Weapon_8))
@@ -140,6 +160,7 @@ void getinput(short snum)
        j = 9;
     if (BUTTON(gamefunc_Weapon_10))
        j = 10;
+#endif
 
     loc.bits |=   j<<8;
 #ifdef RRRA
@@ -260,6 +281,7 @@ void getinput(short snum)
     if ( BUTTON( gamefunc_Strafe_Right ) )
         svel += -keymove;
 
+#ifndef DEMO
     if (BUTTON(gamefunc_Quick_Kick))
     {
         if (BUTTON(gamefunc_Move_Forward))
@@ -273,6 +295,7 @@ void getinput(short snum)
     }
     else
     {
+#endif
         if (ps[snum].drink_amt >= 66 && ps[snum].drink_amt <= 87)
         {
             if (BUTTON(gamefunc_Move_Forward))
@@ -300,7 +323,9 @@ void getinput(short snum)
             if ( BUTTON(gamefunc_Move_Backward) )
                 vel += -keymove;
         }
+#ifndef DEMO
     }
+#endif
 
     if(vel < -MAXVEL) vel = -MAXVEL;
     if(vel > MAXVEL) vel = MAXVEL;
@@ -845,7 +870,9 @@ getspritescore(long snum, long dapicnum)
         case TRIPBOMBSPRITE: return(50);
         case SHOTGUNSPRITE: return(120);
         case DEVISTATORSPRITE: return(120);
+#ifndef DEMO
         case BOWLINGBALLSPRITE: return(25);
+#endif
 
         case FREEZEAMMO: if (ps[snum].ammo_amount[FREEZE_WEAPON] < max_ammo_amount[FREEZE_WEAPON]) return(10); else return(0);
         case AMMO: if (ps[snum].ammo_amount[SHOTGUN_WEAPON] < max_ammo_amount[SHOTGUN_WEAPON]) return(10); else return(0);
@@ -875,7 +902,9 @@ getspritescore(long snum, long dapicnum)
 char doincrements(struct player_struct *p)
 {
     long /*j,*/i,snum;
+#ifndef DEMO
     short snd;
+#endif
 
 #ifdef RRRA
     if (WindTime > 0)
@@ -907,6 +936,7 @@ char doincrements(struct player_struct *p)
 //    p->weapon_ang = -(j/5);
 
     p->player_par++;
+#ifndef DEMO
     if (p->at59d)
         p->at59d--;
 
@@ -927,6 +957,7 @@ char doincrements(struct player_struct *p)
             rbPlayTrack(whichtrack);
         }
     }
+#endif
 
     if (p->at57e > 0)
     {
@@ -958,7 +989,11 @@ char doincrements(struct player_struct *p)
         p->at598 = 1;
         if (Sound[420].num == 0)
             spritesound(420, p->i);
+#ifdef DEMO
+        p->drink_amt -= 30;
+#else
         p->drink_amt -= 9;
+#endif
         p->eat >>= 1;
         p->at596 = p->at597 = 1;
     }
@@ -1006,6 +1041,14 @@ char doincrements(struct player_struct *p)
     {
         p->last_pissed_time--;
 
+#ifdef DEMO
+        if( p->last_pissed_time == (26*219) )
+        {
+            spritesound(FLUSH_TOILET,p->i);
+            if(snum == screenpeek || ud.coop == 1)
+                spritesound(DUKE_PISSRELIEF,p->i);
+        }
+#else
         if (p->drink_amt > 66)
             if ((p->last_pissed_time % 26) == 0)
             p->drink_amt--;
@@ -1025,8 +1068,9 @@ char doincrements(struct player_struct *p)
             else if (p->last_pissed_time == 4919)
                 spritesound(433,p->i);
         }
-
-        if( p->last_pissed_time == 5668 )
+#endif
+        
+        if( p->last_pissed_time == (26*218) )
         {
             p->holster_weapon = 0;
             p->weapon_pos = 10;
@@ -1131,6 +1175,13 @@ char doincrements(struct player_struct *p)
         p->knuckle_incs ++;
         if(p->knuckle_incs==10)
         {
+#ifdef DEMO
+            if (!wupass)
+            {
+                wupass = 1;
+                spritesound(391,p->i);
+            }
+#else
             if (!wupass)
             {
                 snd = -1;
@@ -1212,6 +1263,7 @@ char doincrements(struct player_struct *p)
                     spritesound(DUKE_CRACK,p->i);
                 else spritesound(DUKE_CRACK2,p->i);
             }
+#endif
         }
         else if( p->knuckle_incs == 22 || (sync[snum].bits&(1<<2)))
             p->knuckle_incs=0;
@@ -1224,9 +1276,15 @@ char doincrements(struct player_struct *p)
 
 void checkweapons(struct player_struct *p)
 {
+#ifdef DEMO
+    short weapon_sprites[MAX_WEAPONS] = { KNEE, FIRSTGUNSPRITE, SHOTGUNSPRITE,
+        CHAINGUNSPRITE, RPGSPRITE, HEAVYHBOMB, SHRINKERSPRITE, DEVISTATORSPRITE,
+        TRIPBOMBSPRITE,FREEZEBLAST,HEAVYHBOMB};
+#else
     short weapon_sprites[MAX_WEAPONS] = { KNEE, FIRSTGUNSPRITE, SHOTGUNSPRITE,
             CHAINGUNSPRITE, RPGSPRITE, HEAVYHBOMB, SHRINKERSPRITE, DEVISTATORSPRITE,
             TRIPBOMBSPRITE, BOWLINGBALLSPRITE, FREEZEBLAST, HEAVYHBOMB};
+#endif
     short j,i;
 
 #ifdef RRRA
@@ -1279,6 +1337,7 @@ void checkweapons(struct player_struct *p)
         }
     }
 
+#ifndef DEMO
     for (i = 0; i < 5; i++)
     {
         if (p->keys[i] == 1)
@@ -1301,4 +1360,5 @@ void checkweapons(struct player_struct *p)
             }
         }
     }
+#endif
 }

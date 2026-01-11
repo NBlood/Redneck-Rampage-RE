@@ -217,7 +217,7 @@ void hitawall(struct player_struct *p,short *hitw)
 
 short aim(spritetype *s,short aang)
 {
-    char gotshrinker, gotfreezer;
+    char gotshrinker,gotfreezer;
     short i, j, a, k, cans;
     short aimstats[] = {10,13,1,2};
     long dx1, dy1, dx2, dy2, dx3, dy3, smax, sdist;
@@ -226,8 +226,13 @@ short aim(spritetype *s,short aang)
     a = s->ang;
 
     j = -1;
+#ifdef DEMO
+    gotshrinker = s->picnum == APLAYER && ps[s->yvel].curr_weapon == SHRINKER_WEAPON;
+    gotfreezer = s->picnum == APLAYER && ps[s->yvel].curr_weapon == FREEZE_WEAPON;
+#else
     gotshrinker = 0;
     gotfreezer = 0;
+#endif
 
     smax = 0x7fffffff;
 
@@ -255,6 +260,7 @@ short aim(spritetype *s,short aang)
                         s->picnum == APLAYER &&
                         s != &sprite[i])
                             continue;
+
                     if(gotshrinker && sprite[i].xrepeat < 30 )
                     {
                         switch(PN)
@@ -262,6 +268,17 @@ short aim(spritetype *s,short aang)
                             case SHARK:
                                 if(sprite[i].xrepeat < 20) continue;
                                     continue;
+#ifdef DEMO
+                            case GREENSLIME:
+                            case GREENSLIME+1:
+                            case GREENSLIME+2:
+                            case GREENSLIME+3:
+                            case GREENSLIME+4:
+                            case GREENSLIME+5:
+                            case GREENSLIME+6:
+                            case GREENSLIME+7:
+                                break;
+#endif
                             default:
                                 continue;
                         }
@@ -282,7 +299,13 @@ short aim(spritetype *s,short aang)
                             a = (klabs(scale(SZ-s->z,10,sdist)-(ps[s->yvel].horiz+ps[s->yvel].horizoff-100)) < 100);
                         else a = 1;
 
+#ifdef DEMO
+                        if(PN == ORGANTIC || PN == ROTATEGUN )
+                            cans = cansee(SX,SY,SZ,SECT,s->x,s->y,s->z-(32<<8),s->sectnum);
+                        else cans = cansee(SX,SY,SZ-(32<<8),SECT,s->x,s->y,s->z-(32<<8),s->sectnum);
+#else
                         cans = cansee(SX,SY,SZ-(32<<8),SECT,s->x,s->y,s->z-(32<<8),s->sectnum);
+#endif
 
                         if( a && cans )
                         {
@@ -332,12 +355,19 @@ void shoot(short i,short atwith)
         sx = s->x;
         sy = s->y;
         sz = s->z-((s->yrepeat*tilesizy[s->picnum])<<1)+(4<<8);
-        sz -= (7<<8);
-        if(badguy(s))
+#ifdef DEMO
+        if(s->picnum != ROTATEGUN)
         {
-            sx += (sintable[(sa+1024+96)&2047]>>7);
-            sy += (sintable[(sa+512+96)&2047]>>7);
+#endif
+            sz -= (7<<8);
+            if(badguy(s))
+            {
+                sx += (sintable[(sa+1024+96)&2047]>>7);
+                sy += (sintable[(sa+512+96)&2047]>>7);
+            }
+#ifdef DEMO
         }
+#endif
     }
 
     switch(atwith)
@@ -347,17 +377,22 @@ void shoot(short i,short atwith)
         case BLOODSPLAT3:
         case BLOODSPLAT4:
 
+
             if(p >= 0)
                 sa += 64 - (TRAND&127);
             else sa += 1024 + 64 - (TRAND&127);
             zvel = 1024-(TRAND&2047);
         case KNEE:
+#ifdef DEMO
+            if(atwith == KNEE )
+#else
         case GROWSPARK:
 #ifdef RRRA
         case SLINGBLADE:
             if(atwith == KNEE || atwith == GROWSPARK || atwith == SLINGBLADE)
 #else
             if(atwith == KNEE || atwith == GROWSPARK)
+#endif
 #endif
             {
                 if(p >= 0)
@@ -454,7 +489,11 @@ void shoot(short i,short atwith)
                         sprite[k].cstat |= (TRAND&4);
                         ssp(k,CLIPMASK0);
                         setsprite(k,sprite[k].x,sprite[k].y,sprite[k].z);
+#ifdef DEMO
+                        if( PN == OOZFILTER || PN == HULK )
+#else
                         if( PN == OOZFILTER )
+#endif
                             sprite[k].pal = 6;
                     }
                 }
@@ -486,11 +525,15 @@ void shoot(short i,short atwith)
                     {
                         k = spawn(j,SMALLSMOKE);
                         sprite[k].z -= (8<<8);
+#ifdef DEMO
+                        spritesound(KICK_HIT,j);
+#else
                         if(atwith == KNEE)
                             spritesound(KICK_HIT,j);
 #ifdef RRRA
                         else if (atwith == SLINGBLADE)
                             spritesound(260,j);
+#endif
 #endif
                     }
 
@@ -502,11 +545,12 @@ void shoot(short i,short atwith)
                         checkhitsprite(hitspr,j);
                         if(p >= 0) checkhitswitch(p,hitspr,1);
                     }
-                    else if (hitwall >= 0)
+
+                    else if( hitwall >= 0 )
                     {
-                        if (wall[hitwall].cstat & 2)
-                            if (wall[hitwall].nextsector >= 0)
-                                if (hitz >= (sector[wall[hitwall].nextsector].floorz))
+                        if( wall[hitwall].cstat&2 )
+                            if(wall[hitwall].nextsector >= 0)
+                                if(hitz >= (sector[wall[hitwall].nextsector].floorz) )
                                     hitwall = wall[hitwall].nextwall;
 
                         if( hitwall >= 0 && wall[hitwall].picnum != ACCESSSWITCH && wall[hitwall].picnum != ACCESSSWITCH2 )
@@ -543,6 +587,22 @@ void shoot(short i,short atwith)
                 if(j >= 0)
                 {
                     dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)+(5<<8);
+#ifdef DEMO
+                    switch(sprite[j].picnum)
+                    {
+                        case GREENSLIME:
+                        case GREENSLIME+1:
+                        case GREENSLIME+2:
+                        case GREENSLIME+3:
+                        case GREENSLIME+4:
+                        case GREENSLIME+5:
+                        case GREENSLIME+6:
+                        case GREENSLIME+7:
+                        case ROTATEGUN:
+                            dal -= (8<<8);
+                            break;
+                    }
+#endif
                     zvel = ( ( sprite[j].z-sz-dal )<<8 ) / ldist(&sprite[ps[p].i], &sprite[j]) ;
                     sa = getangle(sprite[j].x-sx,sprite[j].y-sy);
                 }
@@ -623,10 +683,12 @@ void shoot(short i,short atwith)
 
             if(hitsect < 0) return;
 
+#ifndef DEMO
             if (atwith == SHOTGUN)
                 if (sector[hitsect].lotag == 1)
                     if (TRAND&1)
                         return;
+#endif
 
             if( (TRAND&15) == 0 && sector[hitsect].lotag == 2 )
                 tracers(hitx,hity,hitz,sx,sy,sz,8-(ud.multimode>>1));
@@ -650,14 +712,18 @@ void shoot(short i,short atwith)
                         else
                             checkhitceiling(hitsect);
                     }
+#ifndef DEMO
                     if (sector[hitsect].lotag != 1)
-                        spawn(k,SMALLSMOKE);
+#endif
+                    spawn(k,SMALLSMOKE);
                 }
 
                 if(hitspr >= 0)
                 {
+#ifndef DEMO
                     if (sprite[hitspr].picnum == 1930)
                         return;
+#endif
                     checkhitsprite(hitspr,k);
                     if( sprite[hitspr].picnum == APLAYER && (ud.coop != 1 || ud.ffire == 1) )
                     {
@@ -693,8 +759,10 @@ void shoot(short i,short atwith)
 
                     if( isadoorwall(wall[hitwall].picnum) == 1 )
                         goto SKIPBULLETHOLE;
+#ifndef DEMO
                     if (isablockdoor(wall[hitwall].picnum) == 1)
                         goto SKIPBULLETHOLE;
+#endif
                     if(p >= 0 && (
                         wall[hitwall].picnum == DIPSWITCH ||
                         wall[hitwall].picnum == DIPSWITCH+1 ||
@@ -778,6 +846,7 @@ void shoot(short i,short atwith)
 
             return;
 
+#ifndef DEMO
         case TRIPBOMBSPRITE:
             j = spawn(i,atwith);
             sprite[j].xvel = 32;
@@ -856,6 +925,7 @@ void shoot(short i,short atwith)
             }
 
             return;
+#endif
             
         case FIRELASER:
         case SPIT:
@@ -880,6 +950,19 @@ void shoot(short i,short atwith)
 #endif
             else
             {
+#ifdef DEMO
+                if(atwith == COOLEXPLOSION1)
+                {
+                    if(s->picnum == BOSS2) vel = 644;
+                    else vel = 348;
+                    sz -= (4<<7);
+                }
+                else
+                {
+                    vel = 840;
+                    sz -= (4<<7);
+                }
+#else
                 vel = 840;
                 sz -= (4<<7);
                 if (s->picnum == 4649)
@@ -892,6 +975,7 @@ void shoot(short i,short atwith)
                 {
                     sz -= (12<<8);
                 }
+#endif
             }
 
             if(p >= 0)
@@ -900,23 +984,32 @@ void shoot(short i,short atwith)
 
                 if(j >= 0)
                 {
+#ifndef DEMO
                     sx += sintable[(s->ang+512+160)&2047]>>7;
                     sy += sintable[(s->ang+160)&2047]>>7;
+#endif
                     dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)-(12<<8);
                     zvel = ((sprite[j].z-sz-dal)*vel ) / ldist(&sprite[ps[p].i], &sprite[j]) ;
                     sa = getangle(sprite[j].x-sx,sprite[j].y-sy);
                 }
                 else
+#ifdef DEMO
+                    zvel = (100-ps[p].horiz-ps[p].horizoff)*98;
+#else
                 {
                     sx += sintable[(s->ang+512+160)&2047]>>7;
                     sy += sintable[(s->ang+160)&2047]>>7;
                     zvel = (100-ps[p].horiz-ps[p].horizoff)*98;
                 }
+#endif
             }
             else
             {
                 j = findplayer(s,&x);
 //                sa = getangle(ps[j].oposx-sx,ps[j].oposy-sy);
+#ifdef DEMO
+                sa += 16-(TRAND&31);
+#else
                 if (s->picnum == HULK)
                     sa -= (TRAND&31);
                 else if (s->picnum == VIXEN)
@@ -932,6 +1025,7 @@ void shoot(short i,short atwith)
 #else
                     sa += 16-(TRAND&31);
 #endif
+#endif
                 zvel = ( ( (ps[j].oposz - sz + (3<<8) ) )*vel ) / ldist(&sprite[ps[j].i],s);
             }
 
@@ -945,12 +1039,15 @@ void shoot(short i,short atwith)
 #endif
             else
             {
+#ifndef DEMO
                 if( atwith == COOLEXPLOSION1 )
                 {
                     sizx = 8;
                     sizy = 8;
                 }
-                else if( atwith == FIRELASER )
+                else
+#endif
+                if( atwith == FIRELASER )
                 {
                     if(p >= 0)
                     {
@@ -977,17 +1074,35 @@ void shoot(short i,short atwith)
             {
                 j = EGS(sect,sx,sy,sz,atwith,-127,sizx,sizy,sa,vel,zvel,i,4);
                 sprite[j].extra += (TRAND&7);
+
+#ifdef DEMO
+                if(atwith == COOLEXPLOSION1)
+                {
+                    sprite[j].shade = 0;
+                    if(PN == BOSS2)
+                    {
+                        l = sprite[j].xvel;
+                        sprite[j].xvel = 1024;
+                        ssp(j,CLIPMASK0);
+                        sprite[j].xvel = l;
+                        sprite[j].ang += 128-(TRAND&255);
+                    }
+                }
+#endif
+
                 sprite[j].cstat = 128;
                 sprite[j].clipdist = 4;
 
                 sa = s->ang+32-(TRAND&63);
                 zvel = oldzvel+512-(TRAND&1023);
 
+#ifndef DEMO
                 if (atwith == FIRELASER)
                 {
                     sprite[j].xrepeat = 8;
                     sprite[j].yrepeat = 8;
                 }
+#endif
 
                 scount--;
             }
@@ -997,7 +1112,9 @@ void shoot(short i,short atwith)
         case FREEZEBLAST:
             sz += (3<<8);
         case RPG:
+#ifndef DEMO
         case SHRINKSPARK:
+#endif
 #ifdef RRRA
         case RPG2:
         case RRTILE1790:
@@ -1104,11 +1221,39 @@ void shoot(short i,short atwith)
 
             if(p == -1)
             {
+#ifdef DEMO
+                if(PN == BOSS3)
+                {
+                    if(TRAND&1)
+                    {
+                        sprite[j].x -= sintable[sa&2047]>>6;
+                        sprite[j].y -= sintable[(sa+1024+512)&2047]>>6;
+                        sprite[j].ang -= 8;
+                    }
+                    else
+                    {
+                        sprite[j].x += sintable[sa&2047]>>6;
+                        sprite[j].y += sintable[(sa+1024+512)&2047]>>6;
+                        sprite[j].ang += 4;
+                    }
+                    sprite[j].xrepeat = 42;
+                    sprite[j].yrepeat = 42;
+                }
+                else if(PN == BOSS2)
+                {
+                    sprite[j].x -= sintable[sa&2047]/56;
+                    sprite[j].y -= sintable[(sa+1024+512)&2047]/56;
+                    sprite[j].ang -= 8+(TRAND&255)-128;
+                    sprite[j].xrepeat = 24;
+                    sprite[j].yrepeat = 24;
+                }
+#else
                 if(PN == HULK)
                 {
                     sprite[j].xrepeat = 8;
                     sprite[j].yrepeat = 8;
                 }
+#endif
                 else if(atwith != FREEZEBLAST)
                 {
                     sprite[j].xrepeat = 30;
@@ -1153,7 +1298,8 @@ void shoot(short i,short atwith)
 #endif
             break;
 
-        /*case HANDHOLDINGLASER:
+#ifdef DEMO
+        case HANDHOLDINGLASER:
 
             if(p >= 0)
                 zvel = (100-ps[p].horiz-ps[p].horizoff)*32;
@@ -1194,9 +1340,12 @@ void shoot(short i,short atwith)
                     ps[p].ammo_amount[TRIPBOMB_WEAPON]--;
 
             }
-            return;*/
+            return;
+#endif
 
-        //case BOUNCEMINE:
+#ifdef DEMO
+        case BOUNCEMINE:
+#endif
         case MORTER:
 #ifdef RRRA
         case CHEERBOMB:
@@ -1227,6 +1376,107 @@ void shoot(short i,short atwith)
                 sy+(sintable[(sa+512)&2047]>>8),
                 sz+(6<<8),atwith,-64,32,32,sa,vel,zvel,i,1);
             break;
+
+#ifdef DEMO
+
+        case GROW_WEAPON:
+
+            if(p >= 0)
+            {
+                j = aim( s, AUTO_AIM_ANGLE );
+                if(j >= 0)
+                {
+                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1)+(5<<8);
+                    switch(sprite[j].picnum)
+                    {
+                        case GREENSLIME:
+                        case GREENSLIME+1:
+                        case GREENSLIME+2:
+                        case GREENSLIME+3:
+                        case GREENSLIME+4:
+                        case GREENSLIME+5:
+                        case GREENSLIME+6:
+                        case GREENSLIME+7:
+                        case ROTATEGUN:
+                            dal -= (8<<8);
+                            break;
+                    }
+                    zvel = ( ( sprite[j].z-sz-dal )<<8 ) / (ldist(&sprite[ps[p].i], &sprite[j]) );
+                    sa = getangle(sprite[j].x-sx,sprite[j].y-sy);
+                }
+                else
+                {
+                    sa += 16-(TRAND&31);
+                    zvel = (100-ps[p].horiz-ps[p].horizoff)<<5;
+                    zvel += 128-(TRAND&255);
+                }
+
+                sz -= (2<<8);
+            }
+            else
+            {
+                j = findplayer(s,&x);
+                sz -= (4<<8);
+                zvel = ( (ps[j].posz-sz) <<8 ) / (ldist(&sprite[ps[j].i], s ) );
+                zvel += 128-(TRAND&255);
+                sa += 32-(TRAND&63);
+            }
+
+            s->cstat &= ~257;
+            hitscan(sx,sy,sz,sect,
+                sintable[(sa+512)&2047],
+                sintable[sa&2047],
+                zvel<<6,&hitsect,&hitwall,&hitspr,&hitx,&hity,&hitz,CLIPMASK1);
+            s->cstat |= 257;
+
+            j = EGS(sect,hitx,hity,hitz,GROWSPARK,-16,28,28,sa,0,0,i,1);
+
+            sprite[j].pal = 2;
+            sprite[j].cstat |= 130;
+            sprite[j].xrepeat = sprite[j].yrepeat = 1;
+
+            if( hitwall == -1 && hitspr == -1 && hitsect >= 0)
+            {
+                if( zvel < 0 && (sector[hitsect].ceilingstat&1) == 0)
+                    checkhitceiling(hitsect);
+            }
+            else if(hitspr >= 0) checkhitsprite(hitspr,j);
+            else if( hitwall >= 0 && wall[hitwall].picnum != ACCESSSWITCH && wall[hitwall].picnum != ACCESSSWITCH2 )
+                checkhitwall(j,hitwall,hitx,hity,hitz,atwith);
+
+            break;
+        case SHRINKER:
+            if( s->extra >= 0 ) s->shade = -96;
+            if(p >= 0)
+            {
+                j = aim( s, AUTO_AIM_ANGLE );
+                if(j >= 0)
+                {
+                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1);
+                    zvel = ( (sprite[j].z-sz-dal-(4<<8))*768) / (ldist( &sprite[ps[p].i], &sprite[j]));
+                    sa = getangle(sprite[j].x-sx,sprite[j].y-sy);
+                }
+                else zvel = (100-ps[p].horiz-ps[p].horizoff)*98;
+            }
+            else if(s->statnum != 3)
+            {
+                j = findplayer(s,&x);
+                l = ldist(&sprite[ps[j].i],s);
+                zvel = ( (ps[j].oposz-sz)*512) / l ;
+            }
+            else zvel = 0;
+
+            j = EGS(sect,
+                sx+(sintable[(512+sa+512)&2047]>>12),
+                sy+(sintable[(sa+512)&2047]>>12),
+                sz+(2<<8),SHRINKSPARK,-16,28,28,sa,768,zvel,i,4);
+
+            sprite[j].cstat = 128;
+            sprite[j].clipdist = 32;
+
+
+            return;
+#endif
     }
     return;
 }

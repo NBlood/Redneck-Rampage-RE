@@ -29,7 +29,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 
-/*
+#ifdef DEMO
 void displayloogie(short snum)
 {
     long i, a, x, y, z;
@@ -45,7 +45,7 @@ void displayloogie(short snum)
 
         rotatesprite(
             (ps[snum].loogiex[i]+x)<<16,(200+ps[snum].loogiey[i]-y)<<16,z-(i<<8),256-a,
-            LOOGIE,0,0,2,0,0,xdim-1,ydim-1);
+            LOOGIE,0,7,2,0,0,xdim-1,ydim-1);
     }
 }
 
@@ -53,6 +53,8 @@ char animatefist(short gs,short snum)
 {
     short looking_arc,fisti,fistpal;
     long fistzoom, fistz;
+
+    return 0;
 
     fisti = ps[snum].fist_incs;
     if(fisti > 32) fisti = 32;
@@ -85,6 +87,9 @@ char animateknee(short gs,short snum)
     short knee_y[] = {0,-8,-16,-32,-64,-84,-108,-108,-108,-72,-32,-8};
     short looking_arc, pal;
 
+    if (ps[snum].curr_weapon != KNEE)
+        return 0;
+
     if(ps[snum].knee_incs > 11 || ps[snum].knee_incs == 0 || sprite[ps[snum].i].extra <= 0) return 0;
 
     looking_arc = knee_y[ps[snum].knee_incs] + klabs(ps[snum].look_ang)/9;
@@ -100,7 +105,7 @@ char animateknee(short gs,short snum)
             pal = ps[snum].palookup;
     }
 
-    myospal(105+(sync[snum].avel>>4)-(ps[snum].look_ang>>1)+(knee_y[ps[snum].knee_incs]>>2),looking_arc+280-((ps[snum].horiz-ps[snum].horizoff)>>4),KNEE,gs,4,pal);
+    myospal(105+(sync[snum].avel>>4)-(ps[snum].look_ang>>1)+(knee_y[ps[snum].knee_incs]>>2),looking_arc+280-((ps[snum].horiz-ps[snum].horizoff)>>4),NEWCROWBAR,gs,4,pal);
 
     return 1;
 }
@@ -111,6 +116,8 @@ char animateknuckles(short gs,short snum)
     short looking_arc, pal;
 
     if(ps[snum].knuckle_incs == 0 || sprite[ps[snum].i].extra <= 0) return 0;
+
+    return 0;
 
     looking_arc = klabs(ps[snum].look_ang)/9;
 
@@ -125,8 +132,7 @@ char animateknuckles(short gs,short snum)
 
     return 1;
 }
-*/
-
+#endif
 
 long lastvisinc;
 
@@ -141,6 +147,18 @@ void displaymasks(short snum)
 
      if(ps[snum].scuba_on)
 	 {
+#ifdef DEMO
+        if(ud.screen_size > 4)
+        {
+            rotatesprite(43<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite((320-43)<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+        }
+        else
+        {
+            rotatesprite(43<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite((320-43)<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+        }
+#else
         if(ud.screen_size > 4)
         {
             rotatesprite((320-(tilesizx[SCUBAMASK]>>1)-15)<<16,(200-(tilesizy[SCUBAMASK]>>1)+(sintable[totalclock&2047]>>10))<<16,49152,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
@@ -157,15 +175,19 @@ void displaymasks(short snum)
             rotatesprite(35<<16,(-1)<<16,65536,0,SCUBAMASK+3,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
             rotatesprite(285<<16,200<<16,65536,1024,SCUBAMASK+3,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
         }
+#endif
 	 }
 }
-#if 0
+
+#ifdef DEMO
 char animatetip(short gs,short snum)
 {
     short p,looking_arc;
     short tip_y[] = {0,-8,-16,-32,-64,-84,-108,-108,-108,-108,-108,-108,-108,-108,-108,-108,-96,-72,-64,-32,-16};
 
     if(ps[snum].tipincs == 0) return 0;
+
+    return 0;
 
     looking_arc = klabs(ps[snum].look_ang)/9;
     looking_arc -= (ps[snum].hard_landing<<3);
@@ -193,6 +215,8 @@ char animateaccess(short gs,short snum)
     char p;
 
     if(ps[snum].access_incs == 0 || sprite[ps[snum].i].extra <= 0) return 0;
+
+    return 0;
 
     looking_arc = access_y[ps[snum].access_incs] + klabs(ps[snum].look_ang)/9;
     looking_arc -= (ps[snum].hard_landing<<3);
@@ -230,10 +254,12 @@ void displayweapon(short snum)
 
     looking_arc = klabs(p->look_ang)/9;
 
+#ifndef DEMO
     if (shadedsector[p->cursectnum] == 1)
         gs = 16;
     else
-        gs = sprite[p->i].shade;
+#endif
+    gs = sprite[p->i].shade;
     if(gs > 24) gs = 24;
 
     if(p->newowner >= 0 || ud.camerasprite >= 0 || (sprite[p->i].pal != 1 && sprite[p->i].extra <= 0))
@@ -442,7 +468,7 @@ void displayweapon(short snum)
                 x = weapon_xoffset + ((kb_ox[kb_frames[*kb]]>>1) - 12);
                 y = 200 - (244-kb_oy[kb_frames[*kb]]);
                 myospal(x-(p->look_ang>>1),looking_arc+y-gun_pos,
-                        KNEE+kb_frames[*kb],gs,0,pal);
+                        NEWCROWBAR+kb_frames[*kb],gs,0,pal);
             }
 #ifdef RRRA
             else
@@ -459,6 +485,31 @@ void displayweapon(short snum)
 #endif
             break;
 
+#ifdef DEMO
+        case TRIPBOMB_WEAPON:
+            if(sprite[p->i].pal == 1)
+                pal = 1;
+            else
+                pal = sector[p->cursectnum].floorpal;
+
+            weapon_xoffset += 8;
+            gun_pos -= 10;
+
+            if((*kb) > 6)
+                looking_arc += ((*kb)<<3);
+            else if((*kb) < 4)
+                myospal(weapon_xoffset+142-(p->look_ang>>1),
+                        looking_arc+234-gun_pos,HANDHOLDINGLASER+3,gs,o,pal);
+
+            myospal(weapon_xoffset+130-(p->look_ang>>1),
+                    looking_arc+249-gun_pos,
+                    HANDHOLDINGLASER+((*kb)>>2),gs,o,pal);
+            myospal(weapon_xoffset+152-(p->look_ang>>1),
+                    looking_arc+249-gun_pos,
+                    HANDHOLDINGLASER+((*kb)>>2),gs,o|4,pal);
+
+            break;
+#else
         case TRIPBOMB_WEAPON:
         case BOWLING_WEAPON:
             if(sprite[p->i].pal == 1)
@@ -498,7 +549,31 @@ void displayweapon(short snum)
                 }
             }
             break;
+#endif
 
+#ifdef DEMO
+        case RPG_WEAPON:
+            if(sprite[p->i].pal == 1)
+                pal = 1;
+            else pal = sector[p->cursectnum].floorpal;
+
+            weapon_xoffset -= sintable[(768+((*kb)<<7))&2047]>>11;
+            gun_pos += sintable[(768+((*kb)<<7)&2047)]>>11;
+
+            if(*kb > 0)
+            {
+                if(*kb < 8)
+                {
+                    myospal(weapon_xoffset+164,(looking_arc<<1)+176-gun_pos,
+                            RPGGUN+((*kb)>>1),gs,o,pal);
+                }
+            }
+
+            myospal(weapon_xoffset+164,(looking_arc<<1)+176-gun_pos,
+                    RPGGUN,gs,o,pal);
+
+            break;
+#else
         case RPG_WEAPON:
 #ifdef RRRA
         case RA16_WEAPON:
@@ -600,6 +675,7 @@ void displayweapon(short snum)
 #endif
 
             break;
+#endif
 
         case SHOTGUN_WEAPON:
             if(sprite[p->i].pal == 1)
@@ -715,6 +791,51 @@ void displayweapon(short snum)
 
 
 
+#ifdef DEMO
+        case CHAINGUN_WEAPON:
+            if(sprite[p->i].pal == 1)
+                pal = 1;
+            else
+                pal = sector[p->cursectnum].floorpal;
+
+            if(*kb > 0)
+                gun_pos -= sintable[(*kb)<<7]>>12;
+
+            if(*kb > 0 && sprite[p->i].pal != 1) weapon_xoffset += 1-(rand()&3);
+
+            myospal(weapon_xoffset+168-(p->look_ang>>1),looking_arc+260-gun_pos,
+                CHAINGUN,gs,o,pal);
+            switch(*kb)
+            {
+                case 0:
+                    myospal(weapon_xoffset+178-(p->look_ang>>1),looking_arc+233-gun_pos,
+                        CHAINGUN+1,gs,o,pal);
+                    break;
+                default:
+                    if(*kb > 4 && *kb < 12)
+                    {
+                        i = 0;
+                        if(sprite[p->i].pal != 1) i = rand()&7;
+                        myospal(i+weapon_xoffset-4+140-(p->look_ang>>1),i+looking_arc-((*kb)>>1)+208-gun_pos,
+                            CHAINGUN+5+((*kb-4)/5),gs,o,pal);
+                        if(sprite[p->i].pal != 1) i = rand()&7;
+                        myospal(i+weapon_xoffset-4+184-(p->look_ang>>1),i+looking_arc-((*kb)>>1)+208-gun_pos,
+                            CHAINGUN+5+((*kb-4)/5),gs,o,pal);
+                    }
+                    if(*kb < 8)
+                    {
+                        i = rand()&7;
+                        myospal(i+weapon_xoffset-4+162-(p->look_ang>>1),i+looking_arc-((*kb)>>1)+208-gun_pos,
+                            CHAINGUN+5+((*kb-2)/5),gs,o,pal);
+                        myospal(weapon_xoffset+178-(p->look_ang>>1),looking_arc+233-gun_pos,
+                            CHAINGUN+1+((*kb)>>1),gs,o,pal);
+                    }
+                    else myospal(weapon_xoffset+178-(p->look_ang>>1),looking_arc+233-gun_pos,
+                        CHAINGUN+1,gs,o,pal);
+                    break;
+            }
+            break;
+#else
         case CHAINGUN_WEAPON:
             if(sprite[p->i].pal == 1)
                 pal = 1;
@@ -745,6 +866,7 @@ void displayweapon(short snum)
                     break;
             }
             break;
+#endif
          case PISTOL_WEAPON:
              if(sprite[p->i].pal == 1)
                 pal = 1;
@@ -880,6 +1002,37 @@ void displayweapon(short snum)
                 }
             }
             break;
+#ifdef DEMO
+        case DEVISTATOR_WEAPON:
+            if(sprite[p->i].pal == 1)
+                pal = 1;
+            else
+                pal = sector[p->cursectnum].floorpal;
+
+            if((*kb))
+            {
+                char cycloidy[] = {0,4,12,24,12,4,0};
+
+                i = sgn((*kb)>>2);
+
+                if(p->hbomb_hold_delay)
+                {
+                    myospal( (cycloidy[*kb]>>1)+weapon_xoffset+268-(p->look_ang>>1),cycloidy[*kb]+looking_arc+238-gun_pos,DEVISTATOR+i,-32,o,pal);
+                    myospal(weapon_xoffset+30-(p->look_ang>>1),looking_arc+240-gun_pos,DEVISTATOR,gs,o|4,pal);
+                }
+                else
+                {
+                    myospal( -(cycloidy[*kb]>>1)+weapon_xoffset+30-(p->look_ang>>1),cycloidy[*kb]+looking_arc+240-gun_pos,DEVISTATOR+i,-32,o|4,pal);
+                    myospal(weapon_xoffset+268-(p->look_ang>>1),looking_arc+238-gun_pos,DEVISTATOR,gs,o,pal);
+                }
+            }
+            else
+            {
+                myospal(weapon_xoffset+268-(p->look_ang>>1),looking_arc+238-gun_pos,DEVISTATOR,gs,o,pal);
+                myospal(weapon_xoffset+30-(p->look_ang>>1),looking_arc+240-gun_pos,DEVISTATOR,gs,o|4,pal);
+            }
+            break;
+#else
         case DEVISTATOR_WEAPON:
             if(sprite[p->i].pal == 1)
                 pal = 1;
@@ -894,6 +1047,7 @@ void displayweapon(short snum)
             else
                 rd3myospal(150+(weapon_xoffset>>1)-(p->look_ang>>1),266+(looking_arc>>1)-gun_pos,DEVISTATOR+1,gs,o,pal);
             break;
+#endif
 
 #ifdef RRRA
         case RA13_WEAPON:
@@ -901,6 +1055,30 @@ void displayweapon(short snum)
             break;
 #endif
 
+#ifdef DEMO
+        case FREEZE_WEAPON:
+            if(sprite[p->i].pal == 1)
+                pal = 1;
+            else
+                pal = sector[p->cursectnum].floorpal;
+
+            if((*kb))
+            {
+                char cat_frames[] = { 0,0,1,1,2,2 };
+
+                if(sprite[p->i].pal != 1)
+                {
+                    weapon_xoffset += rand()&3;
+                    looking_arc += rand()&3;
+                }
+                gun_pos -= 16;
+                myospal(weapon_xoffset+210-(p->look_ang>>1),looking_arc+261-gun_pos,FREEZE+2,-32,o,pal);
+                myospal(weapon_xoffset+210-(p->look_ang>>1),looking_arc+235-gun_pos,FREEZE+3+cat_frames[*kb%6],-32,o,pal);
+            }
+            else myospal(weapon_xoffset+210-(p->look_ang>>1),looking_arc+261-gun_pos,FREEZE,gs,o,pal);
+
+            break;
+#else
         case FREEZE_WEAPON:
             if(sprite[p->i].pal == 1)
                 pal = 1;
@@ -915,7 +1093,53 @@ void displayweapon(short snum)
             else rdmyospal(weapon_xoffset+260-(p->look_ang>>1),looking_arc+215-gun_pos,FREEZE,gs,o,pal);
 
             break;
+#endif
 
+#ifdef DEMO
+        case SHRINKER_WEAPON:
+        case GROW_WEAPON:
+            weapon_xoffset += 28;
+            looking_arc += 18;
+            if(sprite[p->i].pal == 1)
+                pal = 1;
+            else
+                pal = sector[p->cursectnum].floorpal;
+            if((*kb) == 0)
+            {
+                if(cw == GROW_WEAPON)
+                     myospal(weapon_xoffset+184-(p->look_ang>>1),
+                        looking_arc+240-gun_pos,SHRINKER+2,
+                        16-(sintable[p->random_club_frame&2047]>>10),
+                        o,2);
+                else myospal(weapon_xoffset+184-(p->look_ang>>1),
+                     looking_arc+240-gun_pos,SHRINKER+2,
+                     16-(sintable[p->random_club_frame&2047]>>10),
+                     o,0);
+
+                myospal(weapon_xoffset+188-(p->look_ang>>1),
+                     looking_arc+240-gun_pos,SHRINKER,gs,o,pal);
+            }
+            else
+            {
+                if(sprite[p->i].pal != 1)
+                {
+                    weapon_xoffset += rand()&3;
+                    gun_pos += (rand()&3);
+                }
+
+                if(cw == GROW_WEAPON)
+                    myospal(weapon_xoffset+184-(p->look_ang>>1),
+                        looking_arc+240-gun_pos,SHRINKER+3+((*kb)&3),-32,
+                        o,2);
+                else myospal(weapon_xoffset+184-(p->look_ang>>1),
+                     looking_arc+240-gun_pos,SHRINKER+3+((*kb)&3),-32,
+                     o,0);
+
+                myospal(weapon_xoffset+188-(p->look_ang>>1),
+                     looking_arc+240-gun_pos,SHRINKER+1,gs,o,pal);
+            }
+            break;
+#else
         case SHRINKER_WEAPON:
         case GROW_WEAPON:
             weapon_xoffset += 28;
@@ -951,8 +1175,11 @@ void displayweapon(short snum)
                 }
             }
             break;
+#endif
     }
 
-    //displayloogie(snum);
+#ifdef DEMO
+    displayloogie(snum);
+#endif
 
 }

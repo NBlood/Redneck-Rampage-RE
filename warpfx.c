@@ -27,7 +27,31 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 
 #include "lava.h"
-#ifdef RRRA
+
+#ifdef DEMO
+
+short geosectorwarp[64];
+short geosectorwarp2[64];
+short geosector[64];
+long geox[64];
+long geoy[64];
+long geoz[64];
+long geox2[64];
+long geoy2[64];
+long geoz2[64];
+short geocnt;
+short geocnt2;
+
+char gbrightness;
+char brightness;
+
+long thunderflash;
+long thundertime;
+
+long winderflash;
+long windertime;
+
+#elif defined(RRRA)
 
 extern int fp1, fp2, fp3, fp4, fp5, fp6, fp7;
 extern int fp8, fp9;
@@ -71,6 +95,21 @@ long thundertime;
 
 long winderflash;
 long windertime;
+#endif
+
+#ifdef DEMO
+extern int scrape_t;
+extern int scraped;
+void cdromcontrols(void)
+{
+    if (scrape_t)
+    {
+        scrape_t--;
+        if (!scraped)
+            stopsound(387);
+        scraped = 0;
+    }
+}
 #endif
 
 void thunder(void)

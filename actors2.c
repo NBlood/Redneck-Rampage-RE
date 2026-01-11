@@ -49,7 +49,11 @@ short ifhitbyweapon(short sn)
 
             if(npc->picnum == APLAYER)
             {
+#ifdef DEMO
+                if(ud.god && hittype[sn].picnum != SHRINKSPARK ) return -1;
+#else
                 if(ud.god) return -1;
+#endif
 
                 p = npc->yvel;
                 j = hittype[sn].owner;
@@ -86,9 +90,11 @@ short ifhitbyweapon(short sn)
                     case SEENINE:
                     case OOZFILTER:
                     case EXPLODINGBARREL:
+#ifndef DEMO
                     case TRIPBOMBSPRITE:
 #ifdef RRRA
                     case RPG2:
+#endif
 #endif
                         ps[p].posxv +=
                             hittype[sn].extra*(sintable[(hittype[sn].ang+512)&2047])<<2;
@@ -106,7 +112,11 @@ short ifhitbyweapon(short sn)
             else
             {
                 if(hittype[sn].extra == 0 )
+#ifdef DEMO
+                    if( hittype[sn].picnum == SHRINKSPARK && npc->xrepeat < 24 )
+#else
                     if( npc->xrepeat < 24 )
+#endif
                         return -1;
 
                 npc->extra -= hittype[sn].extra;
@@ -506,7 +516,9 @@ void movefallers(void)
             x = s->extra;
             IFHIT
             {
-#ifdef RRRA
+#ifdef DEMO
+                if( j == FIREEXT || j == RPG || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
+#elif defined(RRRA)
                 if( j == RPG || j == RPG2 || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
 #else
                 if( j == RPG || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
@@ -844,6 +856,127 @@ void movestandables(void)
             goto BOLT;
         }
 
+#ifdef DEMO
+        if(s->picnum == TRIPBOMB)
+        {
+            if(T3 > 0)
+            {
+                T3--;
+                if(T3 == 8)
+                {
+                    spritesound(LASERTRIP_EXPLODE,i);
+                    for(j=0;j<5;j++) RANDOMSCRAP;
+                    x = s->extra;
+                    hitradius( i, tripbombblastradius, x>>2,x>>1,x-(x>>2),x);
+
+                    j = spawn(i,EXPLOSION2);
+                    sprite[j].ang = s->ang;
+                    sprite[j].xvel = 348;
+                    ssp(j,CLIPMASK0);
+
+                    j = headspritestat[5];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].picnum == LASERLINE && s->hitag == sprite[j].hitag)
+                            sprite[j].xrepeat = sprite[j].yrepeat = 0;
+                        j = nextspritestat[j];
+                    }
+                    KILLIT(i);
+                }
+                goto BOLT;
+            }
+            else
+            {
+                x = s->extra;
+                s->extra = 1;
+                l = s->ang;
+                IFHIT { T3 = 16; }
+                s->extra = x;
+                s->ang = l;
+            }
+
+            if( T1 < 32 )
+            {
+                p = findplayer(s,&x);
+                if( x > 768 ) T1++;
+                else if(T1 > 16) T1++;
+            }
+            if( T1 == 32 )
+            {
+                l = s->ang;
+                s->ang = T6;
+
+                T4 = s->x;T5 = s->y;
+                s->x += sintable[(T6+512)&2047]>>9;
+                s->y += sintable[(T6)&2047]>>9;
+                s->z -= (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+
+                x = hitasprite(i,&m);
+
+                hittype[i].lastvx = x;
+
+                s->ang = l;
+
+                k = 0;
+
+                while(x > 0)
+                {
+                    j = spawn(i,LASERLINE);
+                    setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
+                    sprite[j].hitag = s->hitag;
+                    hittype[j].temp_data[1] = sprite[j].z;
+
+                    s->x += sintable[(T6+512)&2047]>>4;
+                    s->y += sintable[(T6)&2047]>>4;
+
+                    if( x < 1024 )
+                    {
+                        sprite[j].xrepeat = x>>5;
+                        break;
+                    }
+                    x -= 1024;
+                }
+
+                T1++;
+                s->x = T4;s->y = T5;
+                s->z += (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+                T4 = 0;
+                if( m >= 0 )
+                {
+                    T3 = 13;
+                    spritesound(LASERTRIP_ARMING,i);
+                }
+                else T3 = 0;
+            }
+            if(T1 == 33)
+            {
+                T2++;
+
+
+                T4 = s->x;T5 = s->y;
+                s->x += sintable[(T6+512)&2047]>>9;
+                s->y += sintable[(T6)&2047]>>9;
+                s->z -= (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+
+                x = hitasprite(i,&m);
+
+                s->x = T4;s->y = T5;
+                s->z += (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+
+                if( hittype[i].lastvx != x )
+                {
+                    T3 = 13;
+                    spritesound(LASERTRIP_ARMING,i);
+                }
+            }
+            goto BOLT;
+        }
+#endif
+
 
         if( s->picnum >= CRACK1 && s->picnum <= CRACK4 )
         {
@@ -852,7 +985,9 @@ void movestandables(void)
                 t[0] = s->cstat;
                 t[1] = s->ang;
                 j = ifhitbyweapon(i);
-#ifdef RRRA
+#ifdef DEMO
+                if(j == FIREEXT || j == RPG || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
+#elif defined(RRRA)
                 if(j == RPG || j == RPG2 || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
 #else
                 if(j == RPG || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
@@ -878,6 +1013,49 @@ void movestandables(void)
             }
             goto BOLT;
         }
+
+#ifdef DEMO
+        if( s->picnum == FIREEXT )
+        {
+            j = ifhitbyweapon(i);
+            if( j == -1 ) goto BOLT;
+
+            for(k=0;k<16;k++)
+            {
+                j = EGS(SECT,SX,SY,SZ-(TRAND%(48<<8)),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(sprite[i].zvel>>2),i,5);
+                sprite[j].pal = 2;
+            }
+
+            spawn(i,EXPLOSION2);
+            spritesound(PIPEBOMB_EXPLODE,i);
+            spritesound(GLASS_HEAVYBREAK,i);
+
+            if(s->hitag > 0)
+            {
+                j = headspritestat[6];
+                while(j >= 0)
+                {
+                    if(s->hitag == sprite[j].hitag && ( sprite[j].picnum == OOZFILTER || sprite[j].picnum == SEENINE ) )
+                        if(sprite[j].shade != -32)
+                            sprite[j].shade = -32;
+                    j = nextspritestat[j];
+                }
+
+                x = s->extra;
+                spawn(i,EXPLOSION2);
+                hitradius( i, pipebombblastradius,x>>2, x-(x>>1),x-(x>>2), x);
+                spritesound(PIPEBOMB_EXPLODE,i);
+
+                goto DETONATE;
+            }
+            else
+            {
+                hitradius(i,seenineblastradius,10,15,20,25);
+                KILLIT(i);
+            }
+            goto BOLT;
+        }
+#endif
 
         if(s->picnum == OOZFILTER || s->picnum == SEENINE || s->picnum == SEENINEDEAD || s->picnum == (SEENINEDEAD+1) )
         {
@@ -1034,6 +1212,29 @@ void movestandables(void)
 
         switch(s->picnum)
         {
+#ifdef DEMO
+            case VIEWSCREEN:
+            case VIEWSCREEN2:
+
+                if(s->xrepeat == 0) KILLIT(i);
+
+                p = findplayer(s, &x);
+
+                if( x < 2048 )
+                {
+                    if( SP == 1 )
+                        camsprite = i;
+                }
+                else if( camsprite != -1 && T1 == 1)
+                {
+                    camsprite = -1;
+                    T1 = 0;
+                    loadtile(s->picnum);
+                }
+
+                goto BOLT;
+#endif
+
             case TRASH:
 
                 if(s->xvel == 0) s->xvel = 1;
@@ -1046,6 +1247,45 @@ void movestandables(void)
                 }
                 else KILLIT(i);
                 break;
+
+#ifdef DEMO
+            case SIDEBOLT1:
+            case SIDEBOLT1+1:
+            case SIDEBOLT1+2:
+            case SIDEBOLT1+3:
+                p = findplayer(s, &x);
+                if( x > 20480 ) goto BOLT;
+
+                CLEAR_THE_BOLT2:
+                if(t[2])
+                {
+                    t[2]--;
+                    goto BOLT;
+                }
+                if( (s->xrepeat|s->yrepeat) == 0 )
+                {
+                    s->xrepeat=t[0];
+                    s->yrepeat=t[1];
+                }
+                if( (TRAND&8) == 0 )
+                {
+                    t[0]=s->xrepeat;
+                    t[1]=s->yrepeat;
+                    t[2] = global_random&4;
+                    s->xrepeat=s->yrepeat=0;
+                    goto CLEAR_THE_BOLT2;
+                }
+                s->picnum++;
+
+                if(l&1) s->cstat ^= 2;
+
+                if( (TRAND&1) && sector[sect].floorpicnum == HURTRAIL )
+                    spritesound(SHORT_CIRCUIT,i);
+
+                if(s->picnum == SIDEBOLT1+4) s->picnum = SIDEBOLT1;
+
+                goto BOLT;
+#endif
 
             case BOLT1:
             case BOLT1+1:
@@ -1235,6 +1475,9 @@ void movestandables(void)
             case EXPLODINGBARREL:
             case WOODENHORSE:
             case HORSEONSIDE:
+#ifdef DEMO
+            case FLOORFLAME:
+#endif
             case FIREBARREL:
             case FIREVASE:
             case NUKEBARREL:
