@@ -1361,8 +1361,8 @@ short spawn( short j, short pn )
                     }
                     else
                     {
-                        sp->xrepeat = 60;
-                        sp->yrepeat = 60;
+                        sp->xrepeat = 24;
+                        sp->yrepeat = 24;
                     }
                 }
 #else

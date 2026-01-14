@@ -1,0 +1,13 @@
+engine.lib: engine.obj cache1d.obj build.obj a.obj mmulti.obj
+	wlib engine.lib +-engine.obj +-cache1d.obj +-a.obj +-mmulti.obj
+
+build.obj : build.c build.h pragmas.h
+	wcc386 build /4r /s /or
+cache1d.obj : cache1d.c pragmas.h
+	wcc386 cache1d /4r /s /or
+engine.obj : engine.c build.h pragmas.h ves2.h
+	wcc386 engine /4r /s /or
+a.obj : a.asm
+	masm a.asm;
+mmulti.obj : mmulti.c pragmas.h
+	wcc386 mmulti /4r /s /or
