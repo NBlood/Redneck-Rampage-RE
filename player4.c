@@ -626,7 +626,11 @@ void processinput(short snum)
         }
     }
     else if (psectlotag == 7777)
+#ifdef TEY
+        if (ud.volume_number == 1 && ud.level_number == 4)
+#else
         if (ud.volume_number == 1 && ud.level_number == 6)
+#endif
             lastlevel = 1;
 
     if (psectlotag == 848 && sector[psect].floorpicnum == WATERTILE2)
@@ -848,6 +852,8 @@ void processinput(short snum)
 
 #ifdef DEMO
                     if(ud.level_number > 10) ud.level_number = 0;
+#elif defined(TEY)
+                    if(ud.level_number > 4) ud.level_number = 0;
 #else
                     if(ud.level_number > 6) ud.level_number = 0;
 #endif
@@ -892,7 +898,11 @@ void processinput(short snum)
             }
 #else
 #ifndef RRRA
+#ifdef TEY
+            if (ud.level_number == 4 && ud.volume_number == 0)
+#else
             if (ud.level_number == 6 && ud.volume_number == 0)
+#endif
                 turdlevel = 1;
 #endif
             ud.level_number++;

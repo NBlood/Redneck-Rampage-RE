@@ -231,7 +231,11 @@ void doorders(void)
     ps[myconnectindex].palette = palette;
     totalclock = 0;
     KB_FlushKeyboardQueue();
+#ifdef TEY
+    rotatesprite(0,0,65536L,0,1685,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+#else
     rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+#endif
     nextpage(); for(i=63;i>0;i-=7) palto(0,0,0,i);
     totalclock = 0;while( !KB_KeyWaiting() ) getpackets();
 

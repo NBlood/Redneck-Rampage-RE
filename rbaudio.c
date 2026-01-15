@@ -31,12 +31,28 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 //#include "duke3d.h"
 #include "dpmi.h"
 
+#ifdef TEY
+extern int lp1, lp2, lp3, lp4, lp5, lp6, lp7, lp8, lp9, lp10;
+static char rbEnabled;
+static char cdDrive;
+char cdlotrack;
+char cdhitrack;
+long cdromtime;
+short whichtrack;
+short oldtrack;
+short cddrives;
+
+#else
 
 char cdlotrack;
 long cdromtime;
 short oldtrack;
 short whichtrack;
 short cddrives;
+
+#endif
+
+
 
 typedef struct
 {
@@ -127,9 +143,11 @@ static struct {
     ioctl_t ioctl;
 } VolumeSizeReq = { { 13,0,3 }, { 0 } };
 
+#ifndef TEY
 char cdhitrack;
 static char rbEnabled;
 static char cdDrive;
+#endif
 
 int rbSendRequest(char *req, char *info, int size);
 

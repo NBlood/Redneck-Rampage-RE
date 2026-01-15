@@ -2465,7 +2465,11 @@ void menus(void)
             else if(x >= 0)
             {
                 tempbuf[0] = 8;
+#ifdef TEY
+                tempbuf[1] = ud.m_level_number = 4;
+#else
                 tempbuf[1] = ud.m_level_number = 6;
+#endif
                 tempbuf[2] = ud.m_volume_number = 0;
                 tempbuf[3] = ud.m_player_skill+1;
 
@@ -2531,6 +2535,8 @@ void menus(void)
                     if(ud.m_volume_number == 0 && ud.m_level_number > 5)
                         ud.m_level_number = 0;
                     if(ud.m_level_number > 10) ud.m_level_number = 0;
+#elif defined(TEY)
+                    if(ud.m_level_number > 4) ud.m_level_number = 0;
 #else
                     if(ud.m_level_number > 6) ud.m_level_number = 0;
 #endif

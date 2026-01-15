@@ -41,6 +41,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 
+#ifdef TEY
+extern int _lp1, _lp2;
+#endif
+
 #define TIMERUPDATESIZ 32
 
 long cameradist = 0, cameraclock = 0;

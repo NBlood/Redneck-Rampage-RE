@@ -360,7 +360,11 @@ char checkhitswitch(short snum,long w,char switchtype)
                 break;
 #endif
             case RRTILE2214:
+#ifdef TEY
+                if (ud.level_number > 4)
+#else
                 if (ud.level_number > 6)
+#endif
                     ud.level_number = 0;
                 sprite[i].picnum++;
                 break;
@@ -544,6 +548,8 @@ char checkhitswitch(short snum,long w,char switchtype)
             ud.level_number++;
 #ifdef DEMO
             if( (ud.volume_number && ud.level_number > 10 ) || ( ud.volume_number == 0 && ud.level_number > 5 ) )
+#elif defined(TEY)
+            if( (ud.volume_number && ud.level_number > 4 ) || ( ud.volume_number == 0 && ud.level_number > 4 ) )
 #else
             if( (ud.volume_number && ud.level_number > 6 ) || ( ud.volume_number == 0 && ud.level_number > 6 ) )
 #endif

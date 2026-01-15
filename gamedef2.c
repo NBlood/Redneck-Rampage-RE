@@ -964,7 +964,11 @@ char parse(void)
 #else
             ps[myconnectindex].gm = MODE_EOL;
             ud.level_number++;
+#ifdef TEY
+            if (ud.level_number > 4)
+#else
             if (ud.level_number > 6)
+#endif
                 ud.level_number = 0;
             ud.m_level_number = ud.level_number;
 #endif

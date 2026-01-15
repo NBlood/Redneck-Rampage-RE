@@ -1813,6 +1813,8 @@ void checksectors(short snum)
                 ud.level_number++;
 #ifdef DEMO
                 if( (ud.volume_number && ud.level_number > 10 ) || ud.level_number > 5 )
+#elif defined(TEY)
+                if( ud.level_number > 4 )
 #else
                 if( ud.level_number > 6 )
 #endif

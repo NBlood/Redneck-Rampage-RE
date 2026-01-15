@@ -308,6 +308,8 @@ void checkcommandline(int argc,char **argv)
                         c++;
 #ifdef DEMO
                         ud.m_level_number = ud.level_number = (atol(c)-1)%11;
+#elif defined(TEY)
+                        ud.m_level_number = ud.level_number = (atol(c)-1)%5;
 #else
                         ud.m_level_number = ud.level_number = (atol(c)-1)%7;
 #endif
@@ -323,14 +325,14 @@ void checkcommandline(int argc,char **argv)
                         exit(0);
 #endif
 
-#ifndef TEY
                     case 'v':
                     case 'V':
                         c++;
+#ifndef TEY
                         ud.warp_on = 1;
                         ud.m_volume_number = ud.volume_number = atol(c)-1;
-                        break;
 #endif
+                        break;
                     case 's':
                     case 'S':
                         c++;

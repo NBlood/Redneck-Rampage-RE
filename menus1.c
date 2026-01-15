@@ -35,6 +35,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #ifdef RRRA
 extern int sp1, sp2, sp3, sp4, sp5;
 #endif
+#ifdef TEY
+extern int sp1, sp2, sp3, sp4, sp5;
+#endif
 
 extern short inputloc;
 extern int recfilep;

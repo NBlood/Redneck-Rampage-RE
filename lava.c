@@ -92,6 +92,40 @@ short minecartopen[16];
 short minecartsect[16];
 
 short lightnincnt;
+#elif defined(TEY)
+
+short torchsectorshade[64];
+short torchtype[64];
+short torchsector[64];
+extern int lp1, lp2, lp3, lp4, lp5, lp6, lp7, lp8, lp9, lp10;
+
+extern int lp11, lp12;
+
+
+short jaildoorcnt;
+short minecartcnt;
+short torchcnt;
+
+short jaildoorsect[32];
+short lightninsectorshade[64];
+short minecartsect[16];
+short minecartopen[16];
+long minecartdrag[16];
+short jaildooropen[32];
+short jaildoordir[32];
+long jaildoordist[32];
+short lightninsector[64];
+long minecartdist[16];
+short jaildoorsecthtag[32];
+long jaildoorspeed[32];
+short minecartchildsect[16];
+long jaildoordrag[32];
+short jaildoorsound[32];
+short minecartdir[16];
+short minecartsound[16];
+long minecartspeed[16];
+
+short lightnincnt;
 #else
 short torchcnt;
 short jaildoorcnt;

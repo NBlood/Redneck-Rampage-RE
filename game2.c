@@ -1391,7 +1391,7 @@ void showtwoscreens(void)
 #endif
 #ifdef TEY
     setview(0,0,xdim-1,ydim-1);
-    KB_FlushKeyboardQueue();
+    flushperms();
     ps[myconnectindex].palette = (char*)&palette[0];
     for(i=0;i<64;i+=7) palto(0,0,0,i);
     KB_FlushKeyboardQueue();
