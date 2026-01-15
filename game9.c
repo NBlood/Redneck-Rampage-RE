@@ -817,6 +817,29 @@ void dobonus(char bonusonly)
             MUSIC_StopSong();
             FX_StopAllSounds();
             clearsoundlocks();
+#elif defined(TEY)
+            MUSIC_StopSong();
+            clearview(0L);
+            nextpage();
+            ud.level_number = 0;
+            ud.volume_number = 0;
+            ud.eog = 1;
+
+            for(t=0;t<64;t++) palto(0,0,0,t);
+
+            KB_FlushKeyboardQueue();
+            ps[myconnectindex].palette = palette;
+            
+            rotatesprite(0,0,32768L,0,1710,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            rotatesprite(160<<16,0,32768L,0,1711,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            rotatesprite(0,100<<16,32768L,0,1712,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            rotatesprite(160<<16,100<<16,32768L,0,1713,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            nextpage(); for(t=63;t>0;t--) palto(0,0,0,t);
+            while( !KB_KeyWaiting() ) getpackets();
+            for(t=0;t<64;t++) palto(0,0,0,t);
+            MUSIC_StopSong();
+            FX_StopAllSounds();
+            clearsoundlocks();
 #else
             MUSIC_StopSong();
             clearview(0L);
@@ -1126,7 +1149,16 @@ void dobonus(char bonusonly)
 #else
     bg_tile = RRTILE403;
     if (ud.volume_number == 0)
+#ifdef TEY
+    {
+        if (ud.level_number)
+            bg_tile = ud.level_number+RRTILE403-1;
+        else
+            bg_tile = 11+RRTILE403-1;
+    }
+#else
         bg_tile = ud.level_number+RRTILE403-1;
+#endif
     else
         bg_tile = ud.level_number+RRTILE409-1;
 
@@ -1197,6 +1229,9 @@ void dobonus(char bonusonly)
                             }
 #else
                             sound(425);
+#ifdef TEY
+                            if (ud.level_number == 0)
+#endif
                             switch(rand()&3)
                             {
                                 case 0:

@@ -572,7 +572,7 @@ void CONFIG_ReadSetup( void )
    dummy = CheckParm("NAME");
    if( dummy ) strcpy(myname,_argv[dummy+1]);
    dummy = CheckParm("MAP");
-#ifndef VOLUMEONE
+#ifndef TEY
    if( dummy )
    {
        strcpy(boardfilename,_argv[dummy+1]);

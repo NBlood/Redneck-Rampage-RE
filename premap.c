@@ -2464,6 +2464,63 @@ void clearfifo(void)
         myminlag[i] = 0;
 }
 
+#ifdef TEY
+
+char* char_D93D0[3] = {
+    "E1L1.map",
+    "E1L2.map",
+    "E1L4.map"
+};
+
+int int_D93DC[3] = {
+    341778,
+    286846,
+    268542
+};
+
+int int_D93E8[3] = {
+    0x12,0x2f,0xf8
+};
+
+void func_58214(int l)
+{
+    FILE* f;
+    int s;
+    int xr;
+    int b;
+    if (strcmp(char_D93D0[l], level_file_names[l]))
+    {
+        sprintf(tempbuf, "\n\nMap not compatable!\n\n");
+        gameexit(tempbuf);
+    }
+    f = fopen(level_file_names[l], "rb");
+    if (!f)
+    {
+        sprintf(tempbuf, "\nError opening file %s\n", level_file_names[l]);
+        gameexit(tempbuf);
+    }
+    fseek(f, 0, SEEK_END);
+    s = ftell(f);
+    if (s != int_D93DC[l])
+    {
+        sprintf(tempbuf, "\n\nMap not compatable!\n\n");
+        gameexit(tempbuf);
+    }
+    rewind(f);
+
+    xr = 0;
+    while ((b = fgetc(f)) != -1)
+        xr ^= b;
+    if ((xr ^ int_D93E8[l]) != 0)
+    {
+        sprintf(tempbuf, "\n\nMap not compatable! %x %x\n\n", int_D93E8[l], xr);
+        gameexit(tempbuf);
+    }
+    fclose(f);
+}
+
+#endif
+
 void enterlevel(char g)
 {
 #ifdef RRRA
@@ -2530,6 +2587,13 @@ void enterlevel(char g)
         sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
         gameexit(tempbuf);
     }
+#elif defined(TEY)
+    else if ( loadboard( level_file_names[ud.level_number],&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
+    {
+        sprintf(tempbuf,"Map %s not found!",level_file_names[ud.level_number]);
+        gameexit(tempbuf);
+    }
+    }
 #else
     else if ( loadboard( level_file_names[ (ud.volume_number*7)+ud.level_number],&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
@@ -2539,7 +2603,7 @@ void enterlevel(char g)
     }
 #endif
 
-#if !defined(RRRA) && !defined(DEMO)
+#if !defined(RRRA) && !defined(DEMO) && !defined(TEY)
     if (ud.volume_number == 1 && ud.level_number == 1)
     {
         short ii;

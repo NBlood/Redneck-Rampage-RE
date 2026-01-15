@@ -224,6 +224,20 @@ void cheats(void)
                         j = 0;
 #endif
 
+#ifdef TEY
+                        ps[myconnectindex].gotweapon[1] = 1;
+                        ps[myconnectindex].gotweapon[2] = 1;
+                        ps[myconnectindex].gotweapon[3] = 1;
+                        ps[myconnectindex].gotweapon[4] = 1;
+                        ps[myconnectindex].gotweapon[8] = 1;
+                        ps[myconnectindex].gotweapon[12] = 1;
+                        addammo(1, &ps[myconnectindex], max_ammo_amount[1]);
+                        addammo(2, &ps[myconnectindex], max_ammo_amount[2]);
+                        addammo(3, &ps[myconnectindex], max_ammo_amount[3]);
+                        addammo(4, &ps[myconnectindex], max_ammo_amount[4]);
+                        addammo(8, &ps[myconnectindex], max_ammo_amount[8]);
+                        addammo(12, &ps[myconnectindex], max_ammo_amount[12]);
+#else
                         for ( weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS-j;weapon++ )
                         {
                             addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
@@ -235,6 +249,7 @@ void cheats(void)
 #endif
 #ifdef RRRA
                         ps[myconnectindex].ammo_amount[RA15_WEAPON] = 1;
+#endif
 #endif
 
                         KB_FlushKeyboardQueue();
@@ -350,6 +365,20 @@ void cheats(void)
 
                     case 1:
                         j = 0;
+#ifdef TEY
+                        ps[myconnectindex].gotweapon[1] = 1;
+                        ps[myconnectindex].gotweapon[2] = 1;
+                        ps[myconnectindex].gotweapon[3] = 1;
+                        ps[myconnectindex].gotweapon[4] = 1;
+                        ps[myconnectindex].gotweapon[8] = 1;
+                        ps[myconnectindex].gotweapon[12] = 1;
+                        addammo(1, &ps[myconnectindex], max_ammo_amount[1]);
+                        addammo(2, &ps[myconnectindex], max_ammo_amount[2]);
+                        addammo(3, &ps[myconnectindex], max_ammo_amount[3]);
+                        addammo(4, &ps[myconnectindex], max_ammo_amount[4]);
+                        addammo(8, &ps[myconnectindex], max_ammo_amount[8]);
+                        addammo(12, &ps[myconnectindex], max_ammo_amount[12]);
+#else
                         for ( weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS-j;weapon++ )
 #ifdef DEMO
                         {
@@ -377,6 +406,7 @@ void cheats(void)
 #endif
 #ifdef RRRA
                         ps[myconnectindex].ammo_amount[RA15_WEAPON] = 1;
+#endif
 #endif
 
                         ps[myconnectindex].steroids_amount =         400;

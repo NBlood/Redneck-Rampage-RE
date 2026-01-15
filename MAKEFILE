@@ -3,8 +3,11 @@
 # rides again
 prod = /5r /otexan /d2 /bt=DOS -DRRRA
 !else ifdef demo
-# redneck rampage
+# alpha demo
 prod = /5r /otexan /bt=DOS -DDEMO
+!else ifdef tey
+# the early years
+prod = /5r /otexan /bt=NT -DTEY
 !else
 # redneck rampage
 prod = /5r /otexan /bt=DOS
@@ -28,6 +31,15 @@ rr.exe : game1.obj game2.obj game3.obj game4.obj game5.obj game6.obj game7.obj g
 			config.obj animlib.obj &
 			lava.obj noise.obj warpfx.obj cdrom.obj
 		wlink $(all) @makefild.lnk
+!else ifdef tey
+redneck.exe : game1.obj game2.obj game3.obj game4.obj game5.obj game6.obj game7.obj game8.obj game9.obj &
+			actors1.obj actors2.obj actors3.obj actors4.obj actors5.obj actors6.obj &
+			gamedef1.obj gamedef2.obj global.obj menus1.obj menus2.obj menus3.obj &
+			player1.obj player2.obj player3.obj player4.obj player5.obj &
+			premap.obj sector1.obj sector2.obj sector3.obj sounds.obj rts.obj &
+			config.obj animlib.obj function.obj &
+			lava.obj noise.obj warpfx.obj dpmi.obj _debug.obj rbaudio.obj usrhooks.obj
+		wlink $(all) @makefil3.lnk
 !else
 rr.exe : game1.obj game2.obj game3.obj game4.obj game5.obj game6.obj game7.obj game8.obj game9.obj &
 			actors1.obj actors2.obj actors3.obj actors4.obj actors5.obj actors6.obj &
@@ -105,6 +117,8 @@ sector3.obj : sector3.c $(globaldependencies)
 sounds.obj : sounds.c $(globaldependencies)
 !ifdef rrra
 	wcc386 sounds /zu $(compileoptions)
+!else ifdef tey
+	wcc386 sounds /zu $(compileoptions)
 !else
 	wcc386 sounds $(compileoptions)
 !endif
@@ -120,18 +134,14 @@ noise.obj : noise.c $(globaldependencies)
 	wcc386 noise $(compileoptions)
 warpfx.obj : warpfx.c $(globaldependencies)
 	wcc386 warpfx $(compileoptions)
-!ifdef demo
 cdrom.obj : cdrom.c $(globaldependencies)
 	wcc386 cdrom $(compileoptions)
-!else
 dpmi.obj : dpmi.c $(globaldependencies)
 	wcc386 dpmi $(compileoptions)
 _debug.obj : _debug.c $(globaldependencies)
 	wcc386 _debug $(compileoptions)
 rbaudio.obj : rbaudio.c $(globaldependencies)
 	wcc386 rbaudio $(compileoptions)
-!endif
-!ifdef rrra
 playmve.obj : playmve.c $(globaldependencies)
 	wcc386 playmve $(compileoptions) -i=.\sos;.\mve
 usrhooks.obj : usrhooks.c $(globaldependencies)
@@ -140,5 +150,4 @@ fog.obj : fog.c $(globaldependencies)
 	wcc386 fog $(compileoptions)
 function.obj : function.c $(globaldependencies)
 	wcc386 function $(compileoptions)
-!endif
 

@@ -1308,6 +1308,12 @@ void coords(short snum)
     printext256(274L,y+35L,31,-1,tempbuf,1);
     sprintf(tempbuf,"AM= %ld",ps[snum].ammo_amount[GROW_WEAPON]);
     printext256(274L,y+43L,31,-1,tempbuf,1);
+#ifdef TEY
+    sprintf(tempbuf,"DRINK= %ld",ps[snum].drink_amt);
+    printext256(274L,y+51L,31,-1,tempbuf,1);
+    sprintf(tempbuf,"MAP= %s",level_file_names[ud.level_number]);
+    printext256(274L,y+59L,31,-1,tempbuf,1);
+#endif
 }
 
 void operatefta(void)
@@ -1383,6 +1389,21 @@ void showtwoscreens(void)
 #ifdef RRRA
     return;
 #endif
+#ifdef TEY
+    setview(0,0,xdim-1,ydim-1);
+    KB_FlushKeyboardQueue();
+    ps[myconnectindex].palette = (char*)&palette[0];
+    for(i=0;i<64;i+=7) palto(0,0,0,i);
+    KB_FlushKeyboardQueue();
+    clearview(0L);
+    rotatesprite(0,0,32768L,0,1710,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    rotatesprite(160<<16,0,32768L,0,1711,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    rotatesprite(0,100<<16,32768L,0,1712,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    rotatesprite(160<<16,100<<16,32768L,0,1713,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    nextpage(); for(i=63;i>0;i-=7) palto(0,0,0,i);
+    totalclock = 0;
+    while( !KB_KeyWaiting() && totalclock < 2400);
+#else
     if (!KB_KeyWaiting())
     {
         getpackets();
@@ -1419,6 +1440,7 @@ void showtwoscreens(void)
     nextpage(); for(i=63;i>0;i-=7) palto(0,0,0,i);
     totalclock = 0;
     while( !KB_KeyWaiting() && totalclock < 2400);
+#endif
 }
 
 void binscreen(void)
@@ -1475,10 +1497,15 @@ void gameexit(char *t)
         setvmode(0x3);
         if(playonten == 0)
         {
+#ifdef TEY
+            printf("%s", t);
+            printf("\n   Y'all come back now, ya' hear...\n");
+#else
             printf("Y'all come back now, ya' hear...\n");
 #ifdef RRRA
             if (*t != 0)
                 printf("%s%s","\n",t);
+#endif
 #endif
         } 
     }

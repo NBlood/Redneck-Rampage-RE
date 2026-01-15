@@ -168,6 +168,14 @@ void menus(void)
             gametext(160,78,"RECTUM YER GONNA HAFTA BUY THE",0);
             gametext(160,86,"FULL DAMN GAME!",0);
             gametext(160,118,"WHACK YER ANY KEY...",0);
+#elif defined(TEY)
+            gametext(160,56,"PURCHASE THE FULL VERSION OF REDNECK",0);
+            gametext(160,66,"RAMPAGE AT YOUR LOCAL GAME RETAILER,",0);
+            gametext(160,76,"OR CALL 1-800-INTERPLAY TO ORDER",0);
+            gametext(160,86,"DIRECT. VISIT INTERPLAY ON THE WORLD-",0);
+            gametext(160,96,"WIDE WEB AT HTTP://WWW/INTERPLAY.COM",0);
+            gametext(160,106,"MENTION CODE RRE4 WHEN YOU CALL.",0);
+            gametext(160,126,"WHACK YER ESC KEY...",0);
 #else
             gametext(160,56,"PLAY REDNECK RAMPAGE OVER THE INTERNET!",0);
             gametext(160,66,"IF YA'S TIRED OF PLAYING WITH YERSELF,",0);
@@ -987,8 +995,16 @@ void menus(void)
                     gametext(c,100,"GREG GOODRICH",0);
                     break;
                 case 962:
+#ifdef TEY
+                    gametext(c,70,"GAME PROGRAMMING",0);
+                    gametext(c,90,"RAFAEL PAIZ",0);
+                    gametext(c,120,"ADDITIONAL PROGRAMMING",0);
+                    gametext(c,140,"ARTHUR ATTILA DONAVAN",0);
+                    gametext(c,155,"DANNY STANLEY",0);
+#else
                     gametext(c,80,"GAME PROGRAMMING",0);
                     gametext(c,100,"RAFAEL PAIZ",0);
+#endif
                     break;
                 case 963:
                     gametext(c,80,"ART DIRECTORS",0);
@@ -1014,7 +1030,11 @@ void menus(void)
                     gametext(c,70,"CHARACTER ANIMATION",0);
                     gametext(c,80,"AMIT DORON",0);
                     gametext(c,100,"A.I. PROGRAMMING",0);
+#ifdef TEY
+                    gametext(c,110,"ARTHUR ATTILA DONAVAN",0);
+#else
                     gametext(c,110,"ARTHUR DONAVAN",0);
+#endif
                     gametext(c,130,"ADDITIONAL ANIMATION",0);
                     gametext(c,140,"GEORGE KARL",0);
                     break;
@@ -1282,6 +1302,8 @@ void menus(void)
                 menutext(c,63+16,SHX(-3),PHX(-3),"COMING SOON!");
             else
                 menutext(c,63+16,SHX(-3),1,"PLAY ON ENGAGE");
+#elif defined(TEY)
+            menutext(c,63+16,SHX(-3),PHX(-3),"HOW TO ORDER");
 #else
             menutext(c,63+16,SHX(-3),PHX(-3),"PLAY ON ENGAGE");
 #endif
@@ -1399,6 +1421,10 @@ void menus(void)
             menutext(160,24,0,0,"SELECT YER EPISODE");
 #ifdef RRRA
             x = probe(160,80,20,2,0);
+#elif defined(TEY)
+            if(boardfilename[0])
+                x = probe(160,80,20,2,0);
+            else x = probe(160,80,20,1,0);
 #else
             if(boardfilename[0])
                 x = probe(160,80,20,3,0);
@@ -1448,7 +1474,9 @@ void menus(void)
             menutext(160,60+20+20,SHX(-4),1,volume_names[2]);
             menutext(160,60+20+20,SHX(-5),1,volume_names[3]);
 #else
+#ifndef TEY
             menutext(160,80+20,SHX(-3),PHX(-3),volume_names[1]);
+#endif
 #ifndef RRRA
             if(boardfilename[0])
             {

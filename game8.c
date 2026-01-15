@@ -51,6 +51,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define VERSION "REL 1.0"
 #define HEAD   "REDNECK RAMPAGE RIDES AGAIN(tm) "VERSION" - KENTUCKY BOURBON EDITION"
 #define HEAD2  "REDNECK RAMPAGE RIDES AGAIN(tm) "VERSION" - KENTUCKY BOURBON EDITION"
+#elif defined(TEY)
+#define VERSION "REL 1.00"
+#define HEAD   "REDNECK RAMPAGE(tm): THE EARLY YEARS"
+#define HEAD2  "REDNECK RAMPAGE(tm): THE EARLY YEARS"
 #else
 #define VERSION "REL 1.01"
 #define HEAD   "REDNECK RAMPAGE(tm) "VERSION" - MOONSHINE"
@@ -159,7 +163,11 @@ void cdecl MVE_gfxMode(short);
     ud.multimode = 1;
     printstr(0,1,"                    COPYRIGHT XATRIX ENTERTAINMENT 1997                         ",79);
 
+#ifdef TEY
+    printstr(0,2,"                         5-LEVEL OEM VERSION 1.00                               ",79);
+#else
     printstr(0,2,"                      REDNECK RAMPAGE VERSION "VERSION"                          ",79);
+#endif
 #endif
 
     l = Z_AvailHeap();
