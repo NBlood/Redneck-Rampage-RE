@@ -2209,7 +2209,7 @@ void moveactors(void)
 #ifndef DEMO
 void ballreturn(short spr)
 {
-#ifdef RRRA
+#if defined(RRRA) || defined(POSSUM)
     short j, i, nextj, nexti;
 #else
     short j, i, nexti, nextj;

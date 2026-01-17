@@ -2370,3 +2370,14 @@ void moveeffectors(void)   //STATNUM 3
           alignflorslope(s->sectnum,wal->x,wal->y,sector[wal->nextsector].floorz);
      }
 }
+
+#ifdef POSSUM
+void hackfunc2()
+{
+    hackfunc2();
+    hackfunc2();
+    hackfunc2();
+    hackfunc2();
+    hackfunc2();
+}
+#endif

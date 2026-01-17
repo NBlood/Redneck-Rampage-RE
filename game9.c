@@ -231,7 +231,7 @@ void doorders(void)
     ps[myconnectindex].palette = palette;
     totalclock = 0;
     KB_FlushKeyboardQueue();
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
     rotatesprite(0,0,65536L,0,1685,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
 #else
     rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
@@ -821,7 +821,7 @@ void dobonus(char bonusonly)
             MUSIC_StopSong();
             FX_StopAllSounds();
             clearsoundlocks();
-#elif defined(TEY)
+#elif defined(TEY) || defined(POSSUM)
             MUSIC_StopSong();
             clearview(0L);
             nextpage();
@@ -1153,7 +1153,7 @@ void dobonus(char bonusonly)
 #else
     bg_tile = RRTILE403;
     if (ud.volume_number == 0)
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
     {
         if (ud.level_number)
             bg_tile = ud.level_number+RRTILE403-1;
@@ -1233,7 +1233,7 @@ void dobonus(char bonusonly)
                             }
 #else
                             sound(425);
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
                             if (ud.level_number == 0)
 #endif
                             switch(rand()&3)

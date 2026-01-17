@@ -58,6 +58,10 @@ extern char firstdemofile[];
 #define VERSION "REL 1.00"
 #define HEAD   "REDNECK RAMPAGE(tm): THE EARLY YEARS"
 #define HEAD2  "REDNECK RAMPAGE(tm): THE EARLY YEARS"
+#elif defined(POSSUM)
+#define VERSION "REL 1.00"
+#define HEAD   "REDNECK RAMPAGE(tm): POSSUM BAYOU"
+#define HEAD2  "REDNECK RAMPAGE(tm): POSSUM BAYOU"
 #else
 #define VERSION "REL 1.01"
 #define HEAD   "REDNECK RAMPAGE(tm) "VERSION" - MOONSHINE"
@@ -68,7 +72,7 @@ void comlinehelp(char **argv)
 {
     printf("Command line help.  %s [/flags...]\n",argv[0]);
     puts(" ?, /?         This help message");
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
     puts(" /l#           Level (1-5)");
 #else
     puts(" /l##          Level (1-11)");
@@ -77,7 +81,7 @@ void comlinehelp(char **argv)
 #endif
     puts(" /s#           Skill (1-4)");
     puts(" /r            Record demo");
-#ifndef TEY
+#if !defined(TEY) && !defined(POSSUM)
     puts(" /dFILE        Start to play demo FILE");
 #endif
     puts(" /m            No monsters");
@@ -92,14 +96,14 @@ void comlinehelp(char **argv)
     puts(" /a            Use player AI (fake multiplayer only)");
     puts(" /i#           Network mode (1/0) (multiplayer only)");
     puts(" /f#           Send fewer packets (1, 2, 4) (multiplayer only)");
-#ifndef TEY
+#if !defined(TEY) && !defined(POSSUM)
     puts(" /gFILE        Use a groupfile FILE");
 #endif
     puts(" /xFILE        Compile FILE (default GAME.CON)");
     puts(" /u#########   User's favorite weapon order (default: 3425689071)");
     puts(" /#            Load and run a game (slot 0-9)");
     puts(" -8250         8250 with modem play, force music OFF");
-#ifndef TEY
+#if !defined(TEY) && !defined(POSSUM)
     puts(" -map FILE     Use a map FILE");
 #endif
     puts(" -name NAME    Foward NAME");
@@ -164,7 +168,7 @@ void checkcommandline(int argc,char **argv)
                             else printf("Using con file: '%s'\n",confilename);
                         }
                         break;
-#ifndef TEY
+#if !defined(TEY) && !defined(POSSUM)
                     case 'g':
                     case 'G':
                         c++;
@@ -294,7 +298,7 @@ void checkcommandline(int argc,char **argv)
                         ud.m_recstat = 1;
                         puts("Demo record mode on.");
                         break;
-#ifndef TEY
+#if !defined(TEY) && !defined(POSSUM)
                     case 'd':
                     case 'D':
                         c++;
@@ -316,7 +320,7 @@ void checkcommandline(int argc,char **argv)
                         break;
                     case 'j':
                     case 'J':
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
                         printf("Redneck Ramage (SHAREWARE) Arthur's southern taster mix v%s\n",VERSION);
                         exit(0);
                         break;
@@ -328,7 +332,7 @@ void checkcommandline(int argc,char **argv)
                     case 'v':
                     case 'V':
                         c++;
-#ifndef TEY
+#if !defined(TEY) && !defined(POSSUM)
                         ud.warp_on = 1;
                         ud.m_volume_number = ud.volume_number = atol(c)-1;
 #endif

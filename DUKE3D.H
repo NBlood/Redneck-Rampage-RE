@@ -56,7 +56,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define MAXSLEEPDIST  16384
 #define SLEEPTIME 24*64
 
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
 #define BYTEVERSION 109
 #else
 #define BYTEVERSION 108

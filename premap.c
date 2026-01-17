@@ -2464,7 +2464,7 @@ void clearfifo(void)
         myminlag[i] = 0;
 }
 
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
 
 char* char_D93D0[3] = {
     "E1L1.map",
@@ -2587,7 +2587,7 @@ void enterlevel(char g)
         sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
         gameexit(tempbuf);
     }
-#elif defined(TEY)
+#elif defined(TEY) || defined(POSSUM)
     else if ( loadboard( level_file_names[ud.level_number],&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
         sprintf(tempbuf,"Map %s not found!",level_file_names[ud.level_number]);
@@ -2603,7 +2603,7 @@ void enterlevel(char g)
     }
 #endif
 
-#if !defined(RRRA) && !defined(DEMO) && !defined(TEY)
+#if !defined(RRRA) && !defined(DEMO) && !defined(TEY) && !defined(POSSUM)
     if (ud.volume_number == 1 && ud.level_number == 1)
     {
         short ii;

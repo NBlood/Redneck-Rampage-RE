@@ -1308,7 +1308,7 @@ void coords(short snum)
     printext256(274L,y+35L,31,-1,tempbuf,1);
     sprintf(tempbuf,"AM= %ld",ps[snum].ammo_amount[GROW_WEAPON]);
     printext256(274L,y+43L,31,-1,tempbuf,1);
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
     sprintf(tempbuf,"DRINK= %ld",ps[snum].drink_amt);
     printext256(274L,y+51L,31,-1,tempbuf,1);
     sprintf(tempbuf,"MAP= %s",level_file_names[ud.level_number]);
@@ -1389,7 +1389,7 @@ void showtwoscreens(void)
 #ifdef RRRA
     return;
 #endif
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
     setview(0,0,xdim-1,ydim-1);
     flushperms();
     ps[myconnectindex].palette = (char*)&palette[0];
@@ -1497,7 +1497,7 @@ void gameexit(char *t)
         setvmode(0x3);
         if(playonten == 0)
         {
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
             printf("%s", t);
             printf("\n   Y'all come back now, ya' hear...\n");
 #else

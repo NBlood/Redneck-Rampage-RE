@@ -1183,3 +1183,27 @@ void displayweapon(short snum)
 #endif
 
 }
+
+#ifdef POSSUM
+
+void hackfunc()
+{
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+    hackfunc();
+}
+
+#endif

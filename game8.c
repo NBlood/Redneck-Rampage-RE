@@ -55,6 +55,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define VERSION "REL 1.00"
 #define HEAD   "REDNECK RAMPAGE(tm): THE EARLY YEARS"
 #define HEAD2  "REDNECK RAMPAGE(tm): THE EARLY YEARS"
+#elif defined(POSSUM)
+#define VERSION "REL 1.00"
+#define HEAD   "REDNECK RAMPAGE(tm): POSSUM BAYOU"
+#define HEAD2  "REDNECK RAMPAGE(tm): POSSUM BAYOU"
 #else
 #define VERSION "REL 1.01"
 #define HEAD   "REDNECK RAMPAGE(tm) "VERSION" - MOONSHINE"
@@ -165,6 +169,8 @@ void cdecl MVE_gfxMode(short);
 
 #ifdef TEY
     printstr(0,2,"                         5-LEVEL OEM VERSION 1.00                               ",79);
+#elif defined(POSSUM)
+    printstr(0,2,"                            7-LEVEL VERSION 1.00                                ",79);
 #else
     printstr(0,2,"                      REDNECK RAMPAGE VERSION "VERSION"                          ",79);
 #endif

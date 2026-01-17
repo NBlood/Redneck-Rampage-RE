@@ -27,7 +27,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 
-#if defined(RRRA) || defined(TEY)
+#if defined(RRRA) || defined(TEY) || defined(POSSUM)
 static int bss_hack1;
 static int bss_hack2;
 static int bss_hack3;

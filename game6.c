@@ -224,7 +224,7 @@ void cheats(void)
                         j = 0;
 #endif
 
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
                         ps[myconnectindex].gotweapon[1] = 1;
                         ps[myconnectindex].gotweapon[2] = 1;
                         ps[myconnectindex].gotweapon[3] = 1;
@@ -365,7 +365,7 @@ void cheats(void)
 
                     case 1:
                         j = 0;
-#ifdef TEY
+#if defined(TEY) || defined(POSSUM)
                         ps[myconnectindex].gotweapon[1] = 1;
                         ps[myconnectindex].gotweapon[2] = 1;
                         ps[myconnectindex].gotweapon[3] = 1;
